@@ -107,14 +107,14 @@ Custom M Codes
 - M502 Reset settings to the one in configuration.h. Does not store values in EEPROM!
 - M908 P<address> S<value> : Set stepper current for digipot (RAMBO board)
 */
-
+#include <SPI.h>
 #include "Reptier.h"
 #include "Eeprom.h"
 #include "pins_arduino.h"
 #include "fastio.h"
 #include "ui.h"
 #include <util/delay.h>
-#include <SPI.h>
+
 
 #if UI_DISPLAY_TYPE==4
 //#include <LiquidCrystal.h> // Uncomment this if you are using liquid crystal library

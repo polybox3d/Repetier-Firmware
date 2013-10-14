@@ -215,9 +215,6 @@ usage or for seraching for memory induced errors. Switch it off for production, 
 #endif
 #define ANALOG_PRESCALER _BV(ADPS0)|_BV(ADPS1)|_BV(ADPS2)
 
-#if MOTHERBOARD==8 || MOTHERBOARD==9 || CPU_ARCH!=ARCH_AVR
-#define EXTERNALSERIAL
-#endif
 //#define EXTERNALSERIAL  // Force using arduino serial
 #ifndef EXTERNALSERIAL
 #define  HardwareSerial_h // Don't use standard serial console
@@ -268,21 +265,6 @@ usage or for seraching for memory induced errors. Switch it off for production, 
 #define uint32 uint32_t
 #define int32 int32_t
 
-/*#if MOTHERBOARD==6 || MOTHERBOARD==62 || MOTHERBOARD==7
-#if MOTHERBOARD!=7
-#define SIMULATE_PWM
-#endif
-#define EXTRUDER_TIMER_VECTOR TIMER2_COMPA_vect
-#define EXTRUDER_OCR OCR2A
-#define EXTRUDER_TCCR TCCR2A
-#define EXTRUDER_TIMSK TIMSK2
-#define EXTRUDER_OCIE OCIE2A
-#define PWM_TIMER_VECTOR TIMER2_COMPB_vect
-#define PWM_OCR OCR2B
-#define PWM_TCCR TCCR2B
-#define PWM_TIMSK TIMSK2
-#define PWM_OCIE OCIE2B
-#else*/
 #define EXTRUDER_TIMER_VECTOR TIMER0_COMPA_vect
 #define EXTRUDER_OCR OCR0A
 #define EXTRUDER_TCCR TCCR0A
