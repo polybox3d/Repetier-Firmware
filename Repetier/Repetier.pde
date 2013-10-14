@@ -116,9 +116,6 @@ Custom M Codes
 #include <util/delay.h>
 
 
-#if UI_DISPLAY_TYPE==4
-//#include <LiquidCrystal.h> // Uncomment this if you are using liquid crystal library
-#endif
 
 // ================ Sanity checks ================
 #ifndef STEP_DOUBLER_FREQUENCY
@@ -528,7 +525,6 @@ SET_OUTPUT(ANALYZER_CH7);
   epr_init_baudrate();
   RFSERIAL.begin(baudrate);
   out.println_P(PSTR("start"));
-  UI_INITIALIZE;
   
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
@@ -567,7 +563,6 @@ SET_OUTPUT(ANALYZER_CH7);
 void defaultLoopActions() {
   //check heater every n milliseconds
   check_periodical();
-  UI_MEDIUM; // do check encoder
   unsigned long curtime = millis();
   if(lines_count)
     previous_millis_cmd = curtime;
@@ -587,8 +582,6 @@ void loop()
 {
   gcode_read_serial();
   GCode *code = gcode_next_command();
-  //UI_SLOW; // do longer timed user interface action
-  UI_MEDIUM; // do check encoder
   if(code){
 #if SDSUPPORT
     if(sd.savetosd){
@@ -860,9 +853,7 @@ byte get_coordinates(GCode *com)
 {
   register long p;
   register byte r=0;
-  if(lines_count==0) {
-    UI_STATUS(UI_TEXT_PRINTING);
-  }
+
   if(GCODE_HAS_X(com)) {
     r = 1;
     if(unit_inches)
@@ -1603,7 +1594,6 @@ inline long bresenham_step() {
 			if(DISABLE_X) disable_x();
 			if(DISABLE_Y) disable_y();
 			if(DISABLE_Z) disable_z();
-			if(lines_count==0) UI_STATUS(UI_TEXT_IDLE);
 			interval = printer_state.interval = interval>>1; // 50% of time to next call to do cur=0
 		}
 	        DEBUG_MEMORY;
@@ -2270,7 +2260,6 @@ OUT_P_L_LN("MSteps:",cur->stepsRemaining);
        if(DISABLE_Y) disable_y();
 #endif
        if(DISABLE_Z) disable_z();
-     if(lines_count==0) UI_STATUS(UI_TEXT_IDLE);
      interval = printer_state.interval = interval>>1; // 50% of time to next call to do cur=0
    }
    DEBUG_MEMORY;
@@ -2294,13 +2283,12 @@ void kill(byte only_steppers)
     for(byte i=0;i<NUM_EXTRUDER;i++)
       extruder_set_temperature(0,i);
     heated_bed_set_temperature(0);
-    UI_STATUS_UPD(UI_TEXT_KILLED);
 #if defined(PS_ON_PIN) && PS_ON_PIN>-1
       //pinMode(PS_ON_PIN,INPUT);
       SET_OUTPUT(PS_ON_PIN); //GND
       WRITE(PS_ON_PIN, (POWER_INVERTING ? LOW : HIGH));
 #endif
-  } else UI_STATUS_UPD(UI_TEXT_STEPPER_DISABLED);
+  } 
 }
 long stepperWait = 0;
 /** \brief Sets the timer 1 compare value to delay ticks.
@@ -2682,8 +2670,6 @@ if((ADCSRA & _BV(ADSC))==0) { // Conversion finished?
   ADCSRA |= _BV(ADSC);  // start next conversion
   }
 #endif
-
- UI_FAST; // Short timed user interface action
  pwm_count++;
 }
 

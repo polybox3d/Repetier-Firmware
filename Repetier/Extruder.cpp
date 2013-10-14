@@ -959,8 +959,6 @@ void autotunePID(float temp,int controllerId)
       disableAllHeater();
       return;
     }
-    UI_MEDIUM;
-    UI_SLOW;
   }
 }
 #endif

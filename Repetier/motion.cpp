@@ -520,7 +520,6 @@ void calculate_move(PrintLine *p,float axis_diff[],byte check_endstops,byte path
     critical=true;
   }
   p->timeInTicks = time_for_move;
-  UI_MEDIUM; // do check encoder
   // Compute the solwest allowed interval (ticks/step), so maximum feedrate is not violated
   long limitInterval = time_for_move/p->stepsRemaining; // until not violated by other constraints it is your target speed
   axis_interval[0] = fabs(axis_diff[0])*F_CPU/(max_feedrate[0]*p->stepsRemaining); // mm*ticks/s/(mm/s*steps) = ticks/step
@@ -632,7 +631,6 @@ void calculate_move(PrintLine *p,float axis_diff[],byte check_endstops,byte path
     }
   }
 #endif
-    UI_MEDIUM; // do check encoder
     updateTrapezoids(lines_write_pos);
     // how much steps on primary axis do we need to reach target feedrate
     //p->plateauSteps = (long) (((float)p->acceleration *0.5f / slowest_axis_plateau_time_repro + p->vMin) *1.01f/slowest_axis_plateau_time_repro);
@@ -1346,7 +1344,6 @@ void mc_arc(float *position, float *target, float *offset, float radius, uint8_t
     {
        gcode_read_serial();
        check_periodical();
-       UI_MEDIUM; // do check encoder
     }
 
     if (count < N_ARC_CORRECTION)  //25 pieces

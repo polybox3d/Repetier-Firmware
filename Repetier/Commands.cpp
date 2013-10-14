@@ -39,7 +39,6 @@ void check_periodical() {
         write_monitor();
      counter_250ms=5;
   }
-  UI_SLOW; 
 }
 
 /** \brief Waits until movement cache is empty.
@@ -52,7 +51,6 @@ void wait_until_end_of_move() {
   while(lines_count) {
     gcode_read_serial();
     check_periodical(); 
-    UI_MEDIUM;
   }
 }
 void printPosition() {
@@ -123,7 +121,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
   long steps;
   bool homeallaxis = (xaxis && yaxis && zaxis) || (!xaxis && !yaxis && !zaxis);
   if (X_MAX_PIN > -1 && Y_MAX_PIN > -1 && Z_MAX_PIN > -1 && MAX_HARDWARE_ENDSTOP_X & MAX_HARDWARE_ENDSTOP_Y && MAX_HARDWARE_ENDSTOP_Z) {
-    UI_STATUS_UPD(UI_TEXT_HOME_DELTA);
     // Homing Z axis means that you must home X and Y
     if (homeallaxis || zaxis) {
       delta_move_to_top_endstops(homing_feedrate[0]);	
@@ -140,7 +137,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
       split_delta_move(true,false,false);
     }
     printer_state.countZSteps = 0;
-    UI_CLEAR_STATUS 
   }
 }
 #else
@@ -148,7 +144,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
   long steps;
   if(xaxis) {
     if ((MIN_HARDWARE_ENDSTOP_X && X_MIN_PIN > -1 && X_HOME_DIR==-1) || (MAX_HARDWARE_ENDSTOP_X && X_MAX_PIN > -1 && X_HOME_DIR==1)){
-      UI_STATUS_UPD(UI_TEXT_HOME_X);
       steps = (printer_state.xMaxSteps-printer_state.xMinSteps) * X_HOME_DIR;         
       printer_state.currentPositionSteps[0] = -steps;
       move_steps(2*steps,0,0,0,homing_feedrate[0],true,true);
@@ -172,7 +167,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
   }        
   if(yaxis) {
     if ((MIN_HARDWARE_ENDSTOP_Y && Y_MIN_PIN > -1 && Y_HOME_DIR==-1) || (MAX_HARDWARE_ENDSTOP_Y && Y_MAX_PIN > -1 && Y_HOME_DIR==1)){
-      UI_STATUS_UPD(UI_TEXT_HOME_Y);
       steps = (printer_state.yMaxSteps-printer_state.yMinSteps) * Y_HOME_DIR;         
       printer_state.currentPositionSteps[1] = -steps;
       move_steps(0,2*steps,0,0,homing_feedrate[1],true,true);
@@ -196,7 +190,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
   }        
   if(zaxis) {
     if ((MIN_HARDWARE_ENDSTOP_Z && Z_MIN_PIN > -1 && Z_HOME_DIR==-1) || (MAX_HARDWARE_ENDSTOP_Z && Z_MAX_PIN > -1 && Z_HOME_DIR==1)){
-      UI_STATUS_UPD(UI_TEXT_HOME_Z);
       steps = (printer_state.zMaxSteps-printer_state.zMinSteps) * Z_HOME_DIR;         
       printer_state.currentPositionSteps[2] = -steps;
       move_steps(0,0,2*steps,0,homing_feedrate[2],true,true);
@@ -210,7 +203,6 @@ void home_axis(bool xaxis,bool yaxis,bool zaxis) {
       printer_state.currentPositionSteps[2] = (Z_HOME_DIR == -1) ? printer_state.zMinSteps : printer_state.zMaxSteps;
     }
   }
-  UI_CLEAR_STATUS  
 }
 #endif
 
@@ -654,7 +646,6 @@ void process_command(GCode *com,byte bufferedCommand)
           if(reportTempsensorError()) break;
           previous_millis_cmd = millis();
           if(DEBUG_DRYRUN) break;
-          UI_STATUS_UPD(UI_TEXT_HEATING_EXTRUDER);
           wait_until_end_of_move();
           Extruder *actExtruder = current_extruder;
           if(GCODE_HAS_T(com) && com->T<NUM_EXTRUDER) actExtruder = &extruder[com->T]; 
@@ -697,14 +688,12 @@ void process_command(GCode *com,byte bufferedCommand)
           }
 #endif
         }
-        UI_CLEAR_STATUS;
 #endif
         previous_millis_cmd = millis();
         break;
       case 190: // M190 - Wait bed for heater to reach target.
 #if HAVE_HEATED_BED
         if(DEBUG_DRYRUN) break;
-        UI_STATUS_UPD(UI_TEXT_HEATING_BED);
         wait_until_end_of_move();
 #if HAVE_HEATED_BED
         if (GCODE_HAS_S(com)) heated_bed_set_temperature(com->S);
@@ -721,7 +710,6 @@ void process_command(GCode *com,byte bufferedCommand)
         }
 #endif
 #endif
-        UI_CLEAR_STATUS;
         previous_millis_cmd = millis();
         break;
 #ifdef BEEPER_PIN
@@ -844,7 +832,6 @@ void process_command(GCode *com,byte bufferedCommand)
         break;
       case 117: // M117 message to lcd
         if(GCODE_HAS_STRING(com)) {
-          UI_STATUS_UPD_RAM(com->text); 
         }
         break;
       case 119: // M119
