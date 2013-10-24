@@ -527,16 +527,16 @@ on this endstop.
 #define ENDSTOP_PULLUP_X_MIN false
 #define ENDSTOP_PULLUP_Y_MIN false
 #define ENDSTOP_PULLUP_Z_MIN false
-#define ENDSTOP_PULLUP_X_MAX true
-#define ENDSTOP_PULLUP_Y_MAX true
+#define ENDSTOP_PULLUP_X_MAX false
+#define ENDSTOP_PULLUP_Y_MAX false
 #define ENDSTOP_PULLUP_Z_MAX false
 
 //set to true to invert the logic of the endstops
 #define ENDSTOP_X_MIN_INVERTING true
 #define ENDSTOP_Y_MIN_INVERTING true
 #define ENDSTOP_Z_MIN_INVERTING true
-#define ENDSTOP_X_MAX_INVERTING false
-#define ENDSTOP_Y_MAX_INVERTING false
+#define ENDSTOP_X_MAX_INVERTING true
+#define ENDSTOP_Y_MAX_INVERTING true
 #define ENDSTOP_Z_MAX_INVERTING true
 
 // Set the values true where you have a hardware endstop. The Pin numbe ris taken from pins.h.
@@ -544,8 +544,8 @@ on this endstop.
 #define MIN_HARDWARE_ENDSTOP_X true
 #define MIN_HARDWARE_ENDSTOP_Y true
 #define MIN_HARDWARE_ENDSTOP_Z true
-#define MAX_HARDWARE_ENDSTOP_X false
-#define MAX_HARDWARE_ENDSTOP_Y false
+#define MAX_HARDWARE_ENDSTOP_X true
+#define MAX_HARDWARE_ENDSTOP_Y true
 #define MAX_HARDWARE_ENDSTOP_Z true
 
 //If your axes are only moving in one direction, make sure the endstops are connected properly.
@@ -903,8 +903,8 @@ to activate the quadratic term. Only adds lots of computations and storage usage
 
  Overridden if EEPROM activated.
 */
-#define BAUDRATE 76800
-//#define BAUDRATE 115200
+//#define BAUDRATE 76800
+#define BAUDRATE 115200
 //#define BAUDRATE 250000
 
 /**
