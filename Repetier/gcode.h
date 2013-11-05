@@ -142,6 +142,7 @@ public:
   void printFloat(double number, uint8_t digits=2); 
 
 };
+#define OUT_MCODE(i) out.print_int_P(PSTR("M"),(int)(i))
 #define OUT_P_I(p,i) out.print_int_P(PSTR(p),(int)(i))
 #define OUT_P_I_LN(p,i) out.println_int_P(PSTR(p),(int)(i))
 #define OUT_P_L(p,i) out.print_long_P(PSTR(p),(long)(i))

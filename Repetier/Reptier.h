@@ -239,20 +239,9 @@ usage or for seraching for memory induced errors. Switch it off for production, 
 #endif
 #define SD_MAX_FOLDER_DEPTH 2
 
-#include "ui.h"
+#include "Polybox.h"
 
-#ifndef SDSUPPORT
-#define SDSUPPORT false
-#endif
-#if SDSUPPORT
-#include "SdFat.h"
-#endif
-#ifndef SDSUPPORT
-#define SDSUPPORT false
-#endif
-#if SDSUPPORT
-#include "SdFat.h"
-#endif
+
 
 #if ENABLE_BACKLASH_COMPENSATION && DRIVE_SYSTEM!=0
 #undef ENABLE_BACKLASH_COMPENSATION
@@ -820,6 +809,9 @@ extern volatile uint osAnalogInputValues[OS_ANALOG_INPUTS];
 
 #define SECONDS_TO_TICKS(s) (unsigned long)(s*(float)F_CPU)
 extern long CPUDivU2(unsigned int divisor);
+
+//base counter for routines.
+extern unsigned int counter_base;
 
 extern unsigned int counter_periodical;
 extern volatile byte execute_periodical;

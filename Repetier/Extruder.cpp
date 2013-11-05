@@ -21,7 +21,6 @@
 
 #include "Reptier.h"
 #include "pins_arduino.h"
-#include "ui.h"
 #if EEPROM_MODE!=0
 #include "Eeprom.h"
 #endif

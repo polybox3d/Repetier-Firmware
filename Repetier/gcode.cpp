@@ -740,63 +740,6 @@ void gcode_read_serial() {
       }           
     }
   }
-  #if SDSUPPORT
-  if(!sd.sdmode || gcode_wpos!=0) { // not reading or incoming serial command
-    return;
-  }
-  while( sd.filesize > sd.sdpos && gcode_wpos < MAX_CMD_SIZE) {  // consume data until no data or buffer full
-    gcode_lastdata = millis();
-    int n = sd.file.read();
-    if(n==-1) {
-      OUT_P_LN("SD read error");
-      break;
-    }
-    sd.sdpos++; // = file.curPosition();
-    gcode_transbuffer[gcode_wpos++] = (byte)n;
-  
-    // first lets detect, if we got an old type ascii command
-    if(gcode_wpos==1) {
-      gcode_binary = (gcode_transbuffer[0] & 128)!=0;
-    }
-    if(gcode_binary) {
-      if(gcode_wpos < 2 ) continue;
-      if(gcode_wpos == 5) gcode_binary_size = gcode_comp_binary_size((char*)gcode_transbuffer);
-      if(gcode_wpos==gcode_binary_size) {
-        act = &gcode_buffer[gcode_windex];
-        if(gcode_parse_binary(act,gcode_transbuffer)) { // Success
-          gcode_silent_insert();
-        } 
-        gcode_wpos = 0;
-        return;
-      }
-    } else {
-      char ch = gcode_transbuffer[gcode_wpos-1];
-      if(ch == '\n' || ch == '\r' || ch == ':' || gcode_wpos >= (MAX_CMD_SIZE - 1) ) {// complete line read
-        gcode_transbuffer[gcode_wpos-1]=0;
-        gcode_comment = false;
-        if(gcode_wpos==1) { // empty line ignore
-          gcode_wpos = 0;
-          continue;
-        }
-        act = &gcode_buffer[gcode_windex];
-        if(gcode_parse_ascii(act,(char *)gcode_transbuffer,false)) { // Success
-          gcode_silent_insert();
-        }
-        gcode_wpos = 0;
-        return;
-      } else {
-        if(ch == ';') gcode_comment = true; // ignore new data until lineend
-        if(gcode_comment) gcode_wpos--;
-      }
-    }
-  }
-  sd.sdmode = false;
-  OUT_P_LN("Done printing file");
-  /*OUT_P_L("Printed bytes:",sd.sdpos);
-  OUT_P_L_LN(" of ",sd.filesize);
-  OUT_P_I_LN("WPOS:",gcode_wpos);*/
-  gcode_wpos = 0;
-#endif
 }
 
 /**

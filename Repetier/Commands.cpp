@@ -24,7 +24,6 @@
 #include "Eeprom.h"
 #endif
 #include "pins_arduino.h"
-#include "ui.h"
 
 #include <SPI.h>
 
@@ -545,7 +544,8 @@ void process_command(GCode *com,byte bufferedCommand)
     previous_millis_cmd = millis();      
   }
 
-  else if(GCODE_HAS_M(com))  { // Process M Code
+  else if(GCODE_HAS_M(com))
+    { // Process M Code
     
     switch( com->M ) {
 #if SDSUPPORT
@@ -1075,7 +1075,177 @@ void process_command(GCode *com,byte bufferedCommand)
 	#endif
 	}
 	break;
+/* ##################POLYBOX##################### */
+/* ___________________CNC_______________________ */
+//out.print_int_P(PSTR(" quadratic steps:"),maxadv);
+//out.println_float_P(PSTR(", speed="),maxadvspeed); 
+    case 10: // vacuum on
+    {    }    break;
+    case 11: // vacuum off
+        {    }    break;
+    case 600:   {    }    break;
+    case 601: // Get CNCTool plugged
+    {
+        OUT_MCODE( com->M );
+        if ( 1 )
+        {
+            OUT_P_LN(" H");
+        }
+        else if ( 1 )
+        {
+            OUT_P_LN(" P");
+        }
+        else
+        {
+            OUT_P_LN(" 0");
+        }
+    }
+    break;
+    case 602: // Get Lubricant motor plugged
+    {
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 603: // Get Lubrivant level ok
+    {
+        OUT_MCODE( com->M );
+        OUT_P_F_LN(" ",4);
+    }
+    break;
+    case 604: // Get Vacuum detected
+    {
+        OUT_MCODE( com->M );
+        OUT_P_F_LN(" ",1);
+    }
+    break;
+/* ___________________SCANNER_______________________ */
+    case 610:    {   }
+    break;
+    case 611:
+    {
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 612:    {    }    break;
+    case 613:    {    }    break;
+/* ___________________LABVIEW_______________________ */
+    case 620:    {    }    break;
+    case 621:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I(" R:",1);
+      OUT_P_I(" E:",2);
+      OUT_P_I(" B:",3);
+      OUT_P_I_LN(" I:",4);
+    }
+    break;
+    case 624:    {    }    break;
+    case 625:    {    }    break;
+    case 626:    {    }    break;
+/* ___________________PRINTER_______________________ */
+    case 630:    {    }    break;
+    case 631:
+    {
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 632:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 633:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 634:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I(" Z1:",1);
+      OUT_P_I(" Z2:",1);
+      OUT_P_I(" Z3:",1);
+      OUT_P_I_LN(" Z4:",1);
+    }
+    break;
+    case 635:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I(" B1:",1);
+      OUT_P_I_LN(" B2:",1);
+    }
+    break;
+    case 636:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_F(" B1:",1);
+      OUT_P_F_LN(" B2:",1);
+    }
+    break;
+    case 637:    {    }    break;
+    case 638:    {    }    break;
+    case 640:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_F(" A:",1);
+      OUT_P_F(" B:",1);
+      OUT_P_F_LN(" C:",1);
+    }
+    break;
+    /* _____________________GLOBAL______________________ */
+    case 651:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 652:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 653:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_F(" A1:",1);
+      OUT_P_F(" A2:",1);
+      OUT_P_F(" A3:",1);
+      OUT_P_F_LN(" A4:",1);
+    }
+    break;
+    case 654:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 655:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 656:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_F(" T11:",1);
+      OUT_P_F_LN(" T2:",1);
+    }
+    break;
+    case 657:
+    {
+      OUT_MCODE( com->M );
+      OUT_P_I_LN(" ",1);
+    }
+    break;
     
+//##################POLYBOX#####################    
     case 350: // Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
       OUT_P_LN("Set Microstepping");
@@ -1137,10 +1307,13 @@ void process_command(GCode *com,byte bufferedCommand)
 #endif
 #endif
     }
-  } else if(GCODE_HAS_T(com))  { // Process T code
+  } 
+  else if(GCODE_HAS_T(com))
+    { // Process T code
     wait_until_end_of_move();
     extruder_select(com->T);
-  } else{
+  } 
+  else{
     if(DEBUG_ERRORS) {
       OUT_P("Unknown command:");
       gcode_print_command(com);
