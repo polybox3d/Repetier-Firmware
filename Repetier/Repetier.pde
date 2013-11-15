@@ -108,13 +108,15 @@ Custom M Codes
 - M908 P<address> S<value> : Set stepper current for digipot (RAMBO board)
 */
 #include <SPI.h>
+#include <Wire.h>
 #include "Reptier.h"
 #include "Eeprom.h"
 #include "pins_arduino.h"
 #include "fastio.h"
-#include "ui.h"
+
 #include <util/delay.h>
 
+#include "i2c_master.h"
 
 
 // ================ Sanity checks ================
@@ -158,6 +160,8 @@ Custom M Codes
 #error MOVE_CACHE_SIZE must be at least 5
 #endif
 
+
+unsigned int counter_base;
 
 #define OVERFLOW_PERIODICAL  (int)(F_CPU/(TIMER0_PRESCALE*40))
 // RAM usage of variables: Non RAMPS 114+MOVE_CACHE_SIZE*59+printer_state(32) = 382 Byte with MOVE_CACHE_SIZE=4
@@ -222,7 +226,7 @@ BEGIN_INTERRUPT_PROTECTED
   uint8_t * heapptr, * stackptr;
   heapptr = (uint8_t *)malloc(4);          // get heap pointer
   free(heapptr);      // free up the memory again (sets heapptr to 0)
-  stackptr =  (uint8_t *)(SP);           // save value of stack pointer
+  stackptr =  (uint8_t *)(SP);           // save value of stack pointer    
   int newfree = (int)stackptr-(int)heapptr;
   if(newfree<lowest_ram) {
      lowest_ram = newfree;
@@ -536,6 +540,10 @@ SET_OUTPUT(ANALYZER_CH7);
   TCCR1B =  (_BV(WGM12) | _BV(CS10)); // no prescaler == 0.0625 usec tick | 001 = clk/1
   OCR1A=65500; //start off with a slow frequency.
   TIMSK1 |= (1<<OCIE1A); // Enable interrupt
+  
+#if IC2_SLAVE_MASTER
+  setup_slave_master();
+#endif
 }
 
 void defaultLoopActions() {
@@ -546,9 +554,8 @@ void defaultLoopActions() {
     previous_millis_cmd = curtime;
   if(max_inactive_time!=0 && (curtime-previous_millis_cmd) >  max_inactive_time ) kill(false);
   if(stepper_inactive_time!=0 && (curtime-previous_millis_cmd) >  stepper_inactive_time ) { kill(true); }
-#if defined(SDCARDDETECT) && SDCARDDETECT>-1 && defined(SDSUPPORT) && SDSUPPORT
-  sd.automount();
-#endif
+
+
   //void finishNextSegment();
   DEBUG_MEMORY;
 }
@@ -561,27 +568,8 @@ void loop()
   gcode_read_serial();
   GCode *code = gcode_next_command();
   if(code){
-#if SDSUPPORT
-    if(sd.savetosd){
-        if(!(GCODE_HAS_M(code) && code->M==29)) { // still writing to file
-            sd.write_command(code);
-        } else {
-            sd.finishWrite();
-        }
-#ifdef ECHO_ON_EXECUTE
-        if(DEBUG_ECHO) {
-           OUT_P("Echo:");
-           gcode_print_command(code);
-           out.println();
-        }
-#endif
-        gcode_command_finished(code);
-    } else {
-        process_command(code,true);
-    }
-#else
+    //  coade as been deleted here, care if error...
     process_command(code,true);
-#endif
   }
   defaultLoopActions();
 }
@@ -2612,6 +2600,12 @@ ISR(PWM_TIMER_VECTOR)
   if(counter_periodical>=(int)(F_CPU/40960)) {
     counter_periodical=0;
     execute_periodical=1;
+  }
+  
+  counter_base++; // Appxoimate a 10ms timer
+  if(counter_base>=(int)(F_CPU/4096)) {
+    counter_base=0;
+    execute_i2c=1;
   }
 // read analog values
 #if ANALOG_INPUTS>0

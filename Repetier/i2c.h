@@ -20,10 +20,7 @@
  * Wire() class can send byte array and string but no float...
  * **/
 #define FB_SIZE 2
-union fb_tag {
-      byte b[2];
-      int f;
-} fb;
+
 
 
 #define PIN_MAX_NUMBER      56*4
@@ -43,20 +40,9 @@ union fb_tag {
 #include "Pin.h"
 #include "Update.h"
 
-Pin pin_values[PIN_MAX_NUMBER]= {0};
-
-#define READ_PIN(i) pin_values[i].value
-
-void set_pin_value( uint8_t pin, int value)
-{
-    pin_values[pin].value = value;
-}
-
-void set_pin_type( uint8_t pin, int type)
-{
-    pin_values[pin].type = type;
-}
-
+void i2c_set_vpin_value( Pin* pin_values, uint8_t pin, int value);
+void i2c_set_vpin_type( Pin* pin_values, uint8_t pin, int type);
+/*
 void pinMode_ext( uint8_t pin, int type)
 {
     pinMode( pin, type );
@@ -68,5 +54,5 @@ void set_pin_Ext( uint8_t pin, int value)
     set_pin_value( pin, value );
     digitalWrite(pin, value);
 }
-
+*/
 #endif

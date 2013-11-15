@@ -142,6 +142,8 @@ public:
   void printFloat(double number, uint8_t digits=2); 
 
 };
+#define OUT_POLY() out.print(POLY_SERIAL_SEPARATOR_VALUE)
+#define OUT_POLY_DEBUG(p) {OUT_POLY();OUT_P(POLY_SERIAL_DEBUG);OUT_P_LN(p)}
 #define OUT_MCODE(i) out.print_int_P(PSTR("M"),(int)(i))
 #define OUT_P_I(p,i) out.print_int_P(PSTR(p),(int)(i))
 #define OUT_P_I_LN(p,i) out.println_int_P(PSTR(p),(int)(i))

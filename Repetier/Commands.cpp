@@ -27,6 +27,8 @@
 
 #include <SPI.h>
 
+#include "i2c_master.h"
+
 const int sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
 
 void check_periodical() {
@@ -51,6 +53,11 @@ void wait_until_end_of_move() {
     gcode_read_serial();
     check_periodical(); 
   }
+}
+int freeRam () {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
 void printPosition() {
   OUT_P_F("X:",printer_state.currentPositionSteps[0]*inv_axis_steps_per_unit[0]*(unit_inches?0.03937:1));
@@ -1083,9 +1090,10 @@ void process_command(GCode *com,byte bufferedCommand)
     {    }    break;
     case 11: // vacuum off
         {    }    break;
-    case 600:   {    }    break;
+    case 600:   {  OUT_MCODE( freeRam() ); OUT_LN; }    break;
     case 601: // Get CNCTool plugged
     {
+        OUT_POLY();
         OUT_MCODE( com->M );
         if ( 1 )
         {
@@ -1109,6 +1117,7 @@ void process_command(GCode *com,byte bufferedCommand)
     break;
     case 603: // Get Lubrivant level ok
     {
+        OUT_POLY();
         OUT_MCODE( com->M );
         OUT_P_F_LN(" ",4);
     }
@@ -1120,25 +1129,65 @@ void process_command(GCode *com,byte bufferedCommand)
     }
     break;
 /* ___________________SCANNER_______________________ */
-    case 610:    {   }
-    break;
-    case 611:
-    {
+    case 610:    //get scanner status
+    {   
+        OUT_POLY();
         OUT_MCODE( com->M );
-        OUT_P_I_LN(" ",1);
+        OUT_P_I_LN(" ",1); // send 1 for ready/ok
     }
     break;
-    case 612:    {    }    break;
-    case 613:    {    }    break;
+    case 611: // Get turntable plugged
+    {
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ", !READ_VPIN(TABLE0_DETECTED_PIN) );
+    }
+    break;
+    case 612:    // Set  turntable On/Off
+    {    
+        WRITE_VPIN( TABLE0_ENABLE_PIN, !(com->S) );    
+    }    
+    break;
+    case 613:    // TurnTable X stepper
+    {    
+        pin_x_steps( TABLE0_STEP_PIN, com->S );
+    }
+    break;
+    case 614:    // Set Table Clock Direction (0 for CCW)
+    {    
+        WRITE_VPIN( TABLE0_DIR_PIN, (com->S) );
+    }
+    case 615:    // Set laser On/Off
+    {    
+        WRITE_VPIN( LASER_0_PIN, !(com->S) );    
+    }
+    break;
+    case 616:    // Set LaserRotation On/Off
+    {    
+        WRITE_VPIN( L0_ENABLE_PIN, !(com->S) );    
+        //OUT_POLY_DEBUG(" Code 616 not used... SLR On/Off");
+    }
+    break;
+    case 617:    // Laser Turn X stepper
+    {    
+        pin_x_steps( L0_STEP_PIN, com->S );
+    }
+    break;
+    case 618:    // Set Laser Clock Direction (0 for CCW)
+    {    
+        WRITE_VPIN( L0_DIR_PIN, (com->S) );
+    }
+    break;
 /* ___________________LABVIEW_______________________ */
     case 620:    {    }    break;
     case 621:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I(" R:",1);
-      OUT_P_I(" E:",2);
-      OUT_P_I(" B:",3);
-      OUT_P_I_LN(" I:",4);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I(" R:",1);
+        OUT_P_I(" E:",2);
+        OUT_P_I(" B:",3);
+        OUT_P_I_LN(" I:",4);
     }
     break;
     case 624:    {    }    break;
@@ -1148,66 +1197,75 @@ void process_command(GCode *com,byte bufferedCommand)
     case 630:    {    }    break;
     case 631:
     {
+        OUT_POLY();
         OUT_MCODE( com->M );
         OUT_P_I_LN(" ",1);
     }
     break;
     case 632:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 633:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 634:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I(" Z1:",1);
-      OUT_P_I(" Z2:",1);
-      OUT_P_I(" Z3:",1);
-      OUT_P_I_LN(" Z4:",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I(" Z1:",1);
+        OUT_P_I(" Z2:",1);
+        OUT_P_I(" Z3:",1);
+        OUT_P_I_LN(" Z4:",1);
     }
     break;
     case 635:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I(" B1:",1);
-      OUT_P_I_LN(" B2:",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I(" B1:",1);
+        OUT_P_I_LN(" B2:",1);
     }
     break;
     case 636:
     {
-      OUT_MCODE( com->M );
-      OUT_P_F(" B1:",1);
-      OUT_P_F_LN(" B2:",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_F(" B1:",1);
+        OUT_P_F_LN(" B2:",1);
     }
     break;
     case 637:    {    }    break;
     case 638:    {    }    break;
     case 640:
     {
-      OUT_MCODE( com->M );
-      OUT_P_F(" A:",1);
-      OUT_P_F(" B:",1);
-      OUT_P_F_LN(" C:",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_F(" A:",1);
+        OUT_P_F(" B:",1);
+        OUT_P_F_LN(" C:",1);
     }
     break;
     /* _____________________GLOBAL______________________ */
     case 651:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 652:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 653:
@@ -1221,27 +1279,31 @@ void process_command(GCode *com,byte bufferedCommand)
     break;
     case 654:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 655:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     case 656:
     {
-      OUT_MCODE( com->M );
-      OUT_P_F(" T11:",1);
-      OUT_P_F_LN(" T2:",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_F(" T11:",1);
+        OUT_P_F_LN(" T2:",1);
     }
     break;
     case 657:
     {
-      OUT_MCODE( com->M );
-      OUT_P_I_LN(" ",1);
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
     }
     break;
     

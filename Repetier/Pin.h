@@ -3,7 +3,7 @@
 
 typedef struct Pin {
     uint8_t type;
-    float value;
+    int value;
 } Pin;
 
 

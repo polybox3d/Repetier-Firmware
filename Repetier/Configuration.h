@@ -43,7 +43,8 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 */
 // Does the firmware use master/slave communication by i2c ? (pin extention function)
 #define IC2_SLAVE_MASTER 1
-
+#define POLY_SERIAL_SEPARATOR_VALUE "#"
+#define POLY_SERIAL_DEBUG   "%"
 
 // BASIC SETTINGS: select your board type, thermistor type, axis scaling, and endstop configuration
 
