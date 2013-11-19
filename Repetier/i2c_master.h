@@ -13,7 +13,6 @@
 #define Receiver 4	// Who I want to talk to
 #define LAST_MASTER_PIN 56
 /* ---------VARIABLES------- */
-extern volatile byte execute_i2c;
 extern volatile byte timer_i2c_update;
 
 /* ---------FUNCTIONS------- */

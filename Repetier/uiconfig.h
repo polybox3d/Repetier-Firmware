@@ -93,18 +93,19 @@ What display type do you use?
 4 = Use the slower LiquiedCrystal library bundled with arduino. 
     IMPORTANT: You need to uncomment the LiquidCrystal include in Repetier.pde for it to work.
                If you have Sanguino and want to use the library, you need to have Arduino 023 or older. (13.04.2012)
+5 = polybox
 */
-#define UI_DISPLAY_TYPE 0
+#define UI_DISPLAY_TYPE 5
 
 /** Number of columns per row
 
 Typical values are 16 and 20
 */
-#define UI_COLS 20
+#define UI_COLS 0
 /**
 Rows of your display. 2 or 4
 */
-#define UI_ROWS 4
+#define UI_ROWS 0
 
 /* What type of chip is used for I2C communication
 0 : PCF8574 or PCF8574A or compatible chips.
@@ -176,7 +177,7 @@ Define the pin
 0 = No keys attached - disables also menu
 1 = Some keys attached
 */
-#define UI_HAS_KEYS 0
+#define UI_HAS_KEYS 1
 
 
 /** \brief Is a back key present.

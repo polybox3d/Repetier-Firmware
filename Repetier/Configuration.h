@@ -41,10 +41,21 @@ like advance steps or ops mode.
 To override EEPROM settings with config settings, set EEPROM_MODE 0
 
 */
+
+/* ##########################################################################################
+##                                        POLYBOX                                          ##
+########################################################################################## */
 // Does the firmware use master/slave communication by i2c ? (pin extention function)
-#define IC2_SLAVE_MASTER 1
+#define IC2_SLAVE_MASTER    1
 #define POLY_SERIAL_SEPARATOR_VALUE "#"
 #define POLY_SERIAL_DEBUG   "%"
+
+#define USE_CLOG_ENCODER    0
+
+#define ENCODER_STEPS_PER_MM 373
+#define MIN_DELTAEXTRUDE_VALUE 0.001 //dont check if not enough filament extruded
+#define DETECT_CLOGGED_PERCENT 90.0 // %  for clogged. if compute value > DETECT_CLOGGED_PERCENT--> clogged detected (90.0 mean 10% of error)
+
 
 // BASIC SETTINGS: select your board type, thermistor type, axis scaling, and endstop configuration
 
@@ -995,6 +1006,25 @@ The following settings override uiconfig.h!
 5 = ViKi LCD - Check pin configuration in ui.h for feature controller 5!!! sd card disabled by default!
 */
 #define FEATURE_CONTROLLER 0
+
+
+
+// ###############################################################################
+// ## Values for menu settings ##
+// ###############################################################################
+
+// Values used for preheat
+#define UI_SET_PRESET_HEATED_BED_TEMP_PLA 60
+#define UI_SET_PRESET_EXTRUDER_TEMP_PLA 180
+#define UI_SET_PRESET_HEATED_BED_TEMP_ABS 110
+#define UI_SET_PRESET_EXTRUDER_TEMP_ABS 240
+// Extreme values
+#define UI_SET_MIN_HEATED_BED_TEMP 55
+#define UI_SET_MAX_HEATED_BED_TEMP 120
+#define UI_SET_MIN_EXTRUDER_TEMP 160
+#define UI_SET_MAX_EXTRUDER_TEMP 270
+#define UI_SET_EXTRUDER_FEEDRATE 2 // mm/sec
+#define UI_SET_EXTRUDER_RETRACT_DISTANCE 3 // mm
 
 #endif
 

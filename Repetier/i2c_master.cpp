@@ -11,7 +11,6 @@ union fb_tag {
 /* ---------VARIABLES------- */
 QueueList <Update> pin_update_queue;
 
-volatile byte execute_i2c;
 volatile byte timer_i2c_update = 0 ;// 10ms*10 = 100ms; use base counter
 Pin pin_values[PIN_MAX_NUMBER]= {0};
 
@@ -127,8 +126,6 @@ void i2c_update()
 
 void check_i2c_periodical()
 {
-  if(!execute_i2c) return;
-  execute_i2c=0;
   if(++timer_i2c_update>=10)
   {
      timer_i2c_update=0;

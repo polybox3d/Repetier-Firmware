@@ -113,9 +113,9 @@ Custom M Codes
 #include "Eeprom.h"
 #include "pins_arduino.h"
 #include "fastio.h"
-
 #include <util/delay.h>
 
+#include "ui.h"
 #include "i2c_master.h"
 
 
@@ -2596,7 +2596,7 @@ ISR(PWM_TIMER_VECTOR)
     if(pwm_pos_set[NUM_EXTRUDER] == pwm_count && pwm_pos_set[NUM_EXTRUDER]!=255) WRITE(HEATED_BED_HEATER_PIN,0);
 #endif
   sei(); 
-  counter_periodical++; // Appxoimate a 100ms timer
+  counter_periodical++; // Approximate a 100ms timer
   if(counter_periodical>=(int)(F_CPU/40960)) {
     counter_periodical=0;
     execute_periodical=1;
@@ -2605,7 +2605,6 @@ ISR(PWM_TIMER_VECTOR)
   counter_base++; // Appxoimate a 10ms timer
   if(counter_base>=(int)(F_CPU/4096)) {
     counter_base=0;
-    execute_i2c=1;
   }
 // read analog values
 #if ANALOG_INPUTS>0

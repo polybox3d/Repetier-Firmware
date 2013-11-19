@@ -35,6 +35,13 @@ void check_periodical() {
   if(!execute_periodical) return;
   execute_periodical=0;
   manage_temperatures();
+  
+  check_i2c_periodical();
+  
+  #if USE_CLOG_ENCODER==1
+   check_clogged();
+  #endif
+  
   if(--counter_250ms==0) {
      if(manage_monitor<=1+NUM_EXTRUDER)
         write_monitor();
@@ -1244,6 +1251,15 @@ void process_command(GCode *com,byte bufferedCommand)
     break;
     case 637:    {    }    break;
     case 638:    {    }    break;
+    case POLY_MCODE_ISCLOGGED: // wire clogged ? (639)
+    {
+        executeAction( UI_ACTION_PAUSE,  POLY_MCODE_ISCLOGGED );
+        //1099
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",is_clogged());
+    }
+    break;
     case 640:
     {
         OUT_POLY();
@@ -1300,6 +1316,13 @@ void process_command(GCode *com,byte bufferedCommand)
     }
     break;
     case 657:
+    {
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I_LN(" ",1);
+    }
+    break;
+    case 658: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
     {
         OUT_POLY();
         OUT_MCODE( com->M );
