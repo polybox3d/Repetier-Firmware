@@ -50,6 +50,8 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define POLY_SERIAL_SEPARATOR_VALUE "#"
 #define POLY_SERIAL_DEBUG   "%"
 
+#define NUM_BOARD    4 // number of board
+
 #define USE_CLOG_ENCODER    0
 
 #define ENCODER_STEPS_PER_MM 373

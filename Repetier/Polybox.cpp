@@ -23,11 +23,24 @@ byte is_clogged()
     return isClogged;
 }
 
+void encoder_incr()
+{
+    encoder_currentSteps++;
+    if ( encoder_currentSteps < 0 )
+        encoder_currentSteps = 0;
+}
 byte check_clogged()
 {
-    float deltaExtrude = abs(printer_state.filamentPrinted - filamentPrinted_lastCheck); //compute delta between previous filament prinetd and current printed.
+    float deltaExtrude;
+    long deltaEncoder;
+    
+    BEGIN_INTERRUPT_PROTECTED
+    deltaExtrude = abs(printer_state.filamentPrinted - filamentPrinted_lastCheck); //compute delta between previous filament prinetd and current printed.
     filamentPrinted_lastCheck = printer_state.filamentPrinted; // update value for next check.
-    long deltaEncoder = abs(encoder_currentSteps - encoder_lastSteps); // delta between current encore step count and last.
+    deltaEncoder = abs(encoder_currentSteps - encoder_lastSteps); // delta between current encore step count and last.
+    encoder_lastSteps = encoder_currentSteps;
+    END_INTERRUPT_PROTECTED
+    
     float deltaEncoderMM = (float)deltaEncoder / (float)ENCODER_STEPS_PER_MM;
     if ( deltaExtrude > MIN_DELTAEXTRUDE_VALUE )
     {
@@ -44,6 +57,8 @@ byte check_clogged()
     }
     return 0;
 }
+
+
 
 void executeAction(int action, int param) {
   if(action>=2000 && action<3000)
@@ -351,4 +366,5 @@ void executeAction(int action, int param) {
       break;
   }
 }
+
 

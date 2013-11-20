@@ -8,9 +8,9 @@
 #include <Wire.h>
 #include "QueueList.h"
 #include "i2c.h"
+#include "Board.h"
 
 
-#define Receiver 4	// Who I want to talk to
 #define LAST_MASTER_PIN 56
 /* ---------VARIABLES------- */
 extern volatile byte timer_i2c_update;
@@ -19,12 +19,17 @@ extern volatile byte timer_i2c_update;
 void operator delete(void * p); 
 void * operator new(size_t size); 
 
+class Board;
+
+extern Board boards[NUM_BOARD];
 void i2c_update_pin_value( int pin, int value);
-void i2c_update_pin_type( int pin, int type);
+void i2c_update_pin_type( int pin, uint8_t type);
 int i2c_read_pin_value( int pin );
+uint8_t i2c_read_pin_type( int pin );
 
 #define WRITE_VPIN(i, t) i2c_update_pin_value(  i, t)
 #define READ_VPIN(i) i2c_read_pin_value( i )
+#define READ_VPIN_MODE(i) i2c_read_pin_type( i )
 #define VPIN_MODE(i, v) i2c_update_pin_type( i, v)
 
 

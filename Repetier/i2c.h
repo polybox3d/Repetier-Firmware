@@ -1,6 +1,8 @@
 #ifndef __I2C_H__
 #define __I2C_H__
 
+#define I2C_PROTOCOL_VERSION 1
+
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #define I2C_WRITE write
@@ -22,26 +24,27 @@
 #define FB_SIZE 2
 
 
-
-#define PIN_MAX_NUMBER      56*4
-
-#define PIN_TYPE_INPUT      INPUT
-#define PIN_TYPE_OUTPUT     OUTPUT
-#define PIN_TYPE_DISABLE    0
-#define PIN_NOONE           NULL
-
 #define I2C_SETUP           1
 #define I2C_SET             2
 #define I2C_GET             3
 #define I2C_ALL             4
+#define I2C_PING            5
+#define I2C_PONG            6
+#define I2C_RESET           7
+#define I2C_VERSION         8
+#define I2C_INIT            9
 
 #define MASTER_ID           1
+
 
 #include "Pin.h"
 #include "Update.h"
 
+#include <Wire.h>
+
 void i2c_set_vpin_value( Pin* pin_values, uint8_t pin, int value);
 void i2c_set_vpin_type( Pin* pin_values, uint8_t pin, int type);
+void i2c_send_action( int dest, uint8_t action );
 /*
 void pinMode_ext( uint8_t pin, int type)
 {

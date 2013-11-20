@@ -521,11 +521,6 @@ SET_OUTPUT(ANALYZER_CH7);
   epr_init(); // Read settings from eeprom if wanted
   update_ramps_parameter();
 
-#if SDSUPPORT
-
-  sd.initsd();
-
-#endif
 #if USE_OPS==1 || defined(USE_ADVANCE)
   EXTRUDER_TCCR = 0; // need Normal not fastPWM set by arduino init
   EXTRUDER_TIMSK |= (1<<EXTRUDER_OCIE); // Activate compa interrupt on timer 0

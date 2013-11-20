@@ -12,6 +12,7 @@ extern volatile byte isClogged;
 #define POLY_MCODE_ISCLOGGED  639
 byte is_clogged();
 byte check_clogged();
+void encoder_incr();
 void pin_x_steps( int PIN , int steps );
 
 void executeAction(int action, int param);
