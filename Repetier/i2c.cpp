@@ -18,3 +18,11 @@ void i2c_send_action( int dest, uint8_t action )
     Wire.I2C_WRITE( action );
     Wire.endTransmission();
 }
+
+void i2c_send_version( int dest )
+{
+    Wire.beginTransmission( dest );
+    Wire.I2C_WRITE( I2C_VERSION );
+    Wire.I2C_WRITE( BOARD_MIN_VERSION_REQUIRE );
+    Wire.endTransmission();
+}

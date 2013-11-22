@@ -312,8 +312,11 @@ void update_ramps_parameter() {
 Sets the output and input pins in accordance to your configuration. Initializes the serial interface.
 Interrupt routines to measure analog values and for the stepper timerloop are started.
 */
+
+volatile int state = 0;
+
 void setup()
-{
+{   
 #ifdef ANALYZER
 // Channel->pin assignments
 #if ANALYZER_CH0>=0
@@ -550,6 +553,9 @@ void defaultLoopActions() {
   if(max_inactive_time!=0 && (curtime-previous_millis_cmd) >  max_inactive_time ) kill(false);
   if(stepper_inactive_time!=0 && (curtime-previous_millis_cmd) >  stepper_inactive_time ) { kill(true); }
 
+
+  pinMode(53, INPUT);
+  pinMode(17, OUTPUT);
 
   //void finishNextSegment();
   DEBUG_MEMORY;
@@ -2639,4 +2645,10 @@ if((ADCSRA & _BV(ADSC))==0) { // Conversion finished?
  pwm_count++;
 }
 
+
+ISR(PCINT0_vect) {
+  state = !state;
+  OUT_P_LN("boom");
+  digitalWrite(17, state);
+}
 

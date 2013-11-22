@@ -39,12 +39,14 @@
 
 #include "Pin.h"
 #include "Update.h"
+#include "Reptier.h"
 
 #include <Wire.h>
 
 void i2c_set_vpin_value( Pin* pin_values, uint8_t pin, int value);
 void i2c_set_vpin_type( Pin* pin_values, uint8_t pin, int type);
 void i2c_send_action( int dest, uint8_t action );
+void i2c_send_version( int dest );
 /*
 void pinMode_ext( uint8_t pin, int type)
 {

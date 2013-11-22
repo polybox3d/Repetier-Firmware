@@ -101,11 +101,34 @@ void i2cReceiveEvent(int howMany)
             i2c_set_vpin_value( boards[sender].pin_values, pin, value );
         }
     }
-    else if (action == I2C_PONG ) 
+    else if (action == I2C_PONG &&  boards[sender].check_state==BOARD_WAIT_PONG ) 
     {
         OUT_P_LN("pong");
+        boards[sender].check_state = BOARD_OK;
+    }
+    else if (action == I2C_RESET ) 
+    {
+        resetFunc();
+    }
+    else if (action == I2C_INIT ) 
+    {
+        boards[sender].check_state = BOARD_OK;
         boards[sender].connected = true;
-        boards[sender].check_state = BOARD_CHECK_OK;
+    }
+    else if (action == I2C_VERSION ) 
+    {
+        while ( Wire.available() )
+        {
+            uint8_t value = Wire.I2C_READ();
+            if ( value < BOARD_MIN_VERSION_REQUIRE )
+            {
+                boards[sender].check_state = BOARD_BAD_VERSION;
+            }
+            else
+            {
+                boards[sender].check_state = BOARD_WAIT_INIT;
+            }
+        }
     }
 }
 

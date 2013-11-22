@@ -46,11 +46,13 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 ##                                        POLYBOX                                          ##
 ########################################################################################## */
 // Does the firmware use master/slave communication by i2c ? (pin extention function)
+#define POLYBOX_VERSION    1
 #define IC2_SLAVE_MASTER    1
 #define POLY_SERIAL_SEPARATOR_VALUE "#"
 #define POLY_SERIAL_DEBUG   "%"
 
 #define NUM_BOARD    4 // number of board
+#define BOARD_MIN_VERSION_REQUIRE   1
 
 #define USE_CLOG_ENCODER    0
 
