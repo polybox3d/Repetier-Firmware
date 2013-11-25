@@ -1334,6 +1334,30 @@ void process_command(GCode *com,byte bufferedCommand)
     }
     break;
     
+    case 659: // i2c refresh timer
+    {
+        i2c_check_timer = com->S;
+        OUT_P_LN(" I2C Timer updated.");
+    }
+    break;
+    case 660:
+    {
+        WRITE_VPIN(66, LOW);
+        OUT_P_LN("ON");
+    }
+    break;
+    case 661:
+    {
+        WRITE_VPIN(66, 10234);
+        OUT_P_LN("OFF");
+    }
+    break;
+    case 666:
+    {
+        VPIN_MODE(66, OUTPUT);
+        OUT_P_LN("OUT");
+    }
+    break;
 //##################POLYBOX#####################    
     case 350: // Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {

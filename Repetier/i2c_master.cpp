@@ -17,6 +17,7 @@ union fb_tag {
 /* ---------VARIABLES------- */
 volatile byte timer_i2c_update = 0 ;// 10ms*10 = 100ms; use base counter
 Board boards[NUM_BOARD];
+volatile uint8_t i2c_check_timer = I2C_CHECK_TIMER;
 
 /* ---------FUNCTIONS------- */
 // define delete operator for Wire() class destructor...
@@ -38,25 +39,34 @@ void * operator new(size_t size)
     return vpin/PINS_PER_BOARD;
 }
 
- int i2c_read_pin_value( int pin )
+int i2c_read_pin_value( int pin )
 {
     return boards[vpin2board(pin)].pin_values[vpin2pin(pin)].value;
+}
+int board_read_pin_value( uint8_t b, uint8_t pin )
+{
+    return boards[b].pin_values[pin].value;
 }
  uint8_t i2c_read_pin_type( int pin )
 {
     return boards[vpin2board(pin)].pin_values[vpin2pin(pin)].type;
 }
+ uint8_t board_read_pin_type( uint8_t b, uint8_t pin )
+{
+    return boards[b].pin_values[pin].type;
+}
 
 void i2c_update_pin_value( int pin, int value) {
     uint8_t real_pin = vpin2pin(pin);
-    i2c_set_vpin_value( boards[vpin2board(pin)].pin_values, real_pin, value );
+    uint8_t board_n = vpin2board(pin);
+    i2c_set_vpin_value( boards[board_n].pin_values, real_pin, value );
     if ( pin >= PINS_PER_BOARD ) // start virtual pin (i.e other Arduino board)
     {
-        boards[vpin2board(pin)].pin_update_queue.push( Update{pin, I2C_SET} );
+        boards[board_n].pin_update_queue.push( Update{real_pin, I2C_SET} );
     }
     else
     {
-        if ( value == HIGH || value == LOW ) // digital
+        if ( IS_DIGITAL(boards[board_n].pin_values[real_pin].type) ) // digital
         {
             digitalWrite( real_pin, value );
         }
@@ -67,16 +77,17 @@ void i2c_update_pin_value( int pin, int value) {
     }
 }
 void i2c_update_pin_type(  int pin, uint8_t type) {
+    uint8_t real_pin = vpin2pin(pin);
     if ( pin >= PINS_PER_BOARD ) // start virtual pin (i.e other Arduino board)
     // So we need to update the fifo queue.
     {
-        boards[vpin2board(pin)].pin_update_queue.push( Update{pin, I2C_SETUP} );
+        boards[vpin2board(pin)].pin_update_queue.push( Update{real_pin, I2C_SETUP} );
     }
     else
     {
-        pinMode(vpin2pin(pin), type );
+        pinMode(real_pin, type & PIN_TYPE_IO_MASK );
     }
-    i2c_set_vpin_type( boards[vpin2board(pin)].pin_values, vpin2pin(pin), type );
+    i2c_set_vpin_type( boards[vpin2board(pin)].pin_values, real_pin, type );
 }
 
 void i2cReceiveEvent(int howMany)
@@ -87,7 +98,6 @@ void i2cReceiveEvent(int howMany)
 
     if ( action == I2C_SET ) 
     {
-      //  Serial.print("***");
         byte pin = 0;
         int value = 0;
         while ( Wire.available() )
@@ -95,15 +105,11 @@ void i2cReceiveEvent(int howMany)
             pin = Wire.I2C_READ();
             value = Wire.I2C_READ() << 8;
             value += Wire.I2C_READ();
-            //check si c'ets bien une pin INPUT (eviter la latence induite entre slave/master sur la modif pinMode 
-            // (si une pin ets devenu output entre tmeps apr exemple)
-            // faire : type == INPUT
             i2c_set_vpin_value( boards[sender].pin_values, pin, value );
         }
     }
     else if (action == I2C_PONG &&  boards[sender].check_state==BOARD_WAIT_PONG ) 
     {
-        OUT_P_LN("pong");
         boards[sender].check_state = BOARD_OK;
     }
     else if (action == I2C_RESET ) 
@@ -134,7 +140,7 @@ void i2cReceiveEvent(int howMany)
 
 
 void setup_slave_master() {
-    OUT_P_LN("Start i2c");
+    OUT_P_LN("Start I2C EPS ");
     Wire.begin( MASTER_ID );                // join i2c bus
     Wire.onReceive(i2cReceiveEvent); // register event  
 }
@@ -150,7 +156,8 @@ void i2c_send_get( int slave_number )
 void i2c_send_update() 
 {
     Update up;
-    byte count;
+    byte count=0;
+    int value=0;
     for (uint8_t i = 1 ; i < NUM_BOARD ; ++i )
     {
         if ( ! boards[i].pin_update_queue.isEmpty() ) 
@@ -163,12 +170,13 @@ void i2c_send_update()
                 Wire.I2C_WRITE( up.set_setup );
                 Wire.I2C_WRITE( up.pin );
                 if ( up.set_setup == I2C_SET ) {
-                    fb.f=READ_VPIN(up.pin);
-                    Wire.I2C_WRITE( fb.b, FB_SIZE );
-                    count = count+2+FB_SIZE;
+                    value = READ_BPIN(i, up.pin);
+                    Wire.I2C_WRITE( (byte) ( ( value & 0xFF00)>>8 ) );
+                    Wire.I2C_WRITE( (byte) ( value & 0x00FF ) );
+                    count = count+2+2;
                 }    
                 else if ( up.set_setup == I2C_SETUP ) {
-                    Wire.I2C_WRITE( READ_VPIN_MODE(up.pin) );
+                    Wire.I2C_WRITE( READ_BPIN_MODE( i, up.pin) );
                     count = count+2+1;
                 }
             }
@@ -183,14 +191,17 @@ void i2c_update()
     i2c_send_update();
     for (uint8_t i = 1 ; i < NUM_BOARD ; ++i )
     {
-      i2c_send_get( i+1 );
+        if ( boards[i].connected ) 
+        {
+            i2c_send_get( i+1 );
+        }
     }
 }
 
 
 void check_i2c_periodical()
 {
-  if(++timer_i2c_update>=10)
+  if(++timer_i2c_update>= i2c_check_timer )
   {
      timer_i2c_update=0;
      i2c_update();
