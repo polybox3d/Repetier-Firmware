@@ -52,7 +52,6 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define POLY_SERIAL_DEBUG   "%"
 
 #define NUM_BOARD    4 // number of board
-#define BOARD_MIN_VERSION_REQUIRE   1
 
 #define USE_CLOG_ENCODER    0
 

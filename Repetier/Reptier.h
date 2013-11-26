@@ -240,7 +240,7 @@ usage or for seraching for memory induced errors. Switch it off for production, 
 #define SD_MAX_FOLDER_DEPTH 2
 
 #include "ui.h"
-#include "i2c_master.h"
+#include "eps.h"
 #include "Polybox.h"
 
 

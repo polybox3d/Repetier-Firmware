@@ -6,16 +6,70 @@ volatile float filamentPrinted_lastCheck = 0.0;
 volatile long encoder_currentSteps = 0 ;
 volatile long encoder_lastSteps = 0;
 volatile byte isClogged = 0;
+volatile uint8_t last_check = 0;
+volatile uint8_t timer_i2c_update=0;
+volatile uint8_t timer_i2c_send_get=0;
+volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
 
 void pin_x_steps( int PIN , int steps )
 {
     for( int i=0 ; i<steps ; i++ )
     {
-        WRITE_VPIN( PIN, 0);
+        WRITE_VPIN( PIN, LOW);
         delay(3);
-        WRITE_VPIN( PIN, 1);
+        WRITE_VPIN( PIN, HIGH);
         delay(3);
     }    
+}
+
+void i2c_send_update()
+{
+    for (uint8_t i = 1 ; i < NUM_BOARD ; ++i )
+    {
+        if ( boards[i].connected )
+        {
+            eps_send_board_update( i );
+        }
+    }
+}
+void i2c_send_get()
+{
+    for (uint8_t i = 1 ; i < NUM_BOARD ; ++i )
+    {
+        if ( boards[i].connected )
+        {
+            eps_send_action( i+1, EPS_GET );
+        }
+    }
+}
+
+void check_i2c_periodical()
+{
+  if(++timer_i2c_update>= i2c_update_time )
+  {
+     timer_i2c_update=0;
+     i2c_send_update();
+  }
+  if(++timer_i2c_send_get>= BOARD_SEND_GET_DELAY )
+  {
+     timer_i2c_send_get=0;
+     i2c_send_get();
+  }
+}
+  
+void check_boards_connected()
+{   // need to wait more ?
+    if ( last_check < BOARD_CONNECTED_CHECK_DELAY )
+    {
+        last_check++;
+        return;
+    }
+    // code to execute
+    last_check = 0; // reset cmpt
+    for ( uint8_t i = 1; i < NUM_BOARD ; ++i )
+    {
+        boards[i].check_connected( i+1 );
+    }
 }
 
 byte is_clogged()

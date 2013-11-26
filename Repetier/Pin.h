@@ -1,10 +1,20 @@
 #ifndef __PIN_H__
 #define __PIN_H__
 
+/**
+ * ATMEGA 2560
+ * 
+ * Size of struct :
+ * uint8_t : 8bits
+ * int : 16bits
+ * => 24bits => 3 Bytes
+ * 
+ * **/
+ 
 #define PINS_PER_BOARD      56
 
-#define PIN_TYPE_INPUT      INPUT //0
-#define PIN_TYPE_OUTPUT     OUTPUT //1
+#define PIN_TYPE_INPUT      INPUT //1
+#define PIN_TYPE_OUTPUT     OUTPUT //0
 #define PIN_TYPE_DIGITAL    0
 #define PIN_TYPE_ANALOG     2
 #define PIN_TYPE_DISABLE    4
@@ -20,7 +30,4 @@ typedef struct Pin {
     uint8_t type;
     int value;
 } Pin;
-
-
-
 #endif

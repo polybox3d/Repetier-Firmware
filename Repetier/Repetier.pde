@@ -116,7 +116,7 @@ Custom M Codes
 #include <util/delay.h>
 
 #include "ui.h"
-#include "i2c_master.h"
+#include "eps.h"
 
 
 // ================ Sanity checks ================

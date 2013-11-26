@@ -27,7 +27,7 @@
 
 #include <SPI.h>
 
-#include "i2c_master.h"
+#include "eps.h"
 
 const int sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
 
@@ -1336,7 +1336,7 @@ void process_command(GCode *com,byte bufferedCommand)
     
     case 659: // i2c refresh timer
     {
-        i2c_check_timer = com->S;
+        i2c_update_time = com->S;
         OUT_P_LN(" I2C Timer updated.");
     }
     break;
