@@ -4,6 +4,9 @@
  * 
  * **/
 
+#ifndef __CONFIGURATION_EPS_H__
+#define __CONFIGURATION_EPS_H__
+
 //#define IS_SLAVE            1          
 #define IS_MASTER            1
 
@@ -23,3 +26,4 @@
 #define DELAY_INIT          100
 #define DELAY_CHECK_PIN     100 // *timer (so ms)
 
+#endif // __CONFIGURATION_EPS_H__

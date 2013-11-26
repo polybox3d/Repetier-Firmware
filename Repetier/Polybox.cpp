@@ -8,7 +8,7 @@ volatile long encoder_lastSteps = 0;
 volatile byte isClogged = 0;
 volatile uint8_t last_check = 0;
 volatile uint8_t timer_i2c_update=0;
-volatile uint8_t timer_i2c_send_get=0;
+volatile int timer_i2c_send_get=0;
 volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
 
 void pin_x_steps( int PIN , int steps )

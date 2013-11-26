@@ -1,7 +1,8 @@
 #ifndef __POLYBOX_H__
 #define __POLYBOX_H__
 
-#include "eps.h"
+#include "eps.h" // Extension pin system, allow to use external board as input/output device.
+#include "lvm.h" // LabViewModule, handle light.
 
 extern volatile float filamentPrinted_lastCheck; ///< mm of filament printed since counting started but at previous check (n-1)
 extern volatile long encoder_currentSteps; ///< steps count by encoder
