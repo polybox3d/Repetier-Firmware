@@ -1188,19 +1188,51 @@ void process_command(GCode *com,byte bufferedCommand)
     break;
 /* ___________________LABVIEW_______________________ */
     case 620:    {    }    break;
-    case 621:
+    case 621: // get global color
     {
         OUT_POLY();
         OUT_MCODE( com->M );
-        OUT_P_I(" R:",1);
-        OUT_P_I(" E:",2);
-        OUT_P_I(" B:",3);
-        OUT_P_I_LN(" I:",4);
+        Color c = lvm_get_global_color();
+        OUT_P_I(" R:", c.r );
+        OUT_P_I(" E:", c.g );
+        OUT_P_I(" P:", c.b );
+        OUT_P_I_LN(" I:", c.i );
     }
     break;
-    case 624:    {    }    break;
-    case 625:    {    }    break;
-    case 626:    {    }    break;
+    case 420: // standard MCode
+    case 622: // set global color
+    {
+        Color c {com->R, com->E, com->P, com->I };
+        lvm_set_global_color( c );
+    }
+    break;
+    case 624: // get global intensity
+    {
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I(" X:", lvm_get_global_h_intensity() );
+        OUT_P_I_LN(" Y:", lvm_get_global_v_intensity() );
+    }
+    break;
+    case 625: // set global intensity
+    {    
+        lvm_set_global_intensity( com->S, com->S ); // ( h, v )
+    }    
+    break;
+    case 626: // set face intensity ( h, v ) 
+    {    
+        lvm_set_face_intensity( com->P, com->X, com->Y );
+    }    
+    break;
+    case 627: // get face intensity
+    {
+        OUT_POLY();
+        OUT_MCODE( com->M );
+        OUT_P_I(" P:", lvm_get_global_h_intensity() );
+        OUT_P_I(" X:", lvm_get_face_h_intensity( com->P ) );
+        OUT_P_I_LN(" Y:", lvm_get_face_v_intensity( com->P ) );
+    }
+    break;
 /* ___________________PRINTER_______________________ */
     case 630:    {    }    break;
     case 631:

@@ -13,6 +13,9 @@ public:
     
     void set_color( Color &c );
     void set_intensity( uint8_t nh, uint8_t nv);
+    Color get_color();
+    uint8_t get_h_intensity();
+    uint8_t get_v_intensity();
     
     private:
     uint8_t id; // id auto-incr.

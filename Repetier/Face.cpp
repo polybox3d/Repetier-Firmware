@@ -21,6 +21,21 @@ void Face::set_color( Color &c )
     color = c;
 }
 
+Color Face::get_color()
+{
+    return color;
+}
+
+uint8_t Face::get_h_intensity()
+{
+    return h;
+}
+
+uint8_t Face::get_v_intensity()
+{
+    return v;
+}   
+    
 void Face::set_intensity( uint8_t nh, uint8_t nv) 
 {
     h = nh;
