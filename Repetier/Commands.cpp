@@ -1202,7 +1202,7 @@ void process_command(GCode *com,byte bufferedCommand)
     case 420: // standard MCode
     case 622: // set global color
     {
-        Color c {com->R, com->E, com->P, com->I };
+        Color c = {com->R, com->E, com->P, com->I };
         lvm_set_global_color( c );
     }
     break;
@@ -1307,7 +1307,7 @@ void process_command(GCode *com,byte bufferedCommand)
     {
         OUT_POLY();
         OUT_MCODE( com->M );
-        OUT_P_I_LN(" ",1);
+        OUT_P_I_LN(" ",is_box_open());
     }
     break;
     case 652:
@@ -1355,7 +1355,7 @@ void process_command(GCode *com,byte bufferedCommand)
     {
         OUT_POLY();
         OUT_MCODE( com->M );
-        OUT_P_I_LN(" ",1);
+        OUT_P_I_LN(" ",is_ic_open());
     }
     break;
     case 658: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...

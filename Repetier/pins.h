@@ -49,7 +49,13 @@ STEPPER_CURRENT_CONTROL
 
 /* ___________________POLYBOX ADD__________________ */
 
-#define Y2_MIN_PIN           4
+#define Y2_MIN_PIN          4
+// Detect if the box (chamber, working space door) is open or not.
+#define BOX_OPEN_0_PIN		0+PINS_PER_BOARD*1
+#define BOX_OPEN_1_PIN		1+PINS_PER_BOARD*1
+//IC = integrated circuit. Detect if the IC box is open or not.
+#define IC_OPEN_0_PIN		16+PINS_PER_BOARD*1
+#define IC_OPEN_1_PIN		17+PINS_PER_BOARD*1
 
 
 

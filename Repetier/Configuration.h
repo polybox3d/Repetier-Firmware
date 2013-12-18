@@ -72,7 +72,7 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 
 // Uncomment the following line if oyu are using arduino compatible firmware made for Arduino version earlier then 1.0
 // If it is incompatible you will get compiler errors about write functions not beeing compatible!
-#define COMPAT_PRE1
+//#define COMPAT_PRE1
 
 /* Define the type of axis movements needed for your printer. The typical case
 is a full cartesian system where x, y and z moves are handled by seperate motors.

@@ -22,6 +22,16 @@ void pin_x_steps( int PIN , int steps )
     }    
 }
 
+byte is_box_open()
+{
+	return  ( READ_VPIN(BOX_OPEN_0_PIN) || READ_VPIN(BOX_OPEN_1_PIN) );
+}
+
+byte is_ic_open()
+{
+	return  ( READ_VPIN(IC_OPEN_0_PIN) || READ_VPIN(IC_OPEN_1_PIN) );
+}
+
 void i2c_send_update()
 {
     for (uint8_t i = 1 ; i < NUM_BOARD ; ++i )
@@ -91,7 +101,7 @@ byte check_clogged()
     BEGIN_INTERRUPT_PROTECTED
     deltaExtrude = abs(printer_state.filamentPrinted - filamentPrinted_lastCheck); //compute delta between previous filament prinetd and current printed.
     filamentPrinted_lastCheck = printer_state.filamentPrinted; // update value for next check.
-    deltaEncoder = abs(encoder_currentSteps - encoder_lastSteps); // delta between current encore step count and last.
+    deltaEncoder = abs(encoder_currentSteps - encoder_lastSteps); // delta between current encode step count and last.
     encoder_lastSteps = encoder_currentSteps;
     END_INTERRUPT_PROTECTED
     

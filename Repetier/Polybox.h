@@ -14,6 +14,9 @@ extern volatile uint8_t i2c_update_time;
 #define POLY_MCODE_ISCLOGGED  639
 byte is_clogged();
 byte check_clogged();
+byte is_box_open();
+byte is_ic_open();
+
 void encoder_incr();
 void pin_x_steps( int PIN , int steps );
 
@@ -21,5 +24,7 @@ void executeAction(int action, int param);
 
 void check_i2c_periodical();
 void check_boards_connected();
+
+
 
 #endif // __POLYBOX_H__

@@ -46,11 +46,12 @@ void eps_set_vpin_value( int pin, int value) {
     boards[board_n].write_bpin( real_pin, value );
     if ( pin >= PINS_PER_BOARD ) // start virtual pin (i.e other Arduino board)
     {
-        boards[board_n].pin_update_queue.push( Update{real_pin, EPS_SET} );
+        Update u = {real_pin, EPS_SET};
+        boards[board_n].pin_update_queue.push( u );
     }
     else
     {
-        if ( IS_DIGITAL(boards[board_n].pin_values[real_pin].type) ) // digital
+        if ( IS_DIGITAL(boards[board_n].pin_values[real_pin]->type) ) // digital
         {
             digitalWrite( real_pin, value );
         }
@@ -66,13 +67,14 @@ void eps_write_vpin_type( int pin, uint8_t type) {
     if ( pin >= PINS_PER_BOARD ) // start virtual pin (i.e other Arduino board)
     // So we need to update the fifo queue.
     {
-        boards[vpin2board(pin)].pin_update_queue.push( Update{real_pin, EPS_SETUP} );
+        Update u = {real_pin, EPS_SETUP};
+        boards[vpin2board(pin)].pin_update_queue.push( u );
     }
     else
     {
         pinMode(real_pin, type & PIN_TYPE_IO_MASK );
     }
-    boards[vpin2board(pin)].pin_values[real_pin].type = type ;
+    boards[vpin2board(pin)].pin_values[real_pin]->type = type ;
 }
 
 void eps_send_action( uint8_t dest, uint8_t action )
@@ -134,8 +136,8 @@ byte eps_send_entries(uint8_t dest)
         if ( ( boards[0].read_bpin_type(next_send_pin)  & PIN_TYPE_IO_MASK ) == PIN_TYPE_INPUT ) 
         {
             Wire.I2C_WRITE( next_send_pin );
-            Wire.I2C_WRITE( (byte) ((boards[0].pin_values[next_send_pin].value & 0xFF00) >> 8)  );
-            Wire.I2C_WRITE( (byte) (boards[0].pin_values[next_send_pin].value & 0x00FF) );
+            Wire.I2C_WRITE( (byte) ((boards[0].pin_values[next_send_pin]->value & 0xFF00) >> 8)  );
+            Wire.I2C_WRITE( (byte) (boards[0].pin_values[next_send_pin]->value & 0x00FF) );
         }
         next_send_pin = (next_send_pin+1) % PINS_PER_BOARD;      
         if ( next_send_pin == 0 )
