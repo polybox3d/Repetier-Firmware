@@ -16,6 +16,7 @@ public:
     Color get_color();
     uint8_t get_h_intensity();
     uint8_t get_v_intensity();
+    uint8_t get_detected();
     
     private:
     uint8_t id; // id auto-incr.

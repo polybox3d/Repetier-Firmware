@@ -15,9 +15,72 @@ Face::Face()
     
     ++current_id;
 }
+uint8_t Face::get_detected()
+{
+	switch ( id )
+    {
+        case 0:
+            READ_VPIN( SELECT_DEFINE_FACE( 0, DETECTED ));
+        break;
+        case 1:
+            READ_VPIN( SELECT_DEFINE_FACE( 1, DETECTED ));
+        break;
+        case 2:
+            READ_VPIN( SELECT_DEFINE_FACE( 2, DETECTED ));
+        break;
+        case 3:
+            READ_VPIN( SELECT_DEFINE_FACE( 3, DETECTED ));
+        break;
+        case 4:
+            READ_VPIN( SELECT_DEFINE_FACE( 4, DETECTED ));
+        break;
+        case 5:
+            READ_VPIN( SELECT_DEFINE_FACE( 5, DETECTED ));
+        break;
+        default:
+        return 1;
+        break;
+    }
+}
 
+// I shoudl WRAP #define....
 void Face::set_color( Color &c )
 {
+	 switch ( id )
+    {
+        case 0:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 0, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 0, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 0, B ), c.b );
+        break;
+        case 1:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 1, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 1, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 1, B ), c.b );
+        break;
+        case 2:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 2, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 2, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 2, B ), c.b );
+        break;
+        case 3:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 3, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 3, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 3, B ), c.b );
+        break;
+        case 4:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 4, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 4, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 4, B ), c.b );
+        break;
+        case 5:
+            WRITE_VPIN( SELECT_DEFINE_FACE( 5, R ), c.r );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 5, G ), c.g );
+            WRITE_VPIN( SELECT_DEFINE_FACE( 5, B ), c.b );
+        break;
+        default:
+        break;
+    }
     color = c;
 }
 

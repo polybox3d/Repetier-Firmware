@@ -116,7 +116,7 @@ int Board::write_bpin(  uint8_t pin, int value )
 }
 uint8_t Board::write_bpin_type( uint8_t pin, uint8_t type )
 {
-    pin_values[pin]->type;
+    pin_values[pin]->type = type;
 }
 
 void Board::process_state( uint8_t dest ) 

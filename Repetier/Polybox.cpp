@@ -66,7 +66,38 @@ void check_i2c_periodical()
      i2c_send_get();
   }
 }
-  
+uint8_t get_lub_level()
+{
+	uint8_t level = 0;
+	#if CN_LUB_LEVEL_LOW >=0 
+		level &= READ_VPIN( CN_LUB_LEVEL_LOW );
+	#endif
+	#if CN_LUB_LEVEL_MEDIUM >=0 
+		level &= READ_VPIN( CN_LUB_LEVEL_MEDIUM );
+	#endif
+	#if CN_LUB_LEVEL_HIGH >=0 
+		level &= READ_VPIN( CN_LUB_LEVEL_HIGH );
+	#endif
+	return level;
+}
+
+void check_all_ATU()
+{
+READ_VPIN( ATU_MAIN );
+// command
+READ_VPIN( ATU_COM_ONOFF_0 );
+READ_VPIN( ATU_COM_ONOFF_1 );
+//monitor
+READ_VPIN( ATU_MON_ONOFF_0 );
+READ_VPIN( ATU_MON_ONOFF_1 );
+//labviewmodule
+READ_VPIN( ATU_LVM );
+READ_VPIN( ATU_HEATERS_BED_BOX);
+READ_VPIN( ATU_TOOL	);
+READ_VPIN( ATU_PRE_ASI_0);
+READ_VPIN( ATU_PRE_ASI_1);
+} 
+
 void check_boards_connected()
 {   // need to wait more ?
     if ( last_check < BOARD_CONNECTED_CHECK_DELAY )
@@ -76,10 +107,33 @@ void check_boards_connected()
     }
     // code to execute
     last_check = 0; // reset cmpt
-    for ( uint8_t i = 1; i < NUM_BOARD ; ++i )
-    {
-        boards[i].check_connected( i+1 );
-    }
+    #if NUM_BOARD > 1
+		//check if slave detected (elec.)
+		boards[1].connected = READ_VPIN( DETECTION_SLAVE_1 );
+		// if slave detected (elec.) we check if slave is UP (software check)
+		if ( boards[1].connected )
+			boards[1].check_connected( 1+1 );
+    #endif
+    #if NUM_BOARD > 2
+		boards[2].connected = READ_VPIN( DETECTION_SLAVE_2 );
+		if ( boards[2].connected )
+			boards[2].check_connected( 2+1 );
+    #endif
+    #if NUM_BOARD > 3
+		boards[3].connected = READ_VPIN( DETECTION_SLAVE_3 );
+		if ( boards[3].connected )
+			boards[3].check_connected( 3+1 );
+    #endif
+    #if NUM_BOARD > 4
+		boards[4].connected = READ_VPIN( DETECTION_SLAVE_4 );
+		if ( boards[4].connected )
+			boards[4].check_connected( 4+1 );
+    #endif
+    #if NUM_BOARD > 5
+		boards[5].connected = READ_VPIN( DETECTION_SLAVE_5 );
+		if ( boards[5].connected )
+			boards[5].check_connected( 5+1 );
+    #endif
 }
 
 byte is_clogged()

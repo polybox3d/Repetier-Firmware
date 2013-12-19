@@ -1103,11 +1103,11 @@ void process_command(GCode *com,byte bufferedCommand)
     {
         OUT_POLY();
         OUT_MCODE( com->M );
-        if ( 1 )
+        if ( READ_VPIN(CN_MOD_MANUAL) )
         {
             OUT_P_LN(" H");
         }
-        else if ( 1 )
+        else if ( READ_VPIN(CN_MOD_PROX) )
         {
             OUT_P_LN(" P");
         }
@@ -1120,20 +1120,38 @@ void process_command(GCode *com,byte bufferedCommand)
     case 602: // Get Lubricant motor plugged
     {
         OUT_MCODE( com->M );
-        OUT_P_I_LN(" ",1);
+        OUT_P_I_LN(" ", READ_VPIN(CN_PRES_LUB) );
     }
     break;
     case 603: // Get Lubrivant level ok
     {
         OUT_POLY();
         OUT_MCODE( com->M );
-        OUT_P_F_LN(" ",4);
+        OUT_P_F_LN(" ", get_lub_level());
     }
     break;
     case 604: // Get Vacuum detected
     {
         OUT_MCODE( com->M );
-        OUT_P_F_LN(" ",1);
+        OUT_P_F_LN(" ", READ_VPIN(CN_PRES_VACUUM) );
+    }
+    break;
+    case 605: // Get recycle fluide state
+    {
+        OUT_MCODE( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_RECYCLE) );
+    }
+    break;
+    case 606: // Get Vacuum state
+    {
+        OUT_MCODE( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_VACUUM) );
+    }
+    break;
+    case 607: // Get lub state
+    {
+        OUT_MCODE( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_LUB) );
     }
     break;
 /* ___________________SCANNER_______________________ */
@@ -1166,24 +1184,56 @@ void process_command(GCode *com,byte bufferedCommand)
         WRITE_VPIN( TABLE0_DIR_PIN, (com->S) );
     }
     case 615:    // Set laser On/Off
-    {    
-        WRITE_VPIN( LASER_0_PIN, !(com->S) );    
+    {   
+		if ( GCODE_HAS_P(com) && GCODE_HAS_S(com) )
+		{
+			if ( com->P == 0 )
+			{
+				WRITE_VPIN( LASER_0_PIN, !(com->S) );    
+			}
+			else if ( com->P == 1 )
+			{
+				WRITE_VPIN( LASER_1_PIN, !(com->S) );    
+			}
+		}
     }
     break;
     case 616:    // Set LaserRotation On/Off
     {    
-        WRITE_VPIN( L0_ENABLE_PIN, !(com->S) );    
+		if ( GCODE_HAS_S(com) )
+		{
+			WRITE_VPIN( L0_ENABLE_PIN, !(com->S) );    
+		}
         //OUT_POLY_DEBUG(" Code 616 not used... SLR On/Off");
     }
     break;
     case 617:    // Laser Turn X stepper
     {    
-        pin_x_steps( L0_STEP_PIN, com->S );
+		if ( GCODE_HAS_S(com) )
+		{
+			pin_x_steps( L0_STEP_PIN, com->S );
+		}
     }
     break;
     case 618:    // Set Laser Clock Direction (0 for CCW)
     {    
-        WRITE_VPIN( L0_DIR_PIN, (com->S) );
+		if ( GCODE_HAS_S(com) )
+		{
+			WRITE_VPIN( L0_DIR_PIN, (com->S) );
+		}
+    }
+    break;
+    case 619:    // Get laser plugged
+    {    
+		
+		READ_VPIN( LASER_1_PRES );
+		OUT_POLY();
+		OUT_MCODE( com->M );        
+		OUT_P_I(" P", 0);
+		OUT_P_I(":", READ_VPIN( LASER_0_PRES ) );
+		OUT_P_I(" P", 1);
+		OUT_P_I(":", READ_VPIN( LASER_1_PRES ) );
+		OUT_P_LN("");
     }
     break;
 /* ___________________LABVIEW_______________________ */
@@ -1199,7 +1249,11 @@ void process_command(GCode *com,byte bufferedCommand)
         OUT_P_I_LN(" I:", c.i );
     }
     break;
-    case 420: // standard MCode
+    case 623: // standard MCode
+    {
+        Color c = {com->R, com->E, com->P, com->I };
+        lvm_set_face_color( com->S, c ); // id , color
+	}
     case 622: // set global color
     {
         Color c = {com->R, com->E, com->P, com->I };
@@ -1221,7 +1275,7 @@ void process_command(GCode *com,byte bufferedCommand)
     break;
     case 626: // set face intensity ( h, v ) 
     {    
-        lvm_set_face_intensity( com->P, com->X, com->Y );
+        lvm_set_face_intensity( com->S, com->X, com->Y );
     }    
     break;
     case 627: // get face intensity
@@ -1231,6 +1285,18 @@ void process_command(GCode *com,byte bufferedCommand)
         OUT_P_I(" P:", lvm_get_global_h_intensity() );
         OUT_P_I(" X:", lvm_get_face_h_intensity( com->P ) );
         OUT_P_I_LN(" Y:", lvm_get_face_v_intensity( com->P ) );
+    }
+    break;
+    case 628: // get LED state (plugged or no)
+    {
+		OUT_POLY();
+        OUT_MCODE( com->M );	
+        for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
+        {
+			OUT_P_I(" P", i);
+			OUT_P_I(":", faces[LVM_FACES_NUM].get_detected() );
+		}
+		OUT_P_LN("");
     }
     break;
 /* ___________________PRINTER_______________________ */

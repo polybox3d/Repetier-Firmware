@@ -22,7 +22,19 @@ uint8_t vpin2bpin(int vpin)
 // READ
 int eps_read_vpin_value( int pin )
 {
-    return boards[vpin2board(pin)].read_bpin( vpin2bpin(pin) );
+	int board = vpin2board(pin);
+	uint8_t rpin = vpin2bpin(pin);
+	if ( board == 0 ) // master
+	{
+		if ( IS_DIGITAL(boards[board].pin_values[rpin]->type) ) // digital
+        {
+			boards[board].write_bpin( rpin, digitalRead( rpin ) ) ;
+        }
+        //
+        // handle ANALOG ?????????
+        //
+	}
+	return boards[board].read_bpin( rpin );
 }
  uint8_t eps_read_vpin_type( int pin )
 {

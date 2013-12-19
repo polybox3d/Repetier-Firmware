@@ -10,6 +10,13 @@ void lvm_set_face_intensity(uint8_t id, uint8_t h, uint8_t v)
         faces[id].set_intensity( h,v );
     }
 }
+void lvm_set_face_color(  uint8_t id, Color &c )
+{
+    if ( id >= 0 && id < LVM_FACES_NUM )
+    {
+        faces[id].set_color( c );
+    }	
+}
 
 void lvm_set_global_intensity( uint8_t h, uint8_t v )
 {

@@ -56,6 +56,59 @@ STEPPER_CURRENT_CONTROL
 //IC = integrated circuit. Detect if the IC box is open or not.
 #define IC_OPEN_0_PIN		16+PINS_PER_BOARD*1
 #define IC_OPEN_1_PIN		17+PINS_PER_BOARD*1
+// detect slave
+#define DETECTION_SLAVE_1	-1
+#define DETECTION_SLAVE_2	-1
+#define DETECTION_SLAVE_3	-1
+#define DETECTION_SLAVE_4	-1
+#define DETECTION_SLAVE_5	-1
+
+#define CN_MOD_PROX			-1
+#define CN_MOD_MANUAL		-1
+#define CN_GEST_INT			-1
+#define CN_GEST_EXT			-1
+#define CN_PRES_LUB			-1
+#define CN_PRES_VACUUM		-1
+#define CN_STATE_LUB		-1
+#define CN_STATE_VACUUM		-1
+#define CN_STATE_RECYCLE	-1
+
+#define CN_LUB_LEVEL_LOW	-1
+#define CN_LUB_LEVEL_MEDIUM	-1
+#define CN_LUB_LEVEL_HIGH	-1
+
+//---------ATU
+#define ATU_MAIN			-1
+// command
+#define ATU_COM_ONOFF_0		-1
+#define ATU_COM_ONOFF_1		-1
+//monitor
+#define ATU_MON_ONOFF_0		-1
+#define ATU_MON_ONOFF_1		-1
+//labviewmodule
+#define ATU_LVM				-1
+#define ATU_HEATERS_BED_BOX	-1
+#define ATU_TOOL			-1
+#define ATU_PRE_ASI_0		-1
+#define ATU_PRE_ASI_1		-1
+
+//Scanner
+#define LASER_0_PIN       	62
+#define L0_STEP_PIN         63
+#define L0_DIR_PIN          64
+#define L0_ENABLE_PIN       65
+#define LASER_0_PRES       	-1
+
+#define LASER_1_PIN       	66
+#define L1_STEP_PIN         67
+#define L1_DIR_PIN          68
+#define L1_ENABLE_PIN       69
+#define LASER_1_PRES       	-1
+
+#define TABLE0_DETECTED_PIN 73
+#define TABLE0_STEP_PIN     70
+#define TABLE0_DIR_PIN      71
+#define TABLE0_ENABLE_PIN   72
 
 
 
@@ -105,20 +158,6 @@ STEPPER_CURRENT_CONTROL
 #define E0_PINS E0_STEP_PIN,E0_DIR_PIN,E0_ENABLE_PIN,
 #define E1_PINS E1_STEP_PIN,E1_DIR_PIN,E1_ENABLE_PIN,
 
-#define LASER_0_PIN       62
-#define L0_STEP_PIN         63
-#define L0_DIR_PIN          64
-#define L0_ENABLE_PIN       65
-
-#define LASER_1_PIN       66
-#define L1_STEP_PIN         67
-#define L1_DIR_PIN          68
-#define L1_ENABLE_PIN       69
-
-#define TABLE0_DETECTED_PIN         73
-#define TABLE0_STEP_PIN         70
-#define TABLE0_DIR_PIN          71
-#define TABLE0_ENABLE_PIN       72
 
 // SPI for Max6675 Thermocouple 
 
