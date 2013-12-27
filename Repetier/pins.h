@@ -63,36 +63,46 @@ STEPPER_CURRENT_CONTROL
 #define DETECTION_SLAVE_4	-1
 #define DETECTION_SLAVE_5	-1
 
-#define CN_MOD_PROX			-1
-#define CN_MOD_MANUAL		-1
-#define CN_GEST_INT			-1
-#define CN_GEST_EXT			-1
-#define CN_PRES_LUB			-1
-#define CN_PRES_VACUUM		-1
-#define CN_STATE_LUB		-1
-#define CN_STATE_VACUUM		-1
-#define CN_STATE_RECYCLE	-1
+/***********************************************************************
+ *                    CN
+ * ********************************************************************/
+#define ID_BOARD_CN 		3
+#define CN_MOD_PROX			22 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_MOD_MANUAL		23 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_GEST_INT			25 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_GEST_EXT			27 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_PRES_LUB			37 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_PRES_VACUUM		43 +PINS_PER_BOARD*ID_BOARD_CN
 
-#define CN_LUB_LEVEL_LOW	-1
-#define CN_LUB_LEVEL_MEDIUM	-1
-#define CN_LUB_LEVEL_HIGH	-1
+#define CN_STATE_LUB		35 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_STATE_VACUUM		41 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_STATE_RECYCLE	39 +PINS_PER_BOARD*ID_BOARD_CN
 
-//---------ATU
-#define ATU_MAIN			-1
+#define CN_LUB_LEVEL_LOW	13+54 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_LUB_LEVEL_MEDIUM	12+54 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_LUB_LEVEL_HIGH	11+54 +PINS_PER_BOARD*ID_BOARD_CN
+
+/***********************************************************************
+ *                    ATU
+ * ********************************************************************/
+#define ID_BOARD_ATU 		1
+#define ATU_MAIN			25 +PINS_PER_BOARD*ID_BOARD_ATU
 // command
-#define ATU_COM_ONOFF_0		-1
-#define ATU_COM_ONOFF_1		-1
+#define ATU_COM_ONOFF_0		28 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_COM_ONOFF_1		30 +PINS_PER_BOARD*ID_BOARD_ATU
 //monitor
-#define ATU_MON_ONOFF_0		-1
-#define ATU_MON_ONOFF_1		-1
+#define ATU_MON_ONOFF_0		19 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_MON_ONOFF_1		18 +PINS_PER_BOARD*ID_BOARD_ATU
 //labviewmodule
-#define ATU_LVM				-1
-#define ATU_HEATERS_BED_BOX	-1
-#define ATU_TOOL			-1
-#define ATU_PRE_ASI_0		-1
-#define ATU_PRE_ASI_1		-1
+#define ATU_LVM				22 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_HEATERS_BED_BOX	23 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_TOOL			24 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_PRE_ASI_0		26 +PINS_PER_BOARD*ID_BOARD_ATU
+#define ATU_PRE_ASI_1		27 +PINS_PER_BOARD*ID_BOARD_ATU
 
-//Scanner
+/***********************************************************************
+ *                    SCANNER
+ * ********************************************************************/
 #define LASER_0_PIN       	62
 #define L0_STEP_PIN         63
 #define L0_DIR_PIN          64
