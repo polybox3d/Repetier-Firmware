@@ -57,10 +57,10 @@ STEPPER_CURRENT_CONTROL
 #define IC_OPEN_0_PIN		16+PINS_PER_BOARD*1
 #define IC_OPEN_1_PIN		17+PINS_PER_BOARD*1
 // detect slave
-#define DETECTION_SLAVE_1	-1
-#define DETECTION_SLAVE_2	-1
-#define DETECTION_SLAVE_3	-1
-#define DETECTION_SLAVE_4	-1
+#define DETECTION_SLAVE_1	18
+#define DETECTION_SLAVE_2	19
+#define DETECTION_SLAVE_3	16
+#define DETECTION_SLAVE_4	17
 #define DETECTION_SLAVE_5	-1
 
 /***********************************************************************
@@ -103,22 +103,26 @@ STEPPER_CURRENT_CONTROL
 /***********************************************************************
  *                    SCANNER
  * ********************************************************************/
-#define LASER_0_PIN       	62
-#define L0_STEP_PIN         63
-#define L0_DIR_PIN          64
-#define L0_ENABLE_PIN       65
-#define LASER_0_PRES       	-1
+#define ID_BOARD_SC 		3
 
-#define LASER_1_PIN       	66
-#define L1_STEP_PIN         67
-#define L1_DIR_PIN          68
-#define L1_ENABLE_PIN       69
-#define LASER_1_PRES       	-1
+#define LASER_0_PIN       	3 +PINS_PER_BOARD*ID_BOARD_SC
+#define L0_STEP_PIN         44
+#define L0_DIR_PIN          48
+#define L0_ENABLE_PIN       50
+#define LASER_0_PRES       	1 +PINS_PER_BOARD*ID_BOARD_SC
+#define LASER_0_MON       	14+54 +PINS_PER_BOARD*ID_BOARD_SC
 
-#define TABLE0_DETECTED_PIN 73
-#define TABLE0_STEP_PIN     70
-#define TABLE0_DIR_PIN      71
-#define TABLE0_ENABLE_PIN   72
+#define LASER_1_PIN       	2+PINS_PER_BOARD*ID_BOARD_SC
+#define L1_STEP_PIN         46
+#define L1_DIR_PIN          47
+#define L1_ENABLE_PIN       49
+#define LASER_1_PRES       	0 +PINS_PER_BOARD*ID_BOARD_SC
+#define LASER_1_MON       	15+54 +PINS_PER_BOARD*ID_BOARD_SC
+
+#define TABLE0_DETECTED_PIN 32
+#define TABLE0_STEP_PIN     5
+#define TABLE0_DIR_PIN      38
+#define TABLE0_ENABLE_PIN   40
 
 
 
