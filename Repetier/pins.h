@@ -128,9 +128,9 @@ STEPPER_CURRENT_CONTROL
 
 /* ___________________POLYBOX ADD_END__________________ */
 
-#define X_STEP_PIN         54
-#define X_DIR_PIN          55
-#define X_ENABLE_PIN       38
+#define X_STEP_PIN         13
+#define X_DIR_PIN          22
+#define X_ENABLE_PIN       24
 #define X_MIN_PIN          3
 #define X_MAX_PIN          2
 
@@ -140,19 +140,19 @@ STEPPER_CURRENT_CONTROL
 #define Y_MIN_PIN          14
 #define Y_MAX_PIN          15
 
-#define Z_STEP_PIN         46
-#define Z_DIR_PIN          48
-#define Z_ENABLE_PIN       62
+#define Z_STEP_PIN         8
+#define Z_DIR_PIN          26
+#define Z_ENABLE_PIN       28
 #define Z_MIN_PIN          18
 #define Z_MAX_PIN          19
 
-#define E0_STEP_PIN         26
-#define E0_DIR_PIN          28
-#define E0_ENABLE_PIN       24
+#define E0_STEP_PIN         3
+#define E0_DIR_PIN          35
+#define E0_ENABLE_PIN       37
 
-#define E1_STEP_PIN         36
-#define E1_DIR_PIN          34
-#define E1_ENABLE_PIN       30
+#define E1_STEP_PIN         2
+#define E1_DIR_PIN          39
+#define E1_ENABLE_PIN       41
 
 #define SDPOWER            -1
 #define SDSS               53
