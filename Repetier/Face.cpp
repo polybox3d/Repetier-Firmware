@@ -20,22 +20,22 @@ uint8_t Face::get_detected()
 	switch ( id )
     {
         case 0:
-            READ_VPIN( SELECT_DEFINE_FACE( 0, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 0, W_DETECTED ));
         break;
         case 1:
-            READ_VPIN( SELECT_DEFINE_FACE( 1, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 1, W_DETECTED ));
         break;
         case 2:
-            READ_VPIN( SELECT_DEFINE_FACE( 2, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 2, W_DETECTED ));
         break;
         case 3:
-            READ_VPIN( SELECT_DEFINE_FACE( 3, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 3, W_DETECTED ));
         break;
         case 4:
-            READ_VPIN( SELECT_DEFINE_FACE( 4, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 4, W_DETECTED ));
         break;
         case 5:
-            READ_VPIN( SELECT_DEFINE_FACE( 5, DETECTED ));
+            READ_VPIN( SELECT_DEFINE_FACE( 5, W_DETECTED ));
         break;
         default:
         return 1;
