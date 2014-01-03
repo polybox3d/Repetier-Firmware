@@ -48,7 +48,7 @@ STEPPER_CURRENT_CONTROL
 
 
 /* ___________________POLYBOX ADD__________________ */
-
+#define PIN_ANALOG			54
 #define Y2_MIN_PIN          4
 // Detect if the box (chamber, working space door) is open or not.
 #define BOX_OPEN_0_PIN		0+PINS_PER_BOARD*1
@@ -62,6 +62,31 @@ STEPPER_CURRENT_CONTROL
 #define DETECTION_SLAVE_3	16
 #define DETECTION_SLAVE_4	17
 #define DETECTION_SLAVE_5	-1
+
+/***********************************************************************
+ *                    Printer
+ * ********************************************************************/
+#define ID_BOARD_PRINTER	2
+
+#define DETECTION_E0		53 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define DETECTION_E1		52 +PINS_PER_BOARD*ID_BOARD_PRINTER
+
+#define DETECTION_BED_0		36 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define DETECTION_BED_1		38 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define DETECTION_BED_2		40 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define DETECTION_BED_3		42 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define DETECTION_OPT		47 +PINS_PER_BOARD*ID_BOARD_PRINTER
+
+#define E0_FILAMENT_0		49 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define E0_FILAMENT_1		51 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define E1_FILAMENT_0		48 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define E1_FILAMENT_1		50 +PINS_PER_BOARD*ID_BOARD_PRINTER
+ 
+#define DETECTION_PEL_BOX_0	53 +PINS_PER_BOARD* 3
+#define DETECTION_PEL_BOX_1	52 +PINS_PER_BOARD* 3
+#define DETECTION_PEL_BOX_2	50 +PINS_PER_BOARD* 3
+#define DETECTION_PEL_BOX_3	48 +PINS_PER_BOARD* 3
+
 
 /***********************************************************************
  *                    CN
@@ -78,9 +103,9 @@ STEPPER_CURRENT_CONTROL
 #define CN_STATE_VACUUM		41 +PINS_PER_BOARD*ID_BOARD_CN
 #define CN_STATE_RECYCLE	39 +PINS_PER_BOARD*ID_BOARD_CN
 
-#define CN_LUB_LEVEL_LOW	13+54 +PINS_PER_BOARD*ID_BOARD_CN
-#define CN_LUB_LEVEL_MEDIUM	12+54 +PINS_PER_BOARD*ID_BOARD_CN
-#define CN_LUB_LEVEL_HIGH	11+54 +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_LUB_LEVEL_LOW	13+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_LUB_LEVEL_MEDIUM	12+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_CN
+#define CN_LUB_LEVEL_HIGH	11+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_CN
 
 /***********************************************************************
  *                    ATU
@@ -91,6 +116,9 @@ STEPPER_CURRENT_CONTROL
 #define ATU_COM_ONOFF_0		28 +PINS_PER_BOARD*ID_BOARD_ATU
 #define ATU_COM_ONOFF_1		30 +PINS_PER_BOARD*ID_BOARD_ATU
 //monitor
+#define ATU_MON_POWER_0		1
+#define ATU_MON_POWER_1		0
+
 #define ATU_MON_ONOFF_0		19 +PINS_PER_BOARD*ID_BOARD_ATU
 #define ATU_MON_ONOFF_1		18 +PINS_PER_BOARD*ID_BOARD_ATU
 //labviewmodule
@@ -110,41 +138,131 @@ STEPPER_CURRENT_CONTROL
 #define L0_DIR_PIN          48
 #define L0_ENABLE_PIN       50
 #define LASER_0_PRES       	1 +PINS_PER_BOARD*ID_BOARD_SC
-#define LASER_0_MON       	14+54 +PINS_PER_BOARD*ID_BOARD_SC
+#define LASER_0_MON       	14+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_SC
 
 #define LASER_1_PIN       	2+PINS_PER_BOARD*ID_BOARD_SC
 #define L1_STEP_PIN         46
 #define L1_DIR_PIN          47
 #define L1_ENABLE_PIN       49
 #define LASER_1_PRES       	0 +PINS_PER_BOARD*ID_BOARD_SC
-#define LASER_1_MON       	15+54 +PINS_PER_BOARD*ID_BOARD_SC
+#define LASER_1_MON       	15+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_SC
 
 #define TABLE0_DETECTED_PIN 32
 #define TABLE0_STEP_PIN     5
 #define TABLE0_DIR_PIN      38
 #define TABLE0_ENABLE_PIN   40
 
+/***********************************************************************
+ *                    THERM
+ * ********************************************************************/
+#define THERM_LC1			11 +PIN_ANALOG
+#define THERM_LC2			12 +PIN_ANALOG
+#define THERM_LC3			13 +PIN_ANALOG
+#define THERM_LC4			14 +PIN_ANALOG
 
+#define THERM_BOX1			8 +PIN_ANALOG
+#define THERM_BOX2			9 +PIN_ANALOG
+#define THERM_BOX3			10 +PIN_ANALOG
+
+#define THERM_ELEC2			7 +PIN_ANALOG
+#define THERM_ELEC1			6 +PIN_ANALOG
+
+#define THERM_B2			3 +PIN_ANALOG
+#define THERM_CF_B2_B		5 +PIN_ANALOG
+#define THERM_CF_B2_H		4 +PIN_ANALOG
+
+#define THERM_B1			0 +PIN_ANALOG
+#define THERM_CF_B1_B		2 +PIN_ANALOG
+#define THERM_CF_B1_H		1 +PIN_ANALOG
+
+
+/***********************************************************************
+ *                    Monitoring
+ * ********************************************************************/
+#define MON_FAN_BOX			15 +PIN_ANALOG
+#define MON_FAN_BOX_IN		14 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_FAN_BOX_OUT		15 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_FAN_BUSE_0		11 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_FAN_BUSE_1		10 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_FAN_PEL_BOX_0	0 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_FAN_PEL_BOX_1	1 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_FAN_PEL_BOX_2	2 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_FAN_PEL_BOX_3	3 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_PEL_BOX_0		10 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_PEL_BOX_1		11 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_PEL_BOX_2		12 +PIN_ANALOG +PINS_PER_BOARD*3
+#define MON_PEL_BOX_3		13 +PIN_ANALOG +PINS_PER_BOARD*3
+
+#define MON_PEL_BUSE_0		12 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_PEL_BUSE_1		14 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_FAN_PEL_BUSE_0	13 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_FAN_PEL_BUSE_1	15 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_BED_0			4 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_BED_1			5 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_BED_2			6 +PIN_ANALOG +PINS_PER_BOARD*2
+#define MON_BED_3			7 +PIN_ANALOG +PINS_PER_BOARD*2
+
+// optional mesure
+
+#define MON_OPT7			8 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT6			7 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT5			6 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT4			5 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT3			4 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT2			3 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_OPT1			2 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_FAN_OPT2		1 +PIN_ANALOG +PINS_PER_BOARD
+#define MON_FAN_OPT1		0 +PIN_ANALOG +PINS_PER_BOARD
+
+
+
+/***********************************************************************
+ *                    Rot-X,Rot-Y, Optional
+ * ********************************************************************/
+
+#define RX_STEP_PIN         7
+#define RX_DIR_PIN          30
+#define RX_ENABLE_PIN       32
+#define RX_MIN_PIN          49 +PINS_PER_BOARD*1
+#define RX_MAX_PIN          51 +PINS_PER_BOARD*1
+#define RX_HOME_PIN         53 +PINS_PER_BOARD*1
+
+#define RY_STEP_PIN         6
+#define RY_DIR_PIN          34
+#define RY_ENABLE_PIN       36
+#define RY_MIN_PIN          52 +PINS_PER_BOARD*1
+#define RY_MAX_PIN          50 +PINS_PER_BOARD*1
+#define RY_HOME_PIN         48 +PINS_PER_BOARD*1
+
+#define OPT_STEP_PIN         9
+#define OPT_DIR_PIN          31
+#define OPT_ENABLE_PIN       33
 
 /* ___________________POLYBOX ADD_END__________________ */
 
 #define X_STEP_PIN         13
 #define X_DIR_PIN          22
 #define X_ENABLE_PIN       24
-#define X_MIN_PIN          3
-#define X_MAX_PIN          2
+#define X_MIN_PIN          29 +PINS_PER_BOARD*1
+#define X_MAX_PIN          31 +PINS_PER_BOARD*1
+#define X_HOME_PIN         33 +PINS_PER_BOARD*1
 
-#define Y_STEP_PIN         60
-#define Y_DIR_PIN          61
-#define Y_ENABLE_PIN       56
-#define Y_MIN_PIN          14
-#define Y_MAX_PIN          15
+#define Y_STEP_PIN         12
+#define Y_DIR_PIN          23
+#define Y_ENABLE_PIN       25
+#define Y_2_STEP_PIN       11
+#define Y_2_DIR_PIN        27
+#define Y_2_ENABLE_PIN     29
+#define Y_MIN_PIN          35 +PINS_PER_BOARD*1
+#define Y_MAX_PIN          37 +PINS_PER_BOARD*1
+#define Y_HOME_PIN         39 +PINS_PER_BOARD*1
 
 #define Z_STEP_PIN         8
 #define Z_DIR_PIN          26
 #define Z_ENABLE_PIN       28
-#define Z_MIN_PIN          18
-#define Z_MAX_PIN          19
+#define Z_MIN_PIN          41 +PINS_PER_BOARD*1
+#define Z_MAX_PIN          43 +PINS_PER_BOARD*1
+#define Z_HOME_PIN         47 +PINS_PER_BOARD*1
 
 #define E0_STEP_PIN         3
 #define E0_DIR_PIN          35
@@ -156,7 +274,7 @@ STEPPER_CURRENT_CONTROL
 
 #define SDPOWER            -1
 #define SDSS               53
-#define SDCARDDETECT 	    49
+#define SDCARDDETECT 	   49
 
 #define LED_PIN            13
 #define FAN_PIN            9
