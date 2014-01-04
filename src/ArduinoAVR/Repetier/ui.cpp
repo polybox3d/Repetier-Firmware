@@ -1049,7 +1049,7 @@ void UIDisplay::parse(char *txt,bool ram)
             if(c2=='c') fvalue=Extruder::current->tempControl.targetTemperatureC;
             else if(c2>='0' && c2<='9') fvalue=extruder[c2-'0'].tempControl.targetTemperatureC;
 #if HAVE_HEATED_BED
-            else if(c2=='b') fvalue=heatedBedController.targetTemperatureC;
+            else if(c2=='b') fvalue=heatedBedController[0].targetTemperatureC;
 #endif
             addFloat(fvalue,3,0 /*UI_TEMP_PRECISION*/);
             break;
@@ -1125,7 +1125,7 @@ void UIDisplay::parse(char *txt,bool ram)
             // Extruder output level
             if(c2>='0' && c2<='9') ivalue=pwm_pos[c2-'0'];
 #if HAVE_HEATED_BED
-            else if(c2=='b') ivalue=pwm_pos[heatedBedController.pwmIndex];
+            else if(c2=='b') ivalue=pwm_pos[heatedBedController[0].pwmIndex];
 #endif
             else if(c2=='C') ivalue=pwm_pos[Extruder::current->id];
             ivalue=(ivalue*100)/255;
@@ -1637,7 +1637,7 @@ void UIDisplay::refreshPage()
 #if HAVE_HEATED_BED==true
 
             //heatbed animated icons
-            if(heatedBedController.targetTemperatureC > 0)
+            if(heatedBedController[0].targetTemperatureC > 0)
                 cache[2][0] = Printer::isAnimation()?'\x0c':'\x0d';
             else
                 cache[2][0] = '\x0b';
@@ -2108,7 +2108,7 @@ void UIDisplay::nextPreviousAction(int8_t next)
     case UI_ACTION_HEATED_BED_TEMP:
 #if HAVE_HEATED_BED==true
     {
-        int tmp = (int)heatedBedController.targetTemperatureC;
+        int tmp = (int)heatedBedController[0].targetTemperatureC;
         if(tmp<UI_SET_MIN_HEATED_BED_TEMP) tmp = 0;
         tmp+=increment;
         if(tmp==1) tmp = UI_SET_MIN_HEATED_BED_TEMP;
@@ -2691,7 +2691,7 @@ void UIDisplay::executeAction(int action)
         case UI_ACTION_HEATED_BED_UP:
 #if HAVE_HEATED_BED==true
         {
-            int tmp = (int)heatedBedController.targetTemperatureC+1;
+            int tmp = (int)heatedBedController[0].targetTemperatureC+1;
             if(tmp==1) tmp = UI_SET_MIN_HEATED_BED_TEMP;
             else if(tmp>UI_SET_MAX_HEATED_BED_TEMP) tmp = UI_SET_MAX_HEATED_BED_TEMP;
             Extruder::setHeatedBedTemperature(tmp);
@@ -2754,7 +2754,7 @@ void UIDisplay::executeAction(int action)
         case UI_ACTION_HEATED_BED_DOWN:
 #if HAVE_HEATED_BED==true
         {
-            int tmp = (int)heatedBedController.targetTemperatureC-1;
+            int tmp = (int)heatedBedController[0].targetTemperatureC-1;
             if(tmp<UI_SET_MIN_HEATED_BED_TEMP) tmp = 0;
             Extruder::setHeatedBedTemperature(tmp);
         }
@@ -2821,7 +2821,7 @@ void UIDisplay::slowAction()
             led |= (tempController[Extruder::current->id]->targetTemperatureC > 0 ? UI_I2C_HOTEND_LED : 0);
 #endif
 #if HAVE_HEATED_BED
-            led |= (heatedBedController.targetTemperatureC > 0 ? UI_I2C_HEATBED_LED : 0);
+            led |= (heatedBedController[0].targetTemperatureC > 0 ? UI_I2C_HEATBED_LED : 0);
 #endif
 #if FAN_PIN>=0
             led |= (Printer::getFanSpeed() > 0 ? UI_I2C_FAN_LED : 0);

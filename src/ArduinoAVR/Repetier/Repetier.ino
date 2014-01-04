@@ -124,6 +124,7 @@ Custom M Codes
 */
 
 #include "Repetier.h"
+#include <Wire.h>
 #include <SPI.h>
 
 #if UI_DISPLAY_TYPE==4

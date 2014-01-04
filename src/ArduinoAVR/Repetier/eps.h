@@ -89,11 +89,11 @@ byte eps_send_entries(uint8_t dest);
 void i2cReceiveEvent(int howMany);
 void setup_slave_master();
 
-
-#ifdef IS_MASTER // welll...arduino dont know new/delete...but it's ok for INO...
+/*
+#ifdef IS_MASTER && ARDUINO < 100 // welll...arduino dont know new/delete...but it's ok for INO...
  void operator delete(void * p);
  void * operator new(size_t size); 
 #endif
-
+*/
 
 #endif

@@ -48,13 +48,6 @@ STEPPER_CURRENT_CONTROL
 
 /* ___________________POLYBOX ADD__________________ */
 #define PIN_ANALOG			54
-#define Y2_MIN_PIN          4
-// Detect if the box (chamber, working space door) is open or not.
-#define BOX_OPEN_0_PIN		0+PINS_PER_BOARD*1
-#define BOX_OPEN_1_PIN		1+PINS_PER_BOARD*1
-//IC = integrated circuit. Detect if the IC box is open or not.
-#define IC_OPEN_0_PIN		16+PINS_PER_BOARD*1
-#define IC_OPEN_1_PIN		17+PINS_PER_BOARD*1
 // detect slave
 #define DETECTION_SLAVE_1	18
 #define DETECTION_SLAVE_2	19
@@ -69,6 +62,16 @@ STEPPER_CURRENT_CONTROL
 
 #define DETECTION_E0		53 +PINS_PER_BOARD*ID_BOARD_PRINTER
 #define DETECTION_E1		52 +PINS_PER_BOARD*ID_BOARD_PRINTER
+
+#define HEATER_BED_0		3 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define HEATER_BED_1		2 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define HEATER_BED_2		44 +PINS_PER_BOARD*ID_BOARD_PRINTER
+#define HEATER_BED_3		46 +PINS_PER_BOARD*ID_BOARD_PRINTER
+
+#define HEATER_BED_0_SENSOR	11 +PIN_ANALOG
+#define HEATER_BED_1_SENSOR	12 +PIN_ANALOG
+#define HEATER_BED_2_SENSOR	13 +PIN_ANALOG
+#define HEATER_BED_3_SENSOR	14 +PIN_ANALOG
 
 #define DETECTION_BED_0		36 +PINS_PER_BOARD*ID_BOARD_PRINTER
 #define DETECTION_BED_1		38 +PINS_PER_BOARD*ID_BOARD_PRINTER
@@ -111,6 +114,10 @@ STEPPER_CURRENT_CONTROL
  * ********************************************************************/
 #define ID_BOARD_ATU 		1
 #define ATU_MAIN			25 +PINS_PER_BOARD*ID_BOARD_ATU
+
+#define POWER_ONOFF_0		51
+#define POWER_ONOFF_1		53
+
 // command
 #define ATU_COM_ONOFF_0		28 +PINS_PER_BOARD*ID_BOARD_ATU
 #define ATU_COM_ONOFF_1		30 +PINS_PER_BOARD*ID_BOARD_ATU
@@ -126,6 +133,12 @@ STEPPER_CURRENT_CONTROL
 #define ATU_TOOL			24 +PINS_PER_BOARD*ID_BOARD_ATU
 #define ATU_PRE_ASI_0		26 +PINS_PER_BOARD*ID_BOARD_ATU
 #define ATU_PRE_ASI_1		27 +PINS_PER_BOARD*ID_BOARD_ATU
+// Detect if the box (chamber, working space door) is open or not.
+#define BOX_OPEN_0_PIN		0+PINS_PER_BOARD*1
+#define BOX_OPEN_1_PIN		1+PINS_PER_BOARD*1
+//IC = integrated circuit. Detect if the IC box is open or not.
+#define IC_OPEN_0_PIN		16+PINS_PER_BOARD*1
+#define IC_OPEN_1_PIN		17+PINS_PER_BOARD*1
 
 /***********************************************************************
  *                    SCANNER
@@ -154,10 +167,6 @@ STEPPER_CURRENT_CONTROL
 /***********************************************************************
  *                    THERM
  * ********************************************************************/
-#define THERM_LC1			11 +PIN_ANALOG
-#define THERM_LC2			12 +PIN_ANALOG
-#define THERM_LC3			13 +PIN_ANALOG
-#define THERM_LC4			14 +PIN_ANALOG
 
 #define THERM_BOX1			8 +PIN_ANALOG
 #define THERM_BOX2			9 +PIN_ANALOG
@@ -249,6 +258,11 @@ STEPPER_CURRENT_CONTROL
 #define Y_STEP_PIN         12
 #define Y_DIR_PIN          23
 #define Y_ENABLE_PIN       25
+/**
+ * You need to set FEATURE_TWO_YSTEPPER to true to use 2 motor for Y
+ * File : Configuration: l.992
+ * **/
+
 #define Y_2_STEP_PIN       11
 #define Y_2_DIR_PIN        27
 #define Y_2_ENABLE_PIN     29
@@ -320,7 +334,30 @@ STEPPER_CURRENT_CONTROL
 #define E2_PINS E2_STEP_PIN,E2_DIR_PIN,E2_ENABLE_PIN,
 #define E3_PINS E3_STEP_PIN,E3_DIR_PIN,E3_ENABLE_PIN,
 
-#endif
+#endif //AZTEEG_X3
 #endif
 
 
+#ifndef SDSSORIG
+#define SDSSORIG -1
+#endif
+
+#ifndef STEPPER_CURRENT_CONTROL // Set default stepper current control if not set yet.
+#define STEPPER_CURRENT_CONTROL CURRENT_CONTROL_MANUAL
+#endif
+
+#ifndef FAN_BOARD_PIN
+#define FAN_BOARD_PIN -1
+#endif
+
+#if NUM_EXTRUDER==1
+#define E1_PINS
+#endif
+
+#if NUM_EXTRUDER<3
+#define E2_PINS
+#endif
+#define SENSITIVE_PINS {0, 1, X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, X_MIN_PIN, X_MAX_PIN, Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, Y_MIN_PIN, Y_MAX_PIN, Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, Z_MIN_PIN, Z_MAX_PIN, LED_PIN, PS_ON_PIN, \
+HEATER_0_PIN, HEATER_1_PIN, FAN_PIN, E0_PINS E1_PINS E2_PINS TEMP_0_PIN, TEMP_1_PIN,SDSS }
+
+#endif //PINS_H

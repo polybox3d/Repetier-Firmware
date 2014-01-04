@@ -716,9 +716,11 @@ This timer is called 3906 timer per second. It is used to update pwm values for 
 */
 ISR(PWM_TIMER_VECTOR)
 {
+// If th euser dont want to use ARCH pwm (analog write) we use woftware pwm with ISR
     static uint8_t pwm_count = 0;
+#if ENABLE_ARCH_PWM == false
     static uint8_t pwm_pos_set[NUM_EXTRUDER+3];
-    static uint8_t pwm_cooler_pos_set[NUM_EXTRUDER];
+    static uint8_t pwm_cooler_pos_set[NUM_EXTRUDER];  
     PWM_OCR += 64;
     if(pwm_count==0)
     {
@@ -813,10 +815,15 @@ ISR(PWM_TIMER_VECTOR)
 #if HEATED_BED_HEATER_PIN>-1 && HAVE_HEATED_BED
     if(pwm_pos_set[NUM_EXTRUDER] == pwm_count && pwm_pos_set[NUM_EXTRUDER]!=255) WRITE(HEATED_BED_HEATER_PIN,0);
 #endif
+
+#endif // #if ENABLE_ARCH_PWM == false
     HAL::allowInterrupts();
     counterPeriodical++; // Appxoimate a 100ms timer
     if(counterPeriodical>=(int)(F_CPU/40960))
     {
+		#if ENABLE_ARCH_PWM == true
+			manage_pwm(); // we manage PWM, it's here cause we dont need a huge freq. and nned to replace old version.
+		#endif
         counterPeriodical=0;
         executePeriodical=1;
     }

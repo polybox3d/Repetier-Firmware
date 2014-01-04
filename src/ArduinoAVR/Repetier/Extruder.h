@@ -294,8 +294,8 @@ class Extruder   // Size: 12*1 Byte+12*4 Byte+4*2Byte = 68 Byte
 };
 
 #if HAVE_HEATED_BED
-#define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER+1
-extern TemperatureController heatedBedController;
+#define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER+HEATED_BED_NUM
+extern TemperatureController heatedBedController[HEATED_BED_NUM];
 #else
 #define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER
 #endif

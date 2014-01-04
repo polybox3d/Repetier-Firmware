@@ -1,6 +1,6 @@
 #include "Polybox.h"
 
-#include "Reptier.h"
+#include "Repetier.h"
 
 volatile float filamentPrinted_lastCheck = 0.0;
 volatile long encoder_currentSteps = 0 ;
@@ -22,11 +22,80 @@ void pin_x_steps( int PIN , int steps )
     }    
 }
 
+/**
+ * Handle PWM. If ENABLE_ARCH_PWM is true, firmware use AnalogWrite to output PWM
+ * No software emulation with ISR.
+ * This routine is called from checkAction in Command::
+ * Grab pwm_pos and extruder::cooler values and set PWM output using EPS
+ * **/
+void manage_pwm()
+{
+ #if ENABLE_ARCH_PWM == true
+#if defined(EXT0_HEATER_PIN) &&  EXT0_HEATER_PIN>-1 && NUM_EXTRUDER>1
+        WRITE_VPIN(EXT0_HEATER_PIN, pwm_pos[0]);
+#if EXT0_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT0_EXTRUDER_COOLER_PIN, extruder[0].coolerPWM);
+#endif
+#endif
+#if defined(EXT1_HEATER_PIN) &&  EXT1_HEATER_PIN>-1
+        WRITE_VPIN(EXT1_HEATER_PIN, pwm_pos[1]);
+#if EXT1_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT1_EXTRUDER_COOLER_PIN, extruder[1].coolerPWM);
+#endif
+#endif
+#if defined(EXT2_HEATER_PIN) && EXT2_HEATER_PIN>-1
+        WRITE_VPIN(EXT2_HEATER_PIN, pwm_pos[2]);
+#if EXT2_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT2_EXTRUDER_COOLER_PIN, extruder[2].coolerPWM);
+#endif
+#endif
+
+#if defined(EXT3_HEATER_PIN) && EXT3_HEATER_PIN>-1
+        WRITE_VPIN(EXT3_HEATER_PIN, pwm_pos[3]);
+#if EXT3_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT3_EXTRUDER_COOLER_PIN, extruder[3].coolerPWM);
+#endif
+#endif
+
+#if defined(EXT4_HEATER_PIN) &&  EXT4_HEATER_PIN>-1
+        WRITE_VPIN(EXT4_HEATER_PIN, pwm_pos[4]);
+#if EXT4_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT4_EXTRUDER_COOLER_PIN, extruder[4].coolerPWM);
+#endif
+#endif
+
+#if defined(EXT5_HEATER_PIN) &&  EXT5_HEATER_PIN>-1
+        WRITE_VPIN(EXT5_HEATER_PIN, pwm_pos[5]);
+#if EXT5_EXTRUDER_COOLER_PIN>-1
+        WRITE_VPIN(EXT5_EXTRUDER_COOLER_PIN, extruder[5].coolerPWM);
+#endif
+#endif
+#if FAN_BOARD_PIN>-1
+        WRITE_VPIN(FAN_BOARD_PIN, pwm_pos[NUM_EXTRUDER+1]);
+#endif
+#if FAN_PIN>-1 && FEATURE_FAN_CONTROL
+        WRITE_VPIN(FAN_PIN, pwm_pos[NUM_EXTRUDER+2]);
+#endif
+#if HEATER_BED_0 >-1 && HAVE_HEATED_BED
+        if( pwm_pos[NUM_EXTRUDER]>0) WRITE_VPIN(HEATER_BED_0, pwm_pos[NUM_EXTRUDER]);
+#endif
+#if HEATER_BED_1 >-1 && HAVE_HEATED_BED
+        if( pwm_pos[NUM_EXTRUDER+1]>0) WRITE_VPIN(HEATER_BED_1, pwm_pos[NUM_EXTRUDER+1]);
+#endif
+#if HEATER_BED_2 >-1 && HAVE_HEATED_BED
+        if( pwm_pos[NUM_EXTRUDER+2]>0) WRITE_VPIN(HEATER_BED_2, pwm_pos[NUM_EXTRUDER+2]);
+#endif
+#if HEATER_BED_3 >-1 && HAVE_HEATED_BED
+        if( pwm_pos[NUM_EXTRUDER+3]>0) WRITE_VPIN(HEATER_BED_3, pwm_pos[NUM_EXTRUDER+3]);
+#endif	
+	
+ #endif
+}
+
 byte is_box_open()
 {
 	return  ( READ_VPIN(BOX_OPEN_0_PIN) || READ_VPIN(BOX_OPEN_1_PIN) );
 }
-
 byte is_ic_open()
 {
 	return  ( READ_VPIN(IC_OPEN_0_PIN) || READ_VPIN(IC_OPEN_1_PIN) );
@@ -83,19 +152,50 @@ uint8_t get_lub_level()
 
 void check_all_ATU()
 {
-READ_VPIN( ATU_MAIN );
-// command
-READ_VPIN( ATU_COM_ONOFF_0 );
-READ_VPIN( ATU_COM_ONOFF_1 );
-//monitor
-READ_VPIN( ATU_MON_ONOFF_0 );
-READ_VPIN( ATU_MON_ONOFF_1 );
-//labviewmodule
-READ_VPIN( ATU_LVM );
-READ_VPIN( ATU_HEATERS_BED_BOX);
-READ_VPIN( ATU_TOOL	);
-READ_VPIN( ATU_PRE_ASI_0);
-READ_VPIN( ATU_PRE_ASI_1);
+	if ( !ENABLE_ATU )
+	{
+		return;
+	}
+	if ( READ_VPIN( ATU_MAIN ) )
+	{
+		Commands::emergencyStop();
+	}
+	// command
+	if ( READ_VPIN( ATU_COM_ONOFF_0 ) || READ_VPIN( ATU_COM_ONOFF_1 ) )
+	{
+		Commands::emergencyStop();
+	}
+	//monitor
+	if ( READ_VPIN( ATU_MON_ONOFF_0 ) ||	READ_VPIN( ATU_MON_ONOFF_1 ) )
+	{
+		Commands::emergencyStop();
+	}
+	//monitor
+	if ( READ_VPIN( ATU_MON_POWER_0 ) ||	READ_VPIN( ATU_MON_POWER_1 ) )
+	{
+		Commands::emergencyStop();
+	}
+	//labviewmodule
+	if ( READ_VPIN( ATU_LVM ) )
+	{
+		Commands::emergencyStop();
+	}
+	if ( READ_VPIN( ATU_HEATERS_BED_BOX) )
+	{
+		Commands::emergencyStop();
+	}
+	if ( READ_VPIN( ATU_TOOL ) )
+	{
+		Commands::emergencyStop();
+	}
+	if ( READ_VPIN( ATU_PRE_ASI_0) || READ_VPIN( ATU_PRE_ASI_1) )
+	{
+		Commands::emergencyStop();
+	}
+	if ( is_box_open() || is_ic_open() )
+	{
+		Commands::emergencyStop();
+	}
 } 
 
 void check_boards_connected()
@@ -149,7 +249,7 @@ void encoder_incr()
 }
 byte check_clogged()
 {
-    float deltaExtrude;
+ /*   float deltaExtrude;
     long deltaEncoder;
     
     BEGIN_INTERRUPT_PROTECTED
@@ -172,304 +272,13 @@ byte check_clogged()
             
             return 1;
          }
-    }
+    }*/
     return 0;
 }
 
-
-
-void executeAction(int action, int param) {
-  if(action>=2000 && action<3000)
-  {
-      
-  }
-  else
-  switch(action) {
-    case UI_ACTION_EMERGENCY_STOP:
-      emergencyStop();
-      break;
-    case UI_ACTION_HOME_ALL:
-      home_axis(true,true,true);
-      printPosition();
-      break;
-    case UI_ACTION_HOME_X:
-      home_axis(true,false,false);
-      printPosition();
-      break;
-    case UI_ACTION_HOME_Y:
-      home_axis(false,true,false);
-      printPosition();
-      break;
-    case UI_ACTION_HOME_Z:
-      home_axis(false,false,true);
-      printPosition();
-      break;
-    case UI_ACTION_SET_ORIGIN:
-      printer_state.currentPositionSteps[0] = -printer_state.offsetX;
-      printer_state.currentPositionSteps[1] = -printer_state.offsetY;
-      printer_state.currentPositionSteps[2] = 0;
-      break;
-    case UI_ACTION_DEBUG_ECHO:
-      if(DEBUG_ECHO) debug_level-=1;else debug_level+=1;
-      break;
-    case UI_ACTION_DEBUG_INFO:
-      if(DEBUG_INFO) debug_level-=2;else debug_level+=2;
-      break;
-    case UI_ACTION_DEBUG_ERROR:
-      if(DEBUG_ERRORS) debug_level-=4;else debug_level+=4;
-      break;
-    case UI_ACTION_DEBUG_DRYRUN:
-      if(DEBUG_DRYRUN) debug_level-=8;else debug_level+=8;
-      if(DEBUG_DRYRUN) { // simulate movements without printing
-          extruder_set_temperature(0,0);
-#if NUM_EXTRUDER>1
-          extruder_set_temperature(0,1);
-#endif
-#if HAVE_HEATED_BED==true
-          heated_bed_set_temperature(0);
-#endif
-      }
-      break;
-    case UI_ACTION_POWER:
-      break;
-    case UI_ACTION_PREHEAT_PLA:
-      extruder_set_temperature(UI_SET_PRESET_EXTRUDER_TEMP_PLA,0);
-#if NUM_EXTRUDER>1
-      extruder_set_temperature(UI_SET_PRESET_EXTRUDER_TEMP_PLA,1);
-#endif
-#if HAVE_HEATED_BED==true
-      heated_bed_set_temperature(UI_SET_PRESET_HEATED_BED_TEMP_PLA);
-#endif 
-      break;
-    case UI_ACTION_PREHEAT_ABS:
-      extruder_set_temperature(UI_SET_PRESET_EXTRUDER_TEMP_ABS,0);
-#if NUM_EXTRUDER>1
-      extruder_set_temperature(UI_SET_PRESET_EXTRUDER_TEMP_ABS,1);
-#endif
-#if HAVE_HEATED_BED==true
-      heated_bed_set_temperature(UI_SET_PRESET_HEATED_BED_TEMP_ABS);
-#endif 
-      break;
-    case UI_ACTION_COOLDOWN:
-      extruder_set_temperature(0,0);
-#if NUM_EXTRUDER>1
-      extruder_set_temperature(0,1);
-#endif
-#if HAVE_HEATED_BED==true
-      heated_bed_set_temperature(0);
-#endif 
-      break;
-    case UI_ACTION_HEATED_BED_OFF:
-#if HAVE_HEATED_BED==true
-      heated_bed_set_temperature(0);
-#endif 
-      break;
-    case UI_ACTION_EXTRUDER0_OFF:
-      extruder_set_temperature(0,0);
-      break;
-    case UI_ACTION_EXTRUDER1_OFF:
- #if NUM_EXTRUDER>1
-      extruder_set_temperature(0,1);
- #endif
-      break;
-#if USE_OPS==1
-    case UI_ACTION_OPS_OFF:
-      printer_state.opsMode=0;
-      break;
-    case UI_ACTION_OPS_CLASSIC:
-      printer_state.opsMode=1;
-      break;
-    case UI_ACTION_OPS_FAST:
-      printer_state.opsMode=2;
-      break;
- #endif
-    case UI_ACTION_DISABLE_STEPPER:
-      kill(true);
-      break;
-    case UI_ACTION_RESET_EXTRUDER:
-      printer_state.currentPositionSteps[3] = 0;
-      break;
-    case UI_ACTION_EXTRUDER_RELATIVE:
-      relative_mode_e=!relative_mode_e;
-      break;
-    case UI_ACTION_SELECT_EXTRUDER0:
-      extruder_select(0);
-      break;
-    case UI_ACTION_SELECT_EXTRUDER1:
-#if NUM_EXTRUDER>1
-      extruder_select(1);
-#endif
-      break;
-#if FAN_PIN>-1
-    case UI_ACTION_FAN_OFF:
-      set_fan_speed(0,false);
-      OUT_P_LN("Fanspeed:0");
-      break;
-    case UI_ACTION_FAN_25:
-      set_fan_speed(64,false);
-      OUT_P_LN("Fanspeed:64");
-      break;
-    case UI_ACTION_FAN_50:
-      set_fan_speed(128,false);
-      OUT_P_LN("Fanspeed:128");
-      break;
-    case UI_ACTION_FAN_75:
-      set_fan_speed(192,false);
-      OUT_P_LN("Fanspeed:192");
-      break;
-    case UI_ACTION_FAN_FULL:
-      set_fan_speed(255,false);
-      OUT_P_LN("Fanspeed:255");
-      break;
-#endif
-    case UI_ACTION_X_UP:
-      move_steps(axis_steps_per_unit[0],0,0,0,homing_feedrate[0],false,true);
-      break;
-    case UI_ACTION_X_DOWN:
-      move_steps(-axis_steps_per_unit[0],0,0,0,homing_feedrate[0],false,true);
-      break;
-    case UI_ACTION_Y_UP:
-      move_steps(0,axis_steps_per_unit[1],0,0,homing_feedrate[1],false,true);
-      break;
-    case UI_ACTION_Y_DOWN:
-      move_steps(0,-axis_steps_per_unit[1],0,0,homing_feedrate[1],false,true);
-      break;
-    case UI_ACTION_Z_UP:
-      move_steps(0,0,axis_steps_per_unit[2],0,homing_feedrate[2],false,true);
-      break;
-    case UI_ACTION_Z_DOWN:
-      move_steps(0,0,-axis_steps_per_unit[2],0,homing_feedrate[2],false,true);
-      break;
-    case UI_ACTION_EXTRUDER_UP:
-      move_steps(0,0,0,axis_steps_per_unit[3],UI_SET_EXTRUDER_FEEDRATE,false,true);
-      break;
-    case UI_ACTION_EXTRUDER_DOWN:
-      move_steps(0,0,0,-axis_steps_per_unit[3],UI_SET_EXTRUDER_FEEDRATE,false,true);
-      break;
-    case UI_ACTION_EXTRUDER_TEMP_UP: {
-         int tmp = (int)(current_extruder->tempControl.targetTemperatureC)+1;
-         if(tmp==1) tmp = UI_SET_MIN_EXTRUDER_TEMP;
-         else if(tmp>UI_SET_MAX_EXTRUDER_TEMP) tmp = UI_SET_MAX_EXTRUDER_TEMP;
-         extruder_set_temperature(tmp,current_extruder->id);
-      }
-      break;
-    case UI_ACTION_EXTRUDER_TEMP_DOWN: {
-         int tmp = (int)(current_extruder->tempControl.targetTemperatureC)-1;
-         if(tmp<UI_SET_MIN_EXTRUDER_TEMP) tmp = 0;
-         extruder_set_temperature(tmp,current_extruder->id);
-      }
-      break;
-    case UI_ACTION_HEATED_BED_UP:
-#if HAVE_HEATED_BED==true
-    {
-       int tmp = (int)heatedBedController.targetTemperatureC+1;
-       if(tmp==1) tmp = UI_SET_MIN_HEATED_BED_TEMP;
-       else if(tmp>UI_SET_MAX_HEATED_BED_TEMP) tmp = UI_SET_MAX_HEATED_BED_TEMP;
-       heated_bed_set_temperature(tmp);
-    }
-#endif
-      break;
-	case UI_ACTION_SHOW_MEASUREMENT:
-#ifdef STEP_COUNTER
-	{
-		out.print_float_P(PSTR("Measure/delta ="),printer_state.countZSteps * inv_axis_steps_per_unit[2]);
-	}
-#endif
-      break;
-	case UI_ACTION_RESET_MEASUREMENT:
-#ifdef STEP_COUNTER
-	{
-		printer_state.countZSteps = 0;
-		out.println_P(PSTR("Measurement reset."));
-	}
-#endif
-      break;
-	case UI_ACTION_SET_MEASURED_ORIGIN:
-#ifdef STEP_COUNTER
-	{
-		if (printer_state.countZSteps < 0)
-			printer_state.countZSteps = -printer_state.countZSteps;
-		printer_state.zLength = inv_axis_steps_per_unit[2] * printer_state.countZSteps;
-		printer_state.zMaxSteps = printer_state.countZSteps;
-		for (byte i=0; i<3; i++) {
-			printer_state.currentPositionSteps[i] = 0;
-		}
-		calculate_delta(printer_state.currentPositionSteps, printer_state.currentDeltaPositionSteps);
-		out.println_P(PSTR("Measured origin set. Measurement reset."));
-	}
-#endif
-	case UI_ACTION_SET_P1:
-#ifdef SOFTWARE_LEVELING
-		for (byte i=0; i<3; i++) {
-			printer_state.levelingP1[i] = printer_state.currentPositionSteps[i];
-		}
-#endif
-      break;
-	case UI_ACTION_SET_P2:
-#ifdef SOFTWARE_LEVELING
-		for (byte i=0; i<3; i++) {
-			printer_state.levelingP2[i] = printer_state.currentPositionSteps[i];
-		}
-#endif
-      break;
-	case UI_ACTION_SET_P3:
-#ifdef SOFTWARE_LEVELING
-		for (byte i=0; i<3; i++) {
-			printer_state.levelingP3[i] = printer_state.currentPositionSteps[i];
-		}
-#endif
-      break;
-	case UI_ACTION_CALC_LEVEL:
-#ifdef SOFTWARE_LEVELING
-		long factors[4];
-		calculate_plane(factors, printer_state.levelingP1, printer_state.levelingP2, printer_state.levelingP3);
-		out.println_P(PSTR("Leveling calc:"));
-		out.println_float_P(PSTR("Tower 1:"), calc_zoffset(factors, DELTA_TOWER1_X_STEPS, DELTA_TOWER1_Y_STEPS) * inv_axis_steps_per_unit[0]);
-		out.println_float_P(PSTR("Tower 2:"), calc_zoffset(factors, DELTA_TOWER2_X_STEPS, DELTA_TOWER2_Y_STEPS) * inv_axis_steps_per_unit[1]);
-		out.println_float_P(PSTR("Tower 3:"), calc_zoffset(factors, DELTA_TOWER3_X_STEPS, DELTA_TOWER3_Y_STEPS) * inv_axis_steps_per_unit[2]);
-#endif
-      break;
-    case UI_ACTION_HEATED_BED_DOWN:
-#if HAVE_HEATED_BED==true
-    {
-       int tmp = (int)heatedBedController.targetTemperatureC-1;
-       if(tmp<UI_SET_MIN_HEATED_BED_TEMP) tmp = 0;
-       heated_bed_set_temperature(tmp);
-    }
-#endif
-      break;
-    case UI_ACTION_FAN_UP:
-      set_fan_speed(get_fan_speed()+32,false);
-      OUT_P_I_LN("Fanspeed:",get_fan_speed());
-      break;
-    case UI_ACTION_FAN_DOWN:
-      set_fan_speed(get_fan_speed()-32,false);
-      OUT_P_I_LN("Fanspeed:",get_fan_speed());
-      break;
-    case UI_ACTION_KILL:
-      cli(); // Don't allow interrupts to do their work
-      kill(false);
-      manage_temperatures();
-      pwm_pos[0] = pwm_pos[1] = pwm_pos[2] = pwm_pos[3]=0;
-#if EXT0_HEATER_PIN>-1
-     WRITE(EXT0_HEATER_PIN,0);
-#endif
-#if defined(EXT1_HEATER_PIN) && EXT1_HEATER_PIN>-1 && NUM_EXTRUDER>1
-     WRITE(EXT1_HEATER_PIN,0);
-#endif
-#if defined(EXT2_HEATER_PIN) && EXT2_HEATER_PIN>-1 && NUM_EXTRUDER>2
-     WRITE(EXT2_HEATER_PIN,0);
-#endif
-#if FAN_PIN>-1
-     WRITE(FAN_PIN,0);
-#endif
-      while(1) {}
-
-      break;
-    case UI_ACTION_RESET:
-      resetFunc();
-      break;
-    case UI_ACTION_PAUSE:
+/*
+ 
+  case UI_ACTION_PAUSE:
       OUT_P("RequestPause:");
     if ( param == POLY_MCODE_ISCLOGGED )
       {
@@ -480,9 +289,4 @@ void executeAction(int action, int param) {
         OUT_P_LN( "Paused." );
       }
       break;
-      default:
-      break;
-  }
-}
-
-
+*/

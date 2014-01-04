@@ -20,4 +20,5 @@
 #define NUM_BOARD           4 // number of board 
 #define PINS_PER_BOARD      56
 
+#define BUFFER_LENGTH		32
 #endif // __CONFIGURATION_EPS_H__

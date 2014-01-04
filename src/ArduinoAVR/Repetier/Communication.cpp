@@ -356,6 +356,11 @@ FSTRINGVALUE(Com::tCreationFailed,"Creation failed")
 FSTRINGVALUE(Com::tSDErrorCode,"SD errorCode:")
 #endif // SDSUPPORT
 
+void Com::printPolybox(uint8_t n)
+{
+	print(POLY_SERIAL_SEPARATOR_VALUE);
+	print(n);	
+}
 void Com::printWarningF(FSTRINGPARAM(text)) {
     printF(tWarning);
     printF(text);

@@ -64,6 +64,16 @@ void Commands::checkForPeriodicalActions()
     if(!executePeriodical) return;
     executePeriodical=0;
     Extruder::manageTemperatures();
+    
+    check_i2c_periodical();
+	check_boards_connected();
+	
+      
+	#if USE_CLOG_ENCODER==1
+	check_clogged();
+	#endif
+	check_all_ATU();
+  
     if(--counter250ms==0)
     {
         if(manageMonitor<=1+NUM_EXTRUDER)
@@ -114,9 +124,9 @@ void Commands::printTemperatures(bool showRaw)
     if(showRaw)
     {
         Com::printF(Com::tSpaceRaw,(int)NUM_EXTRUDER);
-        Com::printF(Com::tColon,(1023<<(2-ANALOG_REDUCE_BITS))-heatedBedController.currentTemperature);
+        Com::printF(Com::tColon,(1023<<(2-ANALOG_REDUCE_BITS))-heatedBedController[0].currentTemperature);
     }
-    Com::printF(Com::tSpaceBAtColon,(pwm_pos[heatedBedController.pwmIndex])); // Show output of autotune when tuning!
+    Com::printF(Com::tSpaceBAtColon,(pwm_pos[heatedBedController[0].pwmIndex])); // Show output of autotune when tuning!
 #endif
 #endif
 #ifdef TEMP_PID
@@ -908,10 +918,10 @@ void Commands::executeGCode(GCode *com)
 #if HAVE_HEATED_BED
             if (com->hasS()) Extruder::setHeatedBedTemperature(com->S,com->hasF() && com->F>0);
 #if defined(SKIP_M190_IF_WITHIN) && SKIP_M190_IF_WITHIN>0
-            if(abs(heatedBedController.currentTemperatureC-heatedBedController.targetTemperatureC)<SKIP_M190_IF_WITHIN) break;
+            if(abs(heatedBedController[0].currentTemperatureC-heatedBedController[0].targetTemperatureC)<SKIP_M190_IF_WITHIN) break;
 #endif
             codenum = HAL::timeInMilliseconds();
-            while(heatedBedController.currentTemperatureC+0.5<heatedBedController.targetTemperatureC)
+            while(heatedBedController[0].currentTemperatureC+0.5<heatedBedController[0].targetTemperatureC)
             {
                 if( (HAL::timeInMilliseconds()-codenum) > 1000 )   //Print Temp Reading every 1 second while heating up.
                 {
@@ -1130,7 +1140,7 @@ void Commands::executeGCode(GCode *com)
                 if(com->S<0) break;
                 if(com->S<NUM_EXTRUDER) temp = &extruder[com->S].tempControl;
 #if HAVE_HEATED_BED
-                else temp = &heatedBedController;
+                else temp = &heatedBedController[0];
 #else
                 else break;
 #endif
@@ -1266,6 +1276,387 @@ void Commands::executeGCode(GCode *com)
 #endif
         }
         break;
+        /* ##################POLYBOX##################### */
+/* ___________________CNC_______________________ */
+//out.print_int_P(PSTR(" quadratic steps:"),maxadv);
+//out.println_float_P(PSTR(", speed="),maxadvspeed); 
+    case 10: // vacuum on
+    {    }    break;
+    case 11: // vacuum off
+        {    }    break;
+    case 600:   {  Com::printPolybox( com->M );( checkFreeMemory() ); Com::println(); }    break;
+    case 601: // Get CNCTool plugged
+    {
+        Com::printPolybox( com->M );
+        if ( READ_VPIN(CN_MOD_MANUAL) )
+        {
+            Com::printFLN(" H");
+        }
+        else if ( READ_VPIN(CN_MOD_PROX) )
+        {
+            Com::printFLN(" P");
+        }
+        else
+        {
+            Com::printFLN(" 0");
+        }
+    }
+    break;
+    case 602: // Get Lubricant motor plugged
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", READ_VPIN(CN_PRES_LUB) );
+    }
+    break;
+    case 603: // Get Lubrivant level ok
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F_LN(" ", get_lub_level());
+    }
+    break;
+    case 604: // Get Vacuum detected
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_PRES_VACUUM) );
+    }
+    break;
+    case 605: // Get recycle fluide state
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_RECYCLE) );
+    }
+    break;
+    case 606: // Get Vacuum state
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_VACUUM) );
+    }
+    break;
+    case 607: // Get lub state
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_LUB) );
+    }
+    break;
+/* ___________________SCANNER_______________________ */
+    case 610:    //get scanner status
+    {   
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",1); // send 1 for ready/ok
+    }
+    break;
+    case 611: // Get turntable plugged
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", !READ_VPIN(TABLE0_DETECTED_PIN) );
+    }
+    break;
+    case 612:    // Set  turntable On/Off
+    {    
+        WRITE_VPIN( TABLE0_ENABLE_PIN, !(com->S) );    
+    }    
+    break;
+    case 613:    // TurnTable X stepper
+    {    
+        pin_x_steps( TABLE0_STEP_PIN, com->S );
+    }
+    break;
+    case 614:    // Set Table Clock Direction (0 for CCW)
+    {    
+        WRITE_VPIN( TABLE0_DIR_PIN, (com->S) );
+    }
+    case 615:    // Set laser On/Off
+    {   
+		if ( com->hasP() && com->hasS() )
+		{
+			if ( com->P == 0 )
+			{
+				WRITE_VPIN( LASER_0_PIN, !(com->S) );    
+			}
+			else if ( com->P == 1 )
+			{
+				WRITE_VPIN( LASER_1_PIN, !(com->S) );    
+			}
+		}
+    }
+    break;
+    case 616:    // Set LaserRotation On/Off
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( L0_ENABLE_PIN, !(com->S) );    
+		}
+        //OUT_POLY_DEBUG(" Code 616 not used... SLR On/Off");
+    }
+    break;
+    case 617:    // Laser Turn X stepper
+    {    
+		if ( com->hasS() )
+		{
+			pin_x_steps( L0_STEP_PIN, com->S );
+		}
+    }
+    break;
+    case 618:    // Set Laser Clock Direction (0 for CCW)
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( L0_DIR_PIN, (com->S) );
+		}
+    }
+    break;
+    case 619:    // Get laser plugged
+    {    
+		
+		READ_VPIN( LASER_1_PRES );
+		Com::printPolybox( com->M );        
+		OUT_P_I(" P", 0);
+		OUT_P_I(":", READ_VPIN( LASER_0_PRES ) );
+		OUT_P_I(" P", 1);
+		OUT_P_I(":", READ_VPIN( LASER_1_PRES ) );
+		OUT_P_LN("");
+    }
+    break;
+/* ___________________LABVIEW_______________________ */
+    case 620: // get labview ATU
+    {    
+		Com::printPolybox( com->M );
+		OUT_P_I_LN("", READ_VPIN( ATU_LVM ));
+	}    
+	break;
+    case 621: // get global color
+    {
+        Com::printPolybox( com->M );
+        Color c = lvm_get_global_color();
+        OUT_P_I(" R:", c.r );
+        OUT_P_I(" E:", c.g );
+        OUT_P_I(" P:", c.b );
+        OUT_P_I_LN(" I:", c.i );
+    }
+    break;
+    case 623: // standard MCode
+    {
+        Color c = {com->R, com->E, com->P, com->I };
+        lvm_set_face_color( com->S, c ); // id , color
+	}
+    case 622: // set global color
+    {
+        Color c = {com->R, com->E, com->P, com->I };
+        lvm_set_global_color( c );
+    }
+    break;
+    case 624: // get global intensity
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I(" X:", lvm_get_global_h_intensity() );
+        OUT_P_I_LN(" Y:", lvm_get_global_v_intensity() );
+    }
+    break;
+    case 625: // set global intensity
+    {    
+        lvm_set_global_intensity( com->S, com->S ); // ( h, v )
+    }    
+    break;
+    case 626: // set face intensity ( h, v ) 
+    {    
+        lvm_set_face_intensity( com->S, com->X, com->Y );
+    }    
+    break;
+    case 627: // get face intensity
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I(" P:", lvm_get_global_h_intensity() );
+        OUT_P_I(" X:", lvm_get_face_h_intensity( com->P ) );
+        OUT_P_I_LN(" Y:", lvm_get_face_v_intensity( com->P ) );
+    }
+    break;
+    case 628: // get LED state (plugged or no)
+    {
+		Com::printPolybox( com->M );	
+        for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
+        {
+			OUT_P_I(" P", i);
+			OUT_P_I(":", faces[LVM_FACES_NUM].get_detected() );
+		}
+		OUT_P_LN("");
+    }
+    break;
+/* ___________________PRINTER_______________________ */
+    case 630: // printer ATU (heaters)
+    {
+		Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",READ_VPIN(ATU_HEATERS_BED_BOX) );
+	}
+	break;
+    case 631:
+    {
+        Com::printPolybox( com->M );
+        if ( DETECTION_E0 > -1 )
+			OUT_P_I(" Z1:",DETECTION_E0);
+		if ( DETECTION_E1 > -1 )
+			OUT_P_I(" Z2:",DETECTION_E1);	
+		OUT_P_LN("");
+    }
+    break;
+    case 632: // Get wire detected.
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", 1);
+    }
+    break;
+    case 633:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I(" Z1:",DETECTION_BED_0);
+        OUT_P_I(" Z2:",DETECTION_BED_1);
+        OUT_P_I(" Z3:",DETECTION_BED_2);
+        OUT_P_I(" Z4:",DETECTION_BED_3);
+        OUT_P_LN("");
+    }
+    break;
+    case 634:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I(" Z1:",1);
+        OUT_P_I(" Z2:",1);
+        OUT_P_I(" Z3:",1);
+        OUT_P_I_LN(" Z4:",1);
+    }
+    break;
+    case 635:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I(" B1:",1);
+        OUT_P_I_LN(" B2:",1);
+    }
+    break;
+    case 636:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F(" B1:",1);
+        OUT_P_F_LN(" B2:",1);
+    }
+    break;
+    case 637:    {    }    break;
+    case 638:    {    }    break;
+    case POLY_MCODE_ISCLOGGED: // wire clogged ? (639)
+    {
+        //executeAction( UI_ACTION_PAUSE,  POLY_MCODE_ISCLOGGED );
+        //1099
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",is_clogged());
+    }
+    break;
+    case 640:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F(" A:",1);
+        OUT_P_F(" B:",1);
+        OUT_P_F_LN(" C:",1);
+    }
+    break;
+    case 643: // get detection peltier box
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F(" Z1:", READ_VPIN(DETECTION_PEL_BOX_0) );
+        OUT_P_F(" Z2:", READ_VPIN(DETECTION_PEL_BOX_1) );
+        OUT_P_F(" Z3:", READ_VPIN(DETECTION_PEL_BOX_2) );
+        OUT_P_F(" Z4:", READ_VPIN(DETECTION_PEL_BOX_3) );
+        OUT_P_LN("");
+    }
+    break;
+    /* _____________________GLOBAL______________________ */
+    case 651:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",is_box_open());
+    }
+    break;
+    case 652:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", READ_VPIN( ATU_MAIN ));
+    }
+    break;
+    case 653: // check connected board
+    {
+        Com::printPolybox( com->M );
+        for ( uint8_t i = 1  ; i <= NUM_BOARD ; ++i )
+        {
+            OUT_P_I(" A", i);
+            OUT_P_I(":", boards[i].connected);
+        }
+        OUT_P_LN("");
+    }
+    break;
+    case 654: // power status
+    {
+        Com::printPolybox( com->M );
+        if ( POWER_ONOFF_0 > -1 )
+			OUT_P_I(" Z1:",POWER_ONOFF_0);
+		if ( POWER_ONOFF_1 > -1 )
+			OUT_P_I(" Z2:",POWER_ONOFF_1);	
+		OUT_P_LN("");
+    }
+    break;
+    case 655:
+    {
+        Com::printPolybox( com->M );
+        if ( ATU_MON_POWER_0 > -1 )
+			OUT_P_I(" Z1:",ATU_MON_POWER_0);
+		if ( ATU_MON_POWER_1 > -1 )
+			OUT_P_I(" Z2:",ATU_MON_POWER_1);	
+		OUT_P_LN("");
+    }
+    break;
+    case 656:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_F(" T11:",1);
+        OUT_P_F_LN(" T2:",1);
+    }
+    break;
+    case 657: // is IC open ?
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",is_ic_open());
+    }
+    break;
+    case 658: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ",1);
+    }
+    break;
+    
+    case 659: // i2c refresh timer
+    {
+		if ( com->hasS() )
+		{
+			i2c_update_time = com->S;
+			OUT_P_LN(" I2C Timer updated.");
+		}
+    }
+    break;
+    case 660:// get tool bloc ATU
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", READ_VPIN(ATU_TOOL) );
+    }
+    break;
+    case 661:
+    {
+        Com::printPolybox( com->M );
+        OUT_P_I_LN(" ", ( READ_VPIN(ATU_PRE_ASI_0) || READ_VPIN(ATU_PRE_ASI_1) ) );
+    }
+    break;
+    case 666:
+    {
+        VPIN_MODE(66, OUTPUT);
+        OUT_P_LN("OUT");
+    }
+    break;
+//##################POLYBOX--END#####################  
 #if FEATURE_Z_PROBE
 #if FEATURE_AUTOLEVEL
         case 320: // Activate autolevel

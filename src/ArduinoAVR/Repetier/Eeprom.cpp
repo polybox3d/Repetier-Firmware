@@ -82,14 +82,14 @@ void EEPROM::restoreEEPROMSettingsFromConfiguration()
     Printer::maxTravelAccelerationMMPerSquareSecond[2] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Z;
 #endif
 #if HAVE_HEATED_BED
-    heatedBedController.heatManager= HEATED_BED_HEAT_MANAGER;
+    heatedBedController[0].heatManager= HEATED_BED_HEAT_MANAGER;
 #ifdef TEMP_PID
-    heatedBedController.pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
-    heatedBedController.pidDriveMin = HEATED_BED_PID_INTEGRAL_DRIVE_MIN;
-    heatedBedController.pidPGain = HEATED_BED_PID_PGAIN;
-    heatedBedController.pidIGain = HEATED_BED_PID_IGAIN;
-    heatedBedController.pidDGain = HEATED_BED_PID_DGAIN;
-    heatedBedController.pidMax = HEATED_BED_PID_MAX;
+    heatedBedController[0].pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
+    heatedBedController[0].pidDriveMin = HEATED_BED_PID_INTEGRAL_DRIVE_MIN;
+    heatedBedController[0].pidPGain = HEATED_BED_PID_PGAIN;
+    heatedBedController[0].pidIGain = HEATED_BED_PID_IGAIN;
+    heatedBedController[0].pidDGain = HEATED_BED_PID_DGAIN;
+    heatedBedController[0].pidMax = HEATED_BED_PID_MAX;
 #endif
 #endif
     Printer::xLength = X_MAX_LENGTH;
@@ -328,17 +328,17 @@ void EEPROM::storeDataIntoEEPROM(uint8_t corrupted)
     HAL::eprSetFloat(EPR_Z_MAX_TRAVEL_ACCEL,Printer::maxTravelAccelerationMMPerSquareSecond[2]);
 #endif
 #if HAVE_HEATED_BED
-    HAL::eprSetByte(EPR_BED_HEAT_MANAGER,heatedBedController.heatManager);
+    HAL::eprSetByte(EPR_BED_HEAT_MANAGER,heatedBedController[0].heatManager);
 #else
     HAL::eprSetByte(EPR_BED_HEAT_MANAGER,HEATED_BED_HEAT_MANAGER);
 #endif
 #if defined(TEMP_PID) && HAVE_HEATED_BED
-    HAL::eprSetByte(EPR_BED_DRIVE_MAX,heatedBedController.pidDriveMax);
-    HAL::eprSetByte(EPR_BED_DRIVE_MIN,heatedBedController.pidDriveMin);
-    HAL::eprSetFloat(EPR_BED_PID_PGAIN,heatedBedController.pidPGain);
-    HAL::eprSetFloat(EPR_BED_PID_IGAIN,heatedBedController.pidIGain);
-    HAL::eprSetFloat(EPR_BED_PID_DGAIN,heatedBedController.pidDGain);
-    HAL::eprSetByte(EPR_BED_PID_MAX,heatedBedController.pidMax);
+    HAL::eprSetByte(EPR_BED_DRIVE_MAX,heatedBedController[0].pidDriveMax);
+    HAL::eprSetByte(EPR_BED_DRIVE_MIN,heatedBedController[0].pidDriveMin);
+    HAL::eprSetFloat(EPR_BED_PID_PGAIN,heatedBedController[0].pidPGain);
+    HAL::eprSetFloat(EPR_BED_PID_IGAIN,heatedBedController[0].pidIGain);
+    HAL::eprSetFloat(EPR_BED_PID_DGAIN,heatedBedController[0].pidDGain);
+    HAL::eprSetByte(EPR_BED_PID_MAX,heatedBedController[0].pidMax);
 #else
     HAL::eprSetByte(EPR_BED_DRIVE_MAX,HEATED_BED_PID_INTEGRAL_DRIVE_MAX);
     HAL::eprSetByte(EPR_BED_DRIVE_MIN,HEATED_BED_PID_INTEGRAL_DRIVE_MIN);
@@ -483,14 +483,14 @@ void EEPROM::readDataFromEEPROM()
     Printer::maxTravelAccelerationMMPerSquareSecond[2] = HAL::eprGetFloat(EPR_Z_MAX_TRAVEL_ACCEL);
 #endif
 #if HAVE_HEATED_BED
-    heatedBedController.heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
+    heatedBedController[0].heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
 #ifdef TEMP_PID
-    heatedBedController.pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
-    heatedBedController.pidDriveMin = HAL::eprGetByte(EPR_BED_DRIVE_MIN);
-    heatedBedController.pidPGain = HAL::eprGetFloat(EPR_BED_PID_PGAIN);
-    heatedBedController.pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
-    heatedBedController.pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
-    heatedBedController.pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
+    heatedBedController[0].pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
+    heatedBedController[0].pidDriveMin = HAL::eprGetByte(EPR_BED_DRIVE_MIN);
+    heatedBedController[0].pidPGain = HAL::eprGetFloat(EPR_BED_PID_PGAIN);
+    heatedBedController[0].pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
+    heatedBedController[0].pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
+    heatedBedController[0].pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
 #endif
 #endif
     Printer::xMin = HAL::eprGetFloat(EPR_X_HOME_OFFSET);

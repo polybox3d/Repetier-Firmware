@@ -73,13 +73,14 @@ All known arduino boards use 64. This value is needed for the extruder timing. *
 #include "WProgram.h"
 #define COMPAT_PRE1
 #endif
-#if CPU_ARCH==ARCH_AVR
+#if CPU_ARCH==4242//ARCH_AVR
 #include "fastio.h"
 #else
-#define	READ(IO)  digitalRead(IO)
-#define	WRITE(IO, v)  digitalWrite(IO, v)
-#define	SET_INPUT(IO)  pinMode(IO, INPUT)
-#define	SET_OUTPUT(IO)  pinMode(IO, OUTPUT)
+#include "Polybox.h"
+#define	READ(IO)  READ_VPIN(IO)//digitalRead(IO)
+#define	WRITE(IO, v)  WRITE_VPIN(IO,v) //digitalWrite(IO, v)
+#define	SET_INPUT(IO)  VPIN_MODE(IO,INPUT)//pinMode(IO, INPUT)
+#define	SET_OUTPUT(IO)  VPIN_MODE(IO,OUTPUT)//pinMode(IO, OUTPUT)
 #endif
 
 #define BEGIN_INTERRUPT_PROTECTED {uint8_t sreg=SREG;__asm volatile( "cli" ::: "memory" );

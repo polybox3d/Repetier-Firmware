@@ -106,7 +106,7 @@ void Extruder::manageTemperatures()
         if(Printer::flag0 & PRINTER_FLAG0_TEMPSENSOR_DEFECT) continue;
         uint8_t on = act->currentTemperature>=act->targetTemperature ? LOW : HIGH;
         if(!on && act->isAlarm()) {
-            beep(50*(controller+1),3);
+            //beep(50*(controller+1),3);
             act->setAlarm(false);  //reset alarm
         }
 #ifdef TEMP_PID
@@ -193,10 +193,27 @@ void Extruder::manageTemperatures()
 
 void Extruder::initHeatedBed()
 {
+	
 #if HAVE_HEATED_BED
-#ifdef TEMP_PID
-    heatedBedController.updateTempControlVars();
-#endif
+ #if HEATER_BED_0 >-1
+    VPIN_MODE(HEATER_BED_0, OUTPUT);
+ #endif
+ #if HEATER_BED_1 >-1
+    VPIN_MODE(HEATER_BED_1, OUTPUT);
+ #endif
+ #if HEATER_BED_2 >-1
+    VPIN_MODE(HEATER_BED_2, OUTPUT);
+ #endif
+ #if HEATER_BED_3 >-1
+    VPIN_MODE(HEATER_BED_3, OUTPUT);
+ #endif
+
+ #ifdef TEMP_PID
+	for( byte i = 0; i< HEATED_BED_NUM ; ++i )
+	{
+		heatedBedController[i].updateTempControlVars();
+	}
+ #endif
 #endif
 }
 
@@ -307,10 +324,8 @@ void Extruder::initExtruder()
         }
 #endif
     }
-#if HEATED_BED_HEATER_PIN>-1
-    SET_OUTPUT(HEATED_BED_HEATER_PIN);
     Extruder::initHeatedBed();
-#endif
+    
     HAL::analogStart();
 
 }
@@ -426,12 +441,16 @@ void Extruder::setTemperatureForExtruder(float temperatureInCelsius,uint8_t extr
 void Extruder::setHeatedBedTemperature(float temperatureInCelsius,bool beep)
 {
 #if HAVE_HEATED_BED
-    if(temperatureInCelsius>HEATED_BED_MAX_TEMP) temperatureInCelsius = HEATED_BED_MAX_TEMP;
-    if(temperatureInCelsius<0) temperatureInCelsius = 0;
-    if(heatedBedController.targetTemperatureC==temperatureInCelsius) return; // don't flood log with messages if killed
-    heatedBedController.setTargetTemperature(temperatureInCelsius);
-    if(beep && temperatureInCelsius>30) heatedBedController.setAlarm(true);
-    Com::printFLN(Com::tTargetBedColon,heatedBedController.targetTemperatureC,0);
+	if(temperatureInCelsius>HEATED_BED_MAX_TEMP) temperatureInCelsius = HEATED_BED_MAX_TEMP;
+	if(temperatureInCelsius<0) temperatureInCelsius = 0;
+	
+	for(uint8_t i=0; i<HEATED_BED_NUM; ++i)
+	{	
+		if(heatedBedController[i].targetTemperatureC==temperatureInCelsius) continue; // don't flood log with messages if killed
+		heatedBedController[i].setTargetTemperature(temperatureInCelsius);
+		if(beep && temperatureInCelsius>30) heatedBedController[i].setAlarm(true);
+		Com::printFLN(Com::tTargetBedColon,heatedBedController[i].targetTemperatureC,0);
+	}
 #endif
 }
 
@@ -1257,13 +1276,39 @@ Extruder extruder[NUM_EXTRUDER] =
 };
 
 #if HAVE_HEATED_BED
-#define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER+1
-TemperatureController heatedBedController = {NUM_EXTRUDER,HEATED_BED_SENSOR_TYPE,BED_SENSOR_INDEX,0,0,0,0,0,HEATED_BED_HEAT_MANAGER
+#define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER+HEATED_BED_NUM
+TemperatureController heatedBedController[HEATED_BED_NUM] =
+{
+#if HEATED_BED_NUM >= 1
+{NUM_EXTRUDER,HEATED_BED_SENSOR_TYPE,BED_0_SENSOR_INDEX,0,0,0,0,0,HEATED_BED_HEAT_MANAGER
 #ifdef TEMP_PID
         ,0,HEATED_BED_PID_INTEGRAL_DRIVE_MAX,HEATED_BED_PID_INTEGRAL_DRIVE_MIN,HEATED_BED_PID_PGAIN,HEATED_BED_PID_IGAIN,HEATED_BED_PID_DGAIN,HEATED_BED_PID_MAX,0,0,0,{0,0,0,0}
 #endif
-                                            ,0};
-#else
+                                            ,0}
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM >= 2
+, {NUM_EXTRUDER,HEATED_BED_SENSOR_TYPE,BED_1_SENSOR_INDEX,0,0,0,0,0,HEATED_BED_HEAT_MANAGER
+#ifdef TEMP_PID
+        ,0,HEATED_BED_PID_INTEGRAL_DRIVE_MAX,HEATED_BED_PID_INTEGRAL_DRIVE_MIN,HEATED_BED_PID_PGAIN,HEATED_BED_PID_IGAIN,HEATED_BED_PID_DGAIN,HEATED_BED_PID_MAX,0,0,0,{0,0,0,0}
+#endif
+                                            ,0}
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM >= 3
+, {NUM_EXTRUDER,HEATED_BED_SENSOR_TYPE,BED_2_SENSOR_INDEX,0,0,0,0,0,HEATED_BED_HEAT_MANAGER
+#ifdef TEMP_PID
+        ,0,HEATED_BED_PID_INTEGRAL_DRIVE_MAX,HEATED_BED_PID_INTEGRAL_DRIVE_MIN,HEATED_BED_PID_PGAIN,HEATED_BED_PID_IGAIN,HEATED_BED_PID_DGAIN,HEATED_BED_PID_MAX,0,0,0,{0,0,0,0}
+#endif
+                                            ,0}
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM >= 4
+, {NUM_EXTRUDER,HEATED_BED_SENSOR_TYPE,BED_3_SENSOR_INDEX,0,0,0,0,0,HEATED_BED_HEAT_MANAGER
+#ifdef TEMP_PID
+        ,0,HEATED_BED_PID_INTEGRAL_DRIVE_MAX,HEATED_BED_PID_INTEGRAL_DRIVE_MIN,HEATED_BED_PID_PGAIN,HEATED_BED_PID_IGAIN,HEATED_BED_PID_DGAIN,HEATED_BED_PID_MAX,0,0,0,{0,0,0,0}
+#endif
+                                            ,0}
+#endif // HEATED_BED_NUM
+};
+#else //no heated bed
 #define NUM_TEMPERATURE_LOOPS NUM_EXTRUDER
 #endif
 
@@ -1289,9 +1334,22 @@ TemperatureController *tempController[NUM_TEMPERATURE_LOOPS] =
 #endif
 #if HAVE_HEATED_BED
 #if NUM_EXTRUDER==0
-    &heatedBedController
+ #if HEATED_BED_NUM >= 1
+    &heatedBedController[0]
+ #endif
 #else
-    ,&heatedBedController
+ #if HEATED_BED_NUM >= 1
+    ,&heatedBedController[0]
+ #endif
+#endif
+#if HEATED_BED_NUM >= 2
+    ,&heatedBedController[1]
+#endif
+#if HEATED_BED_NUM >= 3
+    ,&heatedBedController[2]
+#endif
+#if HEATED_BED_NUM >= 3
+    ,&heatedBedController[2]
 #endif
 #endif
 };

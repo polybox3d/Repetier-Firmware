@@ -26,6 +26,8 @@ void check_i2c_periodical();
 void check_boards_connected();
 void check_all_ATU();
 
+void manage_pwm();
+
 uint8_t get_lub_level();
 
 
