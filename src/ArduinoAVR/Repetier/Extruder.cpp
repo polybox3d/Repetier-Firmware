@@ -195,17 +195,17 @@ void Extruder::initHeatedBed()
 {
 	
 #if HAVE_HEATED_BED
- #if HEATER_BED_0 >-1
-    VPIN_MODE(HEATER_BED_0, OUTPUT);
+ #if HEATER_BED_0 > -1
+    VPIN_MODE(HEATER_BED_0, OUTPUT |PIN_TYPE_ANALOG);
  #endif
- #if HEATER_BED_1 >-1
-    VPIN_MODE(HEATER_BED_1, OUTPUT);
+ #if HEATER_BED_1 > -1
+    VPIN_MODE(HEATER_BED_1, OUTPUT |PIN_TYPE_ANALOG);
  #endif
- #if HEATER_BED_2 >-1
-    VPIN_MODE(HEATER_BED_2, OUTPUT);
+ #if HEATER_BED_2 > -1
+    VPIN_MODE(HEATER_BED_2, OUTPUT |PIN_TYPE_ANALOG);
  #endif
- #if HEATER_BED_3 >-1
-    VPIN_MODE(HEATER_BED_3, OUTPUT);
+ #if HEATER_BED_3 > -1
+    VPIN_MODE(HEATER_BED_3, OUTPUT |PIN_TYPE_ANALOG);
  #endif
 
  #ifdef TEMP_PID
@@ -438,26 +438,36 @@ void Extruder::setTemperatureForExtruder(float temperatureInCelsius,uint8_t extr
         Printer::msecondsPrinting = HAL::timeInMilliseconds();
 }
 
-void Extruder::setHeatedBedTemperature(float temperatureInCelsius,bool beep)
+void Extruder::setHeatedBedTemperatureById(float temperatureInCelsius, uint8_t bed_id, bool beep )
 {
-#if HAVE_HEATED_BED
+	if ( bed_id >= HEATED_BED_NUM || bed_id < 0 )  // out of range/index i.e bad bed-id
+		return;
 	if(temperatureInCelsius>HEATED_BED_MAX_TEMP) temperatureInCelsius = HEATED_BED_MAX_TEMP;
 	if(temperatureInCelsius<0) temperatureInCelsius = 0;
 	
+	
+	if(heatedBedController[bed_id].targetTemperatureC==temperatureInCelsius) return; // don't flood log with messages if killed
+	heatedBedController[bed_id].setTargetTemperature(temperatureInCelsius);
+	if(beep && temperatureInCelsius>30) heatedBedController[bed_id].setAlarm(true);
+	Com::printFLN(Com::tTargetBedColon,heatedBedController[bed_id].targetTemperatureC,0);
+	
+}
+void Extruder::setHeatedBedTemperature(float temperatureInCelsius,bool beep)
+{
+#if HAVE_HEATED_BED
 	for(uint8_t i=0; i<HEATED_BED_NUM; ++i)
-	{	
-		if(heatedBedController[i].targetTemperatureC==temperatureInCelsius) continue; // don't flood log with messages if killed
-		heatedBedController[i].setTargetTemperature(temperatureInCelsius);
-		if(beep && temperatureInCelsius>30) heatedBedController[i].setAlarm(true);
-		Com::printFLN(Com::tTargetBedColon,heatedBedController[i].targetTemperatureC,0);
+	{
+		Extruder::setHeatedBedTemperatureById( temperatureInCelsius, i, beep );
 	}
 #endif
 }
 
-float Extruder::getHeatedBedTemperature()
+float Extruder::getHeatedBedTemperature( uint8_t bed_id )
 {
 #if HAVE_HEATED_BED
-    TemperatureController *c = tempController[NUM_TEMPERATURE_LOOPS-1];
+	if ( bed_id >= HEATED_BED_NUM || bed_id < 0 )  // out of range/index i.e bad bed-id
+		return -1;
+    TemperatureController *c = &heatedBedController[bed_id];
     return c->currentTemperatureC;
 #else
     return -1;

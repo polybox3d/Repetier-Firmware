@@ -1537,8 +1537,69 @@ void Commands::executeGCode(GCode *com)
         OUT_P_F_LN(" B2:",1);
     }
     break;
-    case 637:    {    }    break;
-    case 638:    {    }    break;
+    case 637:   // set bed temp fast 
+    {   
+		if(reportTempsensorError()) break;
+        previousMillisCmd = HAL::timeInMilliseconds();
+        if(Printer::debugDryrun()) break;
+			if (com->hasS() && com->hasP() && com->P >= 0)
+			{ 
+				for (uint8_t i = 0; i < HEATED_BED_NUM ; ++i )
+				{
+					if ( com->P & (1<< i) ) // mask.  p=1101  => bed 3 on, bed 2 one, bed 1 off bed 0 on
+					{
+						Extruder::setHeatedBedTemperatureById( com->S, i, false );
+					}
+				}
+			}
+	}
+	break;
+    case 638:   // set bed temp
+    {	
+		#if HAVE_HEATED_BED
+            if(Printer::debugDryrun()) break;
+            UI_STATUS_UPD(UI_TEXT_HEATING_BED);
+            Commands::waitUntilEndOfAllMoves();
+            // temp and bed-id ?
+			if (com->hasS() && com->hasP() && com->P >= 0)
+			{ 
+				for (uint8_t i = 0; i < HEATED_BED_NUM ; ++i )
+				{
+					if ( com->P & (1<< i) ) // mask.  p=1101  => bed 3 on, bed 2 one, bed 1 off bed 0 on
+					{
+						Extruder::setHeatedBedTemperatureById( com->S, i, false );
+					}
+				}
+			}
+			else
+			{
+				return ;
+			} 
+            codenum = HAL::timeInMilliseconds();
+            bool heating = true;
+            while( heating )
+            {
+                if( (HAL::timeInMilliseconds()-codenum) > 1000 )   //Print Temp Reading every 1 second while heating up.
+                {
+                    printTemperatures();
+                    codenum = HAL::timeInMilliseconds();
+                }
+                Commands::checkForPeriodicalActions();
+                // are temps reached for each bed ?
+                heating = false;
+               	for (uint8_t i = 0; i < HEATED_BED_NUM ; ++i )
+				{
+					if ( com->P & (1<< i) ) // mask.  p=1101  => bed 3 on, bed 2 one, bed 1 off bed 0 on
+					{
+						if ( ! (heatedBedController[i].currentTemperatureC+0.5<heatedBedController[com->P].targetTemperatureC) )
+							heating = true ; // keep heating cause this bed didnt reach the target temp
+					}
+				}
+            }
+#endif
+            UI_CLEAR_STATUS;
+	}    
+	break;
     case POLY_MCODE_ISCLOGGED: // wire clogged ? (639)
     {
         //executeAction( UI_ACTION_PAUSE,  POLY_MCODE_ISCLOGGED );
