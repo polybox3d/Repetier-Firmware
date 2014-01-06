@@ -16,6 +16,7 @@ byte is_clogged();
 byte check_clogged();
 byte is_box_open();
 byte is_ic_open();
+byte bed_detected( uint8_t bed_id);
 
 void encoder_incr();
 void pin_x_steps( int PIN , int steps );

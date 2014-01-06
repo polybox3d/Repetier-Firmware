@@ -442,6 +442,8 @@ void Extruder::setHeatedBedTemperatureById(float temperatureInCelsius, uint8_t b
 {
 	if ( bed_id >= HEATED_BED_NUM || bed_id < 0 )  // out of range/index i.e bad bed-id
 		return;
+	if ( !bed_detected( bed_id ) ) // bed not detected, useless to heat.
+		return;
 	if(temperatureInCelsius>HEATED_BED_MAX_TEMP) temperatureInCelsius = HEATED_BED_MAX_TEMP;
 	if(temperatureInCelsius<0) temperatureInCelsius = 0;
 	

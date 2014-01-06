@@ -96,6 +96,31 @@ byte is_box_open()
 {
 	return  ( READ_VPIN(BOX_OPEN_0_PIN) || READ_VPIN(BOX_OPEN_1_PIN) );
 }
+
+byte bed_detected( uint8_t bed_id )
+{
+	byte detection = false;
+	switch ( bed_id )
+	{
+		case 0:
+			detection = READ_VPIN( DETECTION_BED_0 ) && (HEATER_BED_0>-1) ;
+		break;
+		case 1:
+			detection = READ_VPIN( DETECTION_BED_1 ) && (HEATER_BED_1>-1) ;
+		break;
+		case 2:
+			detection = READ_VPIN( DETECTION_BED_2 ) && (HEATER_BED_2>-1) ;
+		break;
+		case 3:
+			detection = READ_VPIN( DETECTION_BED_3 ) && (HEATER_BED_3>-1) ;
+		break;
+		default:
+		return false;
+		break;
+	}
+	return detection;
+}
+
 byte is_ic_open()
 {
 	return  ( READ_VPIN(IC_OPEN_0_PIN) || READ_VPIN(IC_OPEN_1_PIN) );
