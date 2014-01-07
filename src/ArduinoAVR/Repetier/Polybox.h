@@ -13,6 +13,7 @@ extern volatile uint8_t i2c_update_time;
 
 #define POLY_MCODE_ISCLOGGED  639
 byte is_clogged();
+byte laser_detected( uint8_t laser_id );
 byte check_clogged();
 byte is_box_open();
 byte is_ic_open();

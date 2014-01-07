@@ -97,6 +97,24 @@ byte is_box_open()
 	return  ( READ_VPIN(BOX_OPEN_0_PIN) || READ_VPIN(BOX_OPEN_1_PIN) );
 }
 
+byte laser_detected( uint8_t laser_id )
+{
+	byte detection = false;
+	switch ( laser_id )
+	{
+		case 0:
+			detection = LASER_0_PIN>-1 && READ_VPIN( LASER_0_PRES ) ;
+		break;
+		case 1:
+			detection = LASER_1_PIN>-1 && READ_VPIN( LASER_1_PRES )  ;
+		break;
+		default:
+		return false;
+		break;
+	}
+	return detection;
+}
+
 byte bed_detected( uint8_t bed_id )
 {
 	byte detection = false;

@@ -1367,7 +1367,7 @@ void Commands::executeGCode(GCode *com)
     }
     case 615:    // Set laser On/Off
     {   
-		if ( com->hasP() && com->hasS() )
+		if ( com->hasP() && com->hasS() && laser_detected(com->P) )
 		{
 			if ( com->P == 0 )
 			{
@@ -1411,9 +1411,9 @@ void Commands::executeGCode(GCode *com)
 		READ_VPIN( LASER_1_PRES );
 		Com::printPolybox( com->M );        
 		OUT_P_I(" P", 0);
-		OUT_P_I(":", READ_VPIN( LASER_0_PRES ) );
+		OUT_P_I(":", laser_detected(0) );
 		OUT_P_I(" P", 1);
-		OUT_P_I(":", READ_VPIN( LASER_1_PRES ) );
+		OUT_P_I(":", laser_detected(1) );
 		OUT_P_LN("");
     }
     break;
