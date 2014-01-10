@@ -388,6 +388,7 @@ class UIDisplay {
     void fastAction();
     void mediumAction();
     void pushMenu(void *men,bool refresh);
+    void adjustMenuPos();
     void setStatusP(PGM_P txt);
     void setStatus(char *txt);
     inline void setOutputMaskBits(unsigned int bits) {outputMask|=bits;}
@@ -916,6 +917,89 @@ void ui_check_slow_keys(int &action) {}
 #endif
 #endif
 
+#if FEATURE_CONTROLLER==12 // FELIXPrinters Controller
+#define UI_HAS_KEYS 1
+#define UI_HAS_BACK_KEY 0
+#define UI_DISPLAY_TYPE 1
+#define UI_DISPLAY_CHARSET 1
+#define UI_COLS 20
+#define UI_ROWS 4
+#define UI_ENCODER_SPEED 2
+#define BEEPER_TYPE 0
+#define BEEPER_PIN             -1
+#define UI_DISPLAY_RS_PIN      16
+#define UI_DISPLAY_RW_PIN      -1
+#define UI_DISPLAY_ENABLE_PIN  17
+#define UI_DISPLAY_D0_PIN      -1
+#define UI_DISPLAY_D1_PIN      -1
+#define UI_DISPLAY_D2_PIN      -1
+#define UI_DISPLAY_D3_PIN      -1
+#define UI_DISPLAY_D4_PIN      23
+#define UI_DISPLAY_D5_PIN      25
+#define UI_DISPLAY_D6_PIN      27
+#define UI_DISPLAY_D7_PIN      29
+#define UI_ENCODER_A           35
+#define UI_ENCODER_B           37
+#define UI_ENCODER_CLICK       31
+#define UI_DELAYPERCHAR 320
+#define UI_INVERT_MENU_DIRECTION false
+#ifdef UI_MAIN
+void ui_init_keys() {
+  UI_KEYS_INIT_CLICKENCODER_LOW(UI_ENCODER_A,UI_ENCODER_B); // click encoder on pins 47 and 45. Phase is connected with gnd for signals.
+  UI_KEYS_INIT_BUTTON_LOW(UI_ENCODER_CLICK); // push button, connects gnd to pin
+}
+void ui_check_keys(int &action) {
+ UI_KEYS_CLICKENCODER_LOW_REV(UI_ENCODER_A,UI_ENCODER_B); // click encoder on pins 47 and 45. Phase is connected with gnd for signals.
+ UI_KEYS_BUTTON_LOW(UI_ENCODER_CLICK,UI_ACTION_OK); // push button, connects gnd to pin
+}
+inline void ui_check_slow_encoder() {}
+void ui_check_slow_keys(int &action) {}
+#endif
+#endif // Controller 12
+
+#if FEATURE_CONTROLLER==13 // SeeMeCNC LCD + Rambo
+#define UI_HAS_KEYS 1
+#define UI_HAS_BACK_KEY 0
+#define UI_DISPLAY_TYPE 1
+#define UI_DISPLAY_CHARSET 1
+#define UI_COLS 20
+#define UI_ROWS 4
+#define BEEPER_TYPE 1
+#define BEEPER_PIN             79
+#define UI_DISPLAY_RS_PIN      70
+#define UI_DISPLAY_RW_PIN      -1
+#define UI_DISPLAY_ENABLE_PIN  71
+#define UI_DISPLAY_D0_PIN      -1
+#define UI_DISPLAY_D1_PIN      -1
+#define UI_DISPLAY_D2_PIN      -1
+#define UI_DISPLAY_D3_PIN      -1
+#define UI_DISPLAY_D4_PIN      72
+#define UI_DISPLAY_D5_PIN      73
+#define UI_DISPLAY_D6_PIN      74
+#define UI_DISPLAY_D7_PIN      75
+#define UI_ENCODER_A           76
+#define UI_ENCODER_B           77
+#define UI_ENCODER_CLICK       78
+#define UI_KILL_PIN            80
+#define UI_DELAYPERCHAR 320
+#define UI_INVERT_MENU_DIRECTION true
+#ifdef UI_MAIN
+void ui_init_keys() {
+  UI_KEYS_INIT_CLICKENCODER_LOW(UI_ENCODER_A,UI_ENCODER_B);
+  UI_KEYS_INIT_BUTTON_LOW(UI_ENCODER_CLICK);
+  UI_KEYS_INIT_BUTTON_LOW(UI_KILL_PIN);
+}
+void ui_check_keys(int &action) {
+ UI_KEYS_CLICKENCODER_LOW_REV(UI_ENCODER_A,UI_ENCODER_B);
+ UI_KEYS_BUTTON_LOW(UI_ENCODER_CLICK,UI_ACTION_OK);
+ UI_KEYS_BUTTON_LOW(UI_KILL_PIN,UI_ACTION_KILL);
+}
+inline void ui_check_slow_encoder() {}
+void ui_check_slow_keys(int &action) {}
+#endif
+#endif // Controller 13
+
+
 #if FEATURE_CONTROLLER>0
 #if UI_ROWS==4
 #if UI_COLS==16
@@ -984,6 +1068,8 @@ void ui_check_slow_keys(int &action) {}
 #define BEEP_SHORT beep(BEEPER_SHORT_SEQUENCE);
 #define BEEP_LONG beep(BEEPER_LONG_SEQUENCE);
 #endif
+
+
 extern void beep(uint8_t duration,uint8_t count);
 
 #endif

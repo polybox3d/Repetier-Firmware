@@ -67,6 +67,7 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 /** Number of extruders. Maximum 2 extruder. */
 #define NUM_EXTRUDER 2
 
+
 #define MOTHERBOARD 33
 
 #include "pins.h"
@@ -1101,6 +1102,9 @@ The following settings override uiconfig.h!
 9 = PiBot Display/Controller extension with 16x2 character display
 10 = Gadgets3D shield on RAMPS 1.4, see http://reprap.org/wiki/RAMPS_1.3/1.4_GADGETS3D_Shield_with_Panel
 11 = RepRapDiscount Full Graphic Smart Controller
+12 = FELIXPrinters Controller
+13 = SeeMeCNC Display on Rambo (ORION)
+
 */
 #define FEATURE_CONTROLLER 0
 
