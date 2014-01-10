@@ -262,7 +262,7 @@ void Printer::kill(uint8_t only_steppers)
     {
         for(uint8_t i=0; i<NUM_TEMPERATURE_LOOPS; i++)
             Extruder::setTemperatureForExtruder(0,i);
-        Extruder::setHeatedBedTemperature(0);
+        Extruder::setHeatedBedTemperature(0);// CACA <-------------------------
         UI_STATUS_UPD(UI_TEXT_KILLED);
 #if defined(PS_ON_PIN) && PS_ON_PIN>-1
         //pinMode(PS_ON_PIN,INPUT);
@@ -763,6 +763,7 @@ void Printer::setup()
 #if FEATURE_WATCHDOG
     HAL::startWatchdog();
 #endif // FEATURE_WATCHDOG
+
 }
 
 void Printer::defaultLoopActions()
@@ -776,16 +777,15 @@ void Printer::defaultLoopActions()
     else
     {
         curtime -= previousMillisCmd;
-        if(maxInactiveTime!=0 && curtime >  maxInactiveTime ) Printer::kill(false);
-        if(stepperInactiveTime!=0 && curtime >  stepperInactiveTime )
-            Printer::kill(true);
+        //if(maxInactiveTime!=0L && curtime >  maxInactiveTime ) Printer::kill(false);
+        /*if(stepperInactiveTime!=0 && curtime >  stepperInactiveTime )
+            Printer::kill(true);*/
     }
 #if defined(SDCARDDETECT) && SDCARDDETECT>-1 && defined(SDSUPPORT) && SDSUPPORT
     sd.automount();
 #endif
     //void finishNextSegment();
     DEBUG_MEMORY;
-
 }
 
 #if FEATURE_MEMORY_POSITION

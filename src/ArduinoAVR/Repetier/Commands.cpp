@@ -31,7 +31,7 @@ void Commands::commandLoop()
     {
         GCode::readFromSerial();
         GCode *code = GCode::peekCurrentCommand();
-        //UI_SLOW; // do longer timed user interface action
+        UI_SLOW; // do longer timed user interface action
         UI_MEDIUM; // do check encoder
         if(code)
         {
@@ -80,7 +80,7 @@ void Commands::checkForPeriodicalActions()
             writeMonitor();
         counter250ms=5;
     }
-    UI_SLOW;
+    //UI_SLOW;
 }
 
 /** \brief Waits until movement cache is empty.
@@ -739,12 +739,14 @@ void Commands::executeGCode(GCode *com)
         }
         previousMillisCmd = HAL::timeInMilliseconds();
     }
-
     else if(com->hasM())    // Process M Code
     {
-
+		//com->printCommand();
+		OUT_P_I_LN("===>",  com->M );
+		OUT_P_I_LN("===RAM==>",  HAL::getFreeRam() );
         switch( com->M )
         {
+
 #if SDSUPPORT
 
         case 20: // M20 - list SD card
@@ -821,6 +823,7 @@ void Commands::executeGCode(GCode *com)
                 }
             }
             break;
+
         case 104: // M104
 #if NUM_EXTRUDER>0
             if(reportTempsensorError()) break;
@@ -1166,6 +1169,7 @@ void Commands::executeGCode(GCode *com)
                 Extruder::current->maxStartFeedrate = com->E;
                 Extruder::selectExtruderById(Extruder::current->id);
             }
+
 #if DRIVE_SYSTEM!=3
             if(com->hasZ())
                 Printer::maxZJerk = com->Z;

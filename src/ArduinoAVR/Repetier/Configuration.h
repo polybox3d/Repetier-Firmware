@@ -50,7 +50,7 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define IC2_SLAVE_MASTER			1
 #define POLY_SERIAL_SEPARATOR_VALUE	"#"
 #define POLY_SERIAL_DEBUG			"%"
-#define ENABLE_ATU					true
+#define ENABLE_ATU					false
 #define ENABLE_ARCH_PWM				true
 
 #define NUM_BOARD    4 // number of board
@@ -257,7 +257,7 @@ The codes are only executed for multiple extruder when changing the extruder. */
 // 99 Generic thermistor table 3
 // 100 is AD595
 // 101 is MAX6675
-#define EXT1_TEMPSENSOR_TYPE 3
+#define EXT1_TEMPSENSOR_TYPE 1
 // Analog input pin for reading temperatures or pin enabling SS for MAX6675
 #define EXT1_TEMPSENSOR_PIN TEMP_2_PIN
 // Which pin enables the heater
@@ -982,7 +982,7 @@ matches, the stored values are used to overwrite the settings.
 IMPORTANT: With mode <>0 some changes in Configuration.h are not set any more, as they are
            taken from the EEPROM.
 */
-#define EEPROM_MODE 1
+#define EEPROM_MODE 0
 
 /**************** duplicate motor driver ***************
 
@@ -1030,7 +1030,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 
 /* A watchdog resets the printer, if a signal is not send within predifined time limits. That way we can be sure that the board
 is always running and is not hung up for some unknown reason. */
-#define FEATURE_WATCHDOG true
+#define FEATURE_WATCHDOG false
 
 /* Z-Probing */
 
@@ -1102,7 +1102,7 @@ The following settings override uiconfig.h!
 10 = Gadgets3D shield on RAMPS 1.4, see http://reprap.org/wiki/RAMPS_1.3/1.4_GADGETS3D_Shield_with_Panel
 11 = RepRapDiscount Full Graphic Smart Controller
 */
-#define FEATURE_CONTROLLER 2
+#define FEATURE_CONTROLLER 0
 
 
 /**

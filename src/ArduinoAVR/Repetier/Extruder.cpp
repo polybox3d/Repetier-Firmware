@@ -109,6 +109,7 @@ void Extruder::manageTemperatures()
             //beep(50*(controller+1),3);
             act->setAlarm(false);  //reset alarm
         }
+
 #ifdef TEMP_PID
         act->tempArray[act->tempPointer++] = act->currentTemperatureC;
         act->tempPointer &= 3;
@@ -176,7 +177,9 @@ void Extruder::manageTemperatures()
         if(act == &Extruder::current->tempControl)
             WRITE(LED_PIN,on);
 #endif
+
     }
+    
     if(errorDetected == 0 && extruderTempErrors>0)
         extruderTempErrors--;
     if(Printer::flag0 & PRINTER_FLAG0_TEMPSENSOR_DEFECT)
@@ -362,6 +365,7 @@ void Extruder::selectExtruderById(uint8_t extruderId)
     // Use seperate extruder positions only if beeing told. Slic3r e.g. creates a continuous extruder position increment
     Printer::currentPositionSteps[E_AXIS] = Extruder::current->extrudePosition;
 #endif
+
     Printer::destinationSteps[E_AXIS] = Printer::currentPositionSteps[E_AXIS];
     Printer::axisStepsPerMM[E_AXIS] = Extruder::current->stepsPerMM;
     Printer::invAxisStepsPerMM[E_AXIS] = 1.0f/Printer::axisStepsPerMM[E_AXIS];
@@ -419,6 +423,7 @@ void Extruder::setTemperatureForExtruder(float temperatureInCelsius,uint8_t extr
     if(temperatureInCelsius>=EXTRUDER_FAN_COOL_TEMP) extruder[extr].coolerPWM = extruder[extr].coolerSpeed;
     Com::printF(Com::tTargetExtr,extr,0);
     Com::printFLN(Com::tColon,temperatureInCelsius,0);
+
 #if FEATURE_DITTO_PRINTING
     if(Extruder::dittoMode && extr == 0)
     {
@@ -600,6 +605,7 @@ const uint8_t temptables_num[12] PROGMEM = {NUMTEMPS_1,NUMTEMPS_2,NUMTEMPS_3,NUM
 void TemperatureController::updateCurrentTemperature()
 {
     uint8_t type = sensorType;
+    
     // get raw temperature
     switch(type)
     {
@@ -642,7 +648,7 @@ void TemperatureController::updateCurrentTemperature()
         currentTemperature = 4095; // unknown method, return high value to switch heater off for safety
     }
     int currentTemperature = this->currentTemperature;
-    //OUT_P_I_LN("OC for raw ",raw_temp);
+    
     switch(type)
     {
     case 1:
@@ -658,21 +664,22 @@ void TemperatureController::updateCurrentTemperature()
     case 11:
     case 12:
     {
+		return;
         type--;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
         const short *temptable = (const short *)pgm_read_word(&temptables[type]); //pgm_read_word_near(&temptables[type]);
         short oldraw = pgm_read_word(&temptable[0]);
         short oldtemp = pgm_read_word(&temptable[1]);
-        short newraw,newtemp;
-        currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-currentTemperature;
+        short newraw,newtemp;        
+        currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-currentTemperature;        
         while(i<num)
         {
             newraw = pgm_read_word(&temptable[i++]);
             newtemp = pgm_read_word(&temptable[i++]);
             if (newraw > currentTemperature)
             {
-                //OUT_P_I("RC O:",oldtemp);OUT_P_I_LN(" OR:",oldraw);
+//                OUT_P_I("RC O:",oldtemp);OUT_P_I_LN(" OR:",oldraw);
                 //OUT_P_I("RC N:",newtemp);OUT_P_I_LN(" NR:",newraw);
                 currentTemperatureC = TEMP_INT_TO_FLOAT(oldtemp + (float)(currentTemperature-oldraw)*(float)(newtemp-oldtemp)/(newraw-oldraw));
                 return;
@@ -682,19 +689,20 @@ void TemperatureController::updateCurrentTemperature()
         }
         // Overflow: Set to last value in the table
         currentTemperatureC = TEMP_INT_TO_FLOAT(newtemp);
+        break;
     }
-    break;
     case 50: // User defined PTC thermistor
     case 51:
     case 52:
     {
+		return;
         type-=46;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
         const short *temptable = (const short *)pgm_read_word(&temptables[type]); //pgm_read_word_near(&temptables[type]);
         short oldraw = pgm_read_word(&temptable[0]);
         short oldtemp = pgm_read_word(&temptable[1]);
-        short newraw,newtemp;
+        short newraw,newtemp;        
         while(i<num)
         {
             newraw = pgm_read_word(&temptable[i++]);
@@ -777,6 +785,7 @@ void TemperatureController::setTargetTemperature(float target)
     targetTemperatureC = target;
     int temp = TEMP_FLOAT_TO_INT(target);
     uint8_t type = sensorType;
+    return;
     switch(sensorType)
     {
     case 1:

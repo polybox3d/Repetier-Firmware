@@ -134,6 +134,7 @@ Custom M Codes
 void setup()
 {
     Printer::setup();
+    init_polybox();
 }
 
 void loop()

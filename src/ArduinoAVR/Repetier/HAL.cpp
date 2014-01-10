@@ -716,6 +716,7 @@ This timer is called 3906 timer per second. It is used to update pwm values for 
 */
 ISR(PWM_TIMER_VECTOR)
 {
+	
 // If th euser dont want to use ARCH pwm (analog write) we use woftware pwm with ISR
     static uint8_t pwm_count = 0;
 #if ENABLE_ARCH_PWM == false
@@ -865,7 +866,7 @@ ISR(PWM_TIMER_VECTOR)
     }
 #endif
 
-    UI_FAST; // Short timed user interface action
+   // UI_FAST; // Short timed user interface action
     pwm_count++;
 }
 #if defined(USE_ADVANCE)
