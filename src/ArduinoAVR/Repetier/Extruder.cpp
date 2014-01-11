@@ -445,6 +445,7 @@ void Extruder::setTemperatureForExtruder(float temperatureInCelsius,uint8_t extr
 
 void Extruder::setHeatedBedTemperatureById(float temperatureInCelsius, uint8_t bed_id, bool beep )
 {
+#if HAVE_HEATED_BED
 	if ( bed_id >= HEATED_BED_NUM || bed_id < 0 )  // out of range/index i.e bad bed-id
 		return;
 	if ( !bed_detected( bed_id ) ) // bed not detected, useless to heat.
@@ -457,7 +458,7 @@ void Extruder::setHeatedBedTemperatureById(float temperatureInCelsius, uint8_t b
 	heatedBedController[bed_id].setTargetTemperature(temperatureInCelsius);
 	if(beep && temperatureInCelsius>30) heatedBedController[bed_id].setAlarm(true);
 	Com::printFLN(Com::tTargetBedColon,heatedBedController[bed_id].targetTemperatureC,0);
-	
+#endif	
 }
 void Extruder::setHeatedBedTemperature(float temperatureInCelsius,bool beep)
 {

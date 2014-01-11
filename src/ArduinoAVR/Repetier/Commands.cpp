@@ -773,9 +773,6 @@ void Commands::executeGCode(GCode *com)
     }
     else if(com->hasM())    // Process M Code
     {
-		//com->printCommand();
-		OUT_P_I_LN("===>",  com->M );
-		OUT_P_I_LN("===RAM==>",  HAL::getFreeRam() );
         switch( com->M )
         {
 

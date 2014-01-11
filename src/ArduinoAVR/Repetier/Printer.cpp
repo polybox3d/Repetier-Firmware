@@ -785,15 +785,10 @@ void Printer::defaultLoopActions()
     else
     {
         curtime -= previousMillisCmd;
-        //if(maxInactiveTime!=0L && curtime >  maxInactiveTime ) Printer::kill(false);
-        /*if(stepperInactiveTime!=0 && curtime >  stepperInactiveTime )
-            Printer::kill(true);*/
-/*=======
         if(maxInactiveTime!=0 && curtime >  maxInactiveTime ) Printer::kill(false);
         else Printer::setAllKilled(false); // prevent repeated kills
         if(stepperInactiveTime!=0 && curtime >  stepperInactiveTime )
             Printer::kill(true);
->>>>>>> upstream/master*/
     }
 #if defined(SDCARDDETECT) && SDCARDDETECT>-1 && defined(SDSUPPORT) && SDSUPPORT
     sd.automount();

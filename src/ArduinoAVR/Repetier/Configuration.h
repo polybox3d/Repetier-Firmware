@@ -484,7 +484,7 @@ Value is used for all generic tables created. */
 // ############# Heated bed configuration ########################
 
 /** \brief Set true if you have a heated bed conected to your board, false if not */
-#define HAVE_HEATED_BED true
+#define HAVE_HEATED_BED false
 
 /** \brief Number of heater bed used. Each heater bed is fully-controlled, (THERM+PID+NTC) */
 #define HEATED_BED_NUM	4
@@ -1031,7 +1031,7 @@ WARNING: Servos can draw a considerable amount of current. Make sure your system
 
 /* A watchdog resets the printer, if a signal is not send within predifined time limits. That way we can be sure that the board
 is always running and is not hung up for some unknown reason. */
-#define FEATURE_WATCHDOG false
+#define FEATURE_WATCHDOG true
 
 /* Z-Probing */
 
