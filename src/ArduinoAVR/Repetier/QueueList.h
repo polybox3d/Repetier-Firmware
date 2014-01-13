@@ -44,7 +44,6 @@
 // header defining the interface of the source.
 #ifndef _QUEUELIST_H
 #define _QUEUELIST_H
-
 // include Arduino basic header.
 
 // the definition of the queue class.
@@ -72,8 +71,9 @@ class QueueList {
     // get the number of items in the queue.
     int count () const;
 
+    int page_default;
     // set the printer of the queue.
-    void setPrinter (Print & p);
+//    void setPrinter (Print & p);
 
   private:
     // exit report method in case of error.
@@ -93,7 +93,7 @@ class QueueList {
 
     typedef node * link; // synonym for pointer to a node.
 
-    Print * printer; // the printer of the queue.
+ //   Print * printer; // the printer of the queue.
     int size;        // the size of the queue.
     link head;       // the head of the list.
     link tail;       // the tail of the list.
@@ -105,7 +105,8 @@ QueueList<T>::QueueList () {
   size = 0;       // set the size of queue to zero.
   head = NULL;    // set the head of the list to point nowhere.
   tail = NULL;    // set the tail of the list to point nowhere.
-  printer = NULL; // set the printer of queue to point nowhere.
+  page_default = 0;
+  //printer = NULL; // set the printer of queue to point nowhere.
 }
 
 // clear the queue (destructor).
@@ -118,7 +119,7 @@ QueueList<T>::~QueueList () {
 
   size = 0;       // set the size of queue to zero.
   tail = NULL;    // set the tail of the list to point nowhere.
-  printer = NULL; // set the printer of queue to point nowhere.
+//  printer = NULL; // set the printer of queue to point nowhere.
 }
 
 // push an item to the queue.
@@ -132,7 +133,11 @@ void QueueList<T>::push (const T i) {
 
   // if there is a memory allocation error.
   if (tail == NULL)
-    exit ("QUEUE: insufficient memory to create a new node.");
+  {
+		exit ("QUEUE: insufficient memory to create a new node.");
+		page_default++;
+		return;
+}
 
   // set the next of the new node.
   tail->next = NULL;
@@ -196,17 +201,18 @@ int QueueList<T>::count () const {
 }
 
 // set the printer of the queue.
-template<typename T>
+/*template<typename T>
 void QueueList<T>::setPrinter (Print & p) {
   printer = &p;
-}
+}*/
 
 // exit report method in case of error.
 template<typename T>
-void QueueList<T>::exit (const char * m) const {
+void QueueList<T>::exit (const char * m) const{
   // print the message if there is a printer.
-  if (printer)
-    printer->println (m);
+  //if (printer)
+    //printer->println (m);
+    //Com::printFLN(m);
 
   // loop blinking until hardware reset.
   blink ();
@@ -216,16 +222,16 @@ void QueueList<T>::exit (const char * m) const {
 template<typename T>
 void QueueList<T>::blink () const {
   // set led pin as output.
-  pinMode (ledPin, OUTPUT);
+  /*pinMode (ledPin, OUTPUT);
 
   // continue looping until hardware reset.
   while (true) {
     digitalWrite (ledPin, HIGH); // sets the LED on.
     delay (250);                 // pauses 1/4 of second.
     digitalWrite (ledPin, LOW);  // sets the LED off.
-    delay (250);                 // pauses 1/4 of second.
+    delay (150);                 // pauses 1/4 of second.
   }
-
+*/
   // solution selected due to lack of exit() and assert().
 }
 

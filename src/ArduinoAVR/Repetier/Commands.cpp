@@ -31,8 +31,8 @@ void Commands::commandLoop()
     {
         GCode::readFromSerial();
         GCode *code = GCode::peekCurrentCommand();
-        UI_SLOW; // do longer timed user interface action
-        UI_MEDIUM; // do check encoder
+       // UI_SLOW; // do longer timed user interface action
+        //UI_MEDIUM; // do check encoder
         if(code)
         {
 #if SDSUPPORT
@@ -1311,8 +1311,7 @@ void Commands::executeGCode(GCode *com)
         break;
         /* ##################POLYBOX##################### */
 /* ___________________CNC_______________________ */
-//out.print_int_P(PSTR(" quadratic steps:"),maxadv);
-//out.println_float_P(PSTR(", speed="),maxadvspeed); 
+#if POLYBOX_ENABLE
     case 10: // vacuum on
     {    }    break;
     case 11: // vacuum off
@@ -1323,11 +1322,11 @@ void Commands::executeGCode(GCode *com)
         Com::printPolybox( com->M );
         if ( READ_VPIN(CN_MOD_MANUAL) )
         {
-            Com::printFLN(" H");
+            Com::printFLN(Com::tSpaceH);
         }
         else if ( READ_VPIN(CN_MOD_PROX) )
         {
-            Com::printFLN(" P");
+            Com::printFLN(Com::tSpaceP);
         }
         else
         {
@@ -1338,50 +1337,50 @@ void Commands::executeGCode(GCode *com)
     case 602: // Get Lubricant motor plugged
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", READ_VPIN(CN_PRES_LUB) );
+        Com::printFLN(Com::tSpace, READ_VPIN(CN_PRES_LUB) );
     }
     break;
     case 603: // Get Lubrivant level ok
     {
         Com::printPolybox( com->M );
-        OUT_P_F_LN(" ", get_lub_level());
+        Com::printFLN(Com::tSpace, get_lub_level());
     }
     break;
     case 604: // Get Vacuum detected
     {
         Com::printPolybox( com->M );
-        OUT_P_F_LN(" ", READ_VPIN(CN_PRES_VACUUM) );
+        Com::printFLN(Com::tSpace, READ_VPIN(CN_PRES_VACUUM) );
     }
     break;
     case 605: // Get recycle fluide state
     {
         Com::printPolybox( com->M );
-        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_RECYCLE) );
+        Com::printFLN(Com::tSpace, READ_VPIN(CN_STATE_RECYCLE) );
     }
     break;
     case 606: // Get Vacuum state
     {
         Com::printPolybox( com->M );
-        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_VACUUM) );
+        Com::printFLN(Com::tSpace, READ_VPIN(CN_STATE_VACUUM) );
     }
     break;
     case 607: // Get lub state
     {
         Com::printPolybox( com->M );
-        OUT_P_F_LN(" ", READ_VPIN(CN_STATE_LUB) );
+        Com::printFLN(Com::tSpace, READ_VPIN(CN_STATE_LUB) );
     }
     break;
 /* ___________________SCANNER_______________________ */
     case 610:    //get scanner status
     {   
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",1); // send 1 for ready/ok
+        Com::printFLN(Com::tSpace,1); // send 1 for ready/ok
     }
     break;
     case 611: // Get turntable plugged
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", !READ_VPIN(TABLE0_DETECTED_PIN) );
+        Com::printFLN(Com::tSpace, !READ_VPIN(TABLE0_DETECTED_PIN) );
     }
     break;
     case 612:    // Set  turntable On/Off
@@ -1443,9 +1442,9 @@ void Commands::executeGCode(GCode *com)
 		
 		READ_VPIN( LASER_1_PRES );
 		Com::printPolybox( com->M );        
-		OUT_P_I(" P", 0);
+		Com::printFLN(Com::tSpaceP, 0);
 		OUT_P_I(":", laser_detected(0) );
-		OUT_P_I(" P", 1);
+		Com::printFLN(Com::tSpaceP, 1);
 		OUT_P_I(":", laser_detected(1) );
 		OUT_P_LN("");
     }
@@ -1508,7 +1507,7 @@ void Commands::executeGCode(GCode *com)
 		Com::printPolybox( com->M );	
         for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
         {
-			OUT_P_I(" P", i);
+			Com::printFLN(Com::tSpaceP, i);
 			OUT_P_I(":", faces[LVM_FACES_NUM].get_detected() );
 		}
 		OUT_P_LN("");
@@ -1518,60 +1517,60 @@ void Commands::executeGCode(GCode *com)
     case 630: // printer ATU (heaters)
     {
 		Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",READ_VPIN(ATU_HEATERS_BED_BOX) );
+        Com::printFLN(Com::tSpace,READ_VPIN(ATU_HEATERS_BED_BOX) );
 	}
 	break;
     case 631:
     {
         Com::printPolybox( com->M );
         if ( DETECTION_E0 > -1 )
-			OUT_P_I(" Z1:",DETECTION_E0);
+			Com::printF(Com::tSpaceZ0Colon,DETECTION_E0);
 		if ( DETECTION_E1 > -1 )
-			OUT_P_I(" Z2:",DETECTION_E1);	
+			Com::printF(Com::tSpaceZ1Colon,DETECTION_E1);	
 		OUT_P_LN("");
     }
     break;
     case 632: // Get wire detected.
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", 1);
+       OUT_P_I_LN(" ", 1);
     }
     break;
     case 633:
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" Z1:",DETECTION_BED_0);
-        OUT_P_I(" Z2:",DETECTION_BED_1);
-        OUT_P_I(" Z3:",DETECTION_BED_2);
-        OUT_P_I(" Z4:",DETECTION_BED_3);
-        OUT_P_LN("");
+        Com::printF(Com::tSpaceZ0Colon,DETECTION_BED_0);
+        Com::printF(Com::tSpaceZ1Colon,DETECTION_BED_1);
+        Com::printF(Com::tSpaceZ2Colon,DETECTION_BED_2);
+        Com::printFLN(Com::tSpaceZ3Colon,DETECTION_BED_3);
     }
     break;
     case 634:
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" Z1:",1);
-        OUT_P_I(" Z2:",1);
-        OUT_P_I(" Z3:",1);
-        OUT_P_I_LN(" Z4:",1);
+        Com::printF(Com::tSpaceZ0Colon,1);
+        Com::printF(Com::tSpaceZ1Colon,1);
+        Com::printF(Com::tSpaceZ2Colon,1);
+        Com::printFLN(Com::tSpaceZ3Colon,1);
     }
     break;
     case 635:
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" B1:",1);
-        OUT_P_I_LN(" B2:",1);
+        OUT_P_I(" B0:",1);
+        OUT_P_I_LN(" B1:",1);
     }
     break;
     case 636:
     {
         Com::printPolybox( com->M );
-        OUT_P_F(" B1:",1);
-        OUT_P_F_LN(" B2:",1);
+        OUT_P_F(" B0:",1);
+        OUT_P_F_LN(" B1:",1);
     }
     break;
     case 637:   // set bed temp fast 
     {   
+		#if HAVE_HEATED_BED
 		if(reportTempsensorError()) break;
         previousMillisCmd = HAL::timeInMilliseconds();
         if(Printer::debugDryrun()) break;
@@ -1585,13 +1584,14 @@ void Commands::executeGCode(GCode *com)
 					}
 				}
 			}
+		#endif
 	}
 	break;
     case 638:   // set bed temp
     {	
 		#if HAVE_HEATED_BED
             if(Printer::debugDryrun()) break;
-            UI_STATUS_UPD(UI_TEXT_HEATING_BED);
+    //        UI_STATUS_UPD(UI_TEXT_HEATING_BED);
             Commands::waitUntilEndOfAllMoves();
             // temp and bed-id ?
 			if (com->hasS() && com->hasP() && com->P >= 0)
@@ -1630,7 +1630,7 @@ void Commands::executeGCode(GCode *com)
 				}
             }
 #endif
-            UI_CLEAR_STATUS;
+            //UI_CLEAR_STATUS;
 	}    
 	break;
     case POLY_MCODE_ISCLOGGED: // wire clogged ? (639)
@@ -1638,38 +1638,37 @@ void Commands::executeGCode(GCode *com)
         //executeAction( UI_ACTION_PAUSE,  POLY_MCODE_ISCLOGGED );
         //1099
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",is_clogged());
+        Com::printFLN(Com::tSpace,is_clogged());
     }
     break;
     case 640:
     {
         Com::printPolybox( com->M );
-        OUT_P_F(" A:",1);
-        OUT_P_F(" B:",1);
-        OUT_P_F_LN(" C:",1);
+        Com::printF(Com::tSpaceAColon,1);
+        Com::printF(Com::tSpaceBColon,1);
+        Com::printFLN(Com::tSpaceCColon,1);
     }
     break;
     case 643: // get detection peltier box
     {
         Com::printPolybox( com->M );
-        OUT_P_F(" Z1:", READ_VPIN(DETECTION_PEL_BOX_0) );
-        OUT_P_F(" Z2:", READ_VPIN(DETECTION_PEL_BOX_1) );
-        OUT_P_F(" Z3:", READ_VPIN(DETECTION_PEL_BOX_2) );
-        OUT_P_F(" Z4:", READ_VPIN(DETECTION_PEL_BOX_3) );
-        OUT_P_LN("");
+        Com::printF(Com::tSpaceZ0Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
+        Com::printF(Com::tSpaceZ1Colon, READ_VPIN(DETECTION_PEL_BOX_1) );
+        Com::printF(Com::tSpaceZ2Colon, READ_VPIN(DETECTION_PEL_BOX_2) );
+        Com::printFLN(Com::tSpaceZ3Colon, READ_VPIN(DETECTION_PEL_BOX_3) );
     }
     break;
     /* _____________________GLOBAL______________________ */
     case 651:
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",is_box_open());
+        Com::printFLN(Com::tSpace,is_box_open());
     }
     break;
     case 652:
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", READ_VPIN( ATU_MAIN ));
+        Com::printFLN(Com::tSpace, READ_VPIN( ATU_MAIN ));
     }
     break;
     case 653: // check connected board
@@ -1687,9 +1686,9 @@ void Commands::executeGCode(GCode *com)
     {
         Com::printPolybox( com->M );
         if ( POWER_ONOFF_0 > -1 )
-			OUT_P_I(" Z1:",POWER_ONOFF_0);
+			Com::printF(Com::tSpaceZ0Colon, POWER_ONOFF_0);
 		if ( POWER_ONOFF_1 > -1 )
-			OUT_P_I(" Z2:",POWER_ONOFF_1);	
+			Com::printF(Com::tSpaceZ1Colon, POWER_ONOFF_1);	
 		OUT_P_LN("");
     }
     break;
@@ -1697,9 +1696,9 @@ void Commands::executeGCode(GCode *com)
     {
         Com::printPolybox( com->M );
         if ( ATU_MON_POWER_0 > -1 )
-			OUT_P_I(" Z1:",ATU_MON_POWER_0);
+			Com::printF(Com::tSpaceZ0Colon, ATU_MON_POWER_0);
 		if ( ATU_MON_POWER_1 > -1 )
-			OUT_P_I(" Z2:",ATU_MON_POWER_1);	
+			Com::printF(Com::tSpaceZ1Colon, ATU_MON_POWER_1);	
 		OUT_P_LN("");
     }
     break;
@@ -1713,13 +1712,13 @@ void Commands::executeGCode(GCode *com)
     case 657: // is IC open ?
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",is_ic_open());
+        Com::printFLN(Com::tSpace, is_ic_open());
     }
     break;
     case 658: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ",1);
+        Com::printFLN(Com::tSpace, 1);
     }
     break;
     
@@ -1728,20 +1727,20 @@ void Commands::executeGCode(GCode *com)
 		if ( com->hasS() )
 		{
 			i2c_update_time = com->S;
-			OUT_P_LN(" I2C Timer updated.");
+			//OUT_P_LN(" I2C Timer updated.");
 		}
     }
     break;
     case 660:// get tool bloc ATU
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", READ_VPIN(ATU_TOOL) );
+        Com::printFLN(Com::tSpace, READ_VPIN(ATU_TOOL) );
     }
     break;
     case 661:
     {
         Com::printPolybox( com->M );
-        OUT_P_I_LN(" ", ( READ_VPIN(ATU_PRE_ASI_0) || READ_VPIN(ATU_PRE_ASI_1) ) );
+        Com::printFLN(Com::tSpace, ( READ_VPIN(ATU_PRE_ASI_0) || READ_VPIN(ATU_PRE_ASI_1) ) );
     }
     break;
     case 666:
@@ -1750,6 +1749,8 @@ void Commands::executeGCode(GCode *com)
         OUT_P_LN("OUT");
     }
     break;
+
+#endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  
 #if FEATURE_Z_PROBE
 #if FEATURE_AUTOLEVEL

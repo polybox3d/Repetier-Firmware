@@ -665,7 +665,6 @@ void TemperatureController::updateCurrentTemperature()
     case 11:
     case 12:
     {
-		return;
         type--;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
@@ -696,7 +695,6 @@ void TemperatureController::updateCurrentTemperature()
     case 51:
     case 52:
     {
-		return;
         type-=46;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
@@ -787,7 +785,6 @@ void TemperatureController::setTargetTemperature(float target)
     targetTemperatureC = target;
     int temp = TEMP_FLOAT_TO_INT(target);
     uint8_t type = sensorType;
-    return;
     switch(sensorType)
     {
     case 1:
@@ -1061,8 +1058,8 @@ void TemperatureController::autotunePID(float temp,uint8_t controllerId,bool sto
             }
             return;
         }
-        UI_MEDIUM;
-        UI_SLOW;
+        //UI_MEDIUM;
+        //UI_SLOW;
     }
 }
 #endif
@@ -1087,7 +1084,7 @@ bool reportTempsensorError()
     for(uint8_t i=0; i<NUM_TEMPERATURE_LOOPS; i++)
     {
         int temp = tempController[i]->currentTemperatureC;
-        if(i==NUM_EXTRUDER) Com::printF(Com::tHeatedBed);
+        if(i>=NUM_EXTRUDER) Com::printF(Com::tHeatedBed);
         else Com::printF(Com::tExtruderSpace,i);
         if(temp<MIN_DEFECT_TEMPERATURE || temp>MAX_DEFECT_TEMPERATURE)
         {

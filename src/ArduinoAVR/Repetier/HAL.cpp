@@ -825,6 +825,7 @@ ISR(PWM_TIMER_VECTOR)
 		#if ENABLE_ARCH_PWM == true
 			manage_pwm(); // we manage PWM, it's here cause we dont need a huge freq. and nned to replace old version.
 		#endif
+
         counterPeriodical=0;
         executePeriodical=1;
     }

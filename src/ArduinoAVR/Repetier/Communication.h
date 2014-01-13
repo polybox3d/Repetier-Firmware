@@ -25,6 +25,21 @@
 class Com
 {
     public:
+/** POLY **/
+FSTRINGVAR(tSpaceAColon)
+FSTRINGVAR(tSpaceCColon)
+FSTRINGVAR(tSpaceRColon)
+FSTRINGVAR(tSpacePColon)
+FSTRINGVAR(tSpaceIColon)
+FSTRINGVAR(tSpaceZ0Colon)
+FSTRINGVAR(tSpaceZ1Colon)
+FSTRINGVAR(tSpaceZ2Colon)
+FSTRINGVAR(tSpaceZ3Colon)
+FSTRINGVAR(tSpaceZ4Colon)
+FSTRINGVAR(tSpaceP)
+FSTRINGVAR(tSpaceH)
+FSTRINGVAR(tSpaceM)
+/** END **/
 FSTRINGVAR(tDebug)
 FSTRINGVAR(tFirmware)
 FSTRINGVAR(tOk)

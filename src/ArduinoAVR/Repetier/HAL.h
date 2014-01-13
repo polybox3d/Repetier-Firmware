@@ -35,7 +35,7 @@
 #if CPU_ARCH==ARCH_AVR
 #include <avr/io.h>
 #else
-#define PROGMEM
+#define PROGMEM 
 #define PGM_P const char *
 #define PSTR(s) s
 #define pgm_read_byte_near(x) (*(char*)x)
@@ -79,12 +79,12 @@ const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 #include "WProgram.h"
 #define COMPAT_PRE1
 #endif
-#if CPU_ARCH==4242//ARCH_AVR
+#if CPU_ARCH==4142//ARCH_AVR
 #include "fastio.h"
 #else
 #include "Polybox.h"
 #define	READ(IO)  READ_VPIN(IO)//digitalRead(IO)
-#define	WRITE(IO, v)  WRITE_VPIN(IO,v) //digitalWrite(IO, v)
+#define	WRITE(IO, v)  WRITE_VPIN(IO,v)// digitalWrite(IO, v)
 #define	SET_INPUT(IO)  VPIN_MODE(IO,INPUT)//pinMode(IO, INPUT)
 #define	SET_OUTPUT(IO)  VPIN_MODE(IO,OUTPUT)//pinMode(IO, OUTPUT)
 #endif

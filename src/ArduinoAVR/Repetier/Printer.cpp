@@ -478,10 +478,12 @@ void Printer::setup()
 {
     HAL::stopWatchdog();
 #if FEATURE_CONTROLLER==5
-    HAL::delayMilliseconds(100);
+    HAL::delayMilliseconds(200);
 #endif // FEATURE_CONTROLLER
     //HAL::delayMilliseconds(500);  // add a delay at startup to give hardware time for initalization
     HAL::hwSetup();
+    HAL::serialSetBaudrate(baudrate);
+    Com::printFLN(Com::tStart);
 #ifdef ANALYZER
 // Channel->pin assignments
 #if ANALYZER_CH0>=0
@@ -519,7 +521,6 @@ void Printer::setup()
     SET_OUTPUT(X_STEP_PIN);
     SET_OUTPUT(Y_STEP_PIN);
     SET_OUTPUT(Z_STEP_PIN);
-
     //Initialize Dir Pins
 #if X_DIR_PIN>-1
     SET_OUTPUT(X_DIR_PIN);
@@ -747,15 +748,13 @@ void Printer::setup()
     extruderStepsNeeded = 0;
 #endif
     EEPROM::initBaudrate();
-    HAL::serialSetBaudrate(baudrate);
-    Com::printFLN(Com::tStart);
-    UI_INITIALIZE;
+    // HAL::serialSetBaudrate(baudrate);         <<<<<<<<<<<<<<<<
+    // Com::printFLN(Com::tStart);               <<<<<<<<<<<<<<<<
+    //UI_INITIALIZE;
     HAL::showStartReason();
     Extruder::initExtruder();
     EEPROM::init(); // Read settings from eeprom if wanted
     updateDerivedParameter();
-    Commands::checkFreeMemory();
-    Commands::writeLowestFreeRAM();
     HAL::setupTimer();
 #if NONLINEAR_SYSTEM
     transformCartesianStepsToDeltaSteps(Printer::currentPositionSteps, Printer::currentDeltaPositionSteps);
@@ -771,7 +770,8 @@ void Printer::setup()
 #if FEATURE_WATCHDOG
     HAL::startWatchdog();
 #endif // FEATURE_WATCHDOG
-
+    Commands::checkFreeMemory();
+    Commands::writeLowestFreeRAM();
 }
 
 void Printer::defaultLoopActions()

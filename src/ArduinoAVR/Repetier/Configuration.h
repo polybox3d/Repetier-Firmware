@@ -48,12 +48,13 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 // Does the firmware use master/slave communication by i2c ? (pin extention function)
 #define POLYBOX_VERSION				1
 #define IC2_SLAVE_MASTER			1
+//enable polybox ? Currently bugged care
+#define POLYBOX_ENABLE				true
 #define POLY_SERIAL_SEPARATOR_VALUE	"#"
 #define POLY_SERIAL_DEBUG			"%"
 #define ENABLE_ATU					false
 #define ENABLE_ARCH_PWM				true
-
-#define NUM_BOARD    4 // number of board
+#define POLYBOX_DEBUG				false
 
 #define USE_CLOG_ENCODER    0
 
@@ -484,7 +485,7 @@ Value is used for all generic tables created. */
 // ############# Heated bed configuration ########################
 
 /** \brief Set true if you have a heated bed conected to your board, false if not */
-#define HAVE_HEATED_BED false
+#define HAVE_HEATED_BED true
 
 /** \brief Number of heater bed used. Each heater bed is fully-controlled, (THERM+PID+NTC) */
 #define HEATED_BED_NUM	4
@@ -499,8 +500,8 @@ Value is used for all generic tables created. */
 /** Analog pin of analog sensor to read temperature of heated bed.  */
 #define HEATED_BED_SENSOR_PIN TEMP_1_PIN
 /** \brief Pin to enable heater for bed. */
-/* We undef this pin, to set our 4 heater_pin
-#define HEATED_BED_HEATER_PIN HEATER_1_PIN*/
+/* We undef this pin, to set our 4 heater_pin */
+#define HEATED_BED_HEATER_PIN HEATER_1_PIN
 // How often the temperature of the heated bed is set (msec)
 #define HEATED_BED_SET_INTERVAL 5000
 
@@ -1107,91 +1108,5 @@ The following settings override uiconfig.h!
 
 */
 #define FEATURE_CONTROLLER 0
-
-
-/**
-Select the language to use.
-0 = English
-1 = German
-2 = Dutch
-3 = Brazilian portuguese
-4 = Italian
-5 = Spanish
-6 = Swedish
-*/
-#define UI_LANGUAGE 1
-
-// This is line 2 of the status display at startup. Change to your like.
-#define UI_PRINTER_NAME "Ordbot"
-#define UI_PRINTER_COMPANY "RepRapDiscount"
-
-
-/** Animate switches between menus etc. */
-#define UI_ANIMATION true
-
-/** How many ms should a single page be shown, until it is switched to the next one.*/
-#define UI_PAGES_DURATION 4000
-
-/** Delay of start screen in milliseconds */
-#define UI_START_SCREEN_DELAY 1000
-/** Uncomment if you don't want automatic page switching. You can still switch the
-info pages with next/previous button/click-encoder */
-#define UI_DISABLE_AUTO_PAGESWITCH true
-
-/** Time to return to info menu if x millisconds no key was pressed. Set to 0 to disable it. */
-#define UI_AUTORETURN_TO_MENU_AFTER 30000
-
-#define FEATURE_UI_KEYS 0
-
-/* Normally cou want a next/previous actions with every click of your encoder.
-Unfotunately, the encoder have a different count of phase changes between clicks.
-Select an encoder speed from 0 = fastest to 2 = slowest that results in one menu move per click.
-*/
-#define UI_ENCODER_SPEED 1
-
-/* There are 2 ways to change positions. You can move by increments of 1/0.1 mm resulting in more menu entries
-and requiring many turns on your encode. The alternative is to enable speed dependent positioning. It will change
-the move distance depending on the speed you turn the encoder. That way you can move very fast and very slow in the
-same setting.
-
-*/
-#define UI_SPEEDDEPENDENT_POSITIONING true
-
-/** \brief bounce time of keys in milliseconds */
-#define UI_KEY_BOUNCETIME 10
-
-/** \brief First time in ms until repeat of action. */
-#define UI_KEY_FIRST_REPEAT 500
-/** \brief Reduction of repeat time until next execution. */
-#define UI_KEY_REDUCE_REPEAT 50
-/** \brief Lowest repeat time. */
-#define UI_KEY_MIN_REPEAT 50
-
-#define FEATURE_BEEPER true
-/**
-Beeper sound definitions for short beeps during key actions
-and longer beeps for important actions.
-Parameter is delay in microseconds and the secons is the number of repetitions.
-Values must be in range 1..255
-*/
-#define BEEPER_SHORT_SEQUENCE 2,2
-#define BEEPER_LONG_SEQUENCE 8,8
-
-// ###############################################################################
-// ## Values for menu settings ##
-// ###############################################################################
-
-// Values used for preheat
-#define UI_SET_PRESET_HEATED_BED_TEMP_PLA 60
-#define UI_SET_PRESET_EXTRUDER_TEMP_PLA 180
-#define UI_SET_PRESET_HEATED_BED_TEMP_ABS 110
-#define UI_SET_PRESET_EXTRUDER_TEMP_ABS 240
-// Extreme values
-#define UI_SET_MIN_HEATED_BED_TEMP 55
-#define UI_SET_MAX_HEATED_BED_TEMP 120
-#define UI_SET_MIN_EXTRUDER_TEMP 160
-#define UI_SET_MAX_EXTRUDER_TEMP 270
-#define UI_SET_EXTRUDER_FEEDRATE 2 // mm/sec
-#define UI_SET_EXTRUDER_RETRACT_DISTANCE 3 // mm
 
 #endif

@@ -57,10 +57,10 @@ int board_read_bpin_value( uint8_t b, uint8_t pin )
 void eps_set_vpin_value( int pin, int value) {
     uint8_t real_pin = vpin2bpin(pin);
     uint8_t board_n = vpin2board(pin);
-    boards[board_n].write_bpin( real_pin, value );
     // same value as before, we stop now, no time to waste
     if ( value == boards[board_n].pin_values[real_pin]->value )
 		return;
+	boards[board_n].write_bpin( real_pin, value );
     if ( pin >= PINS_PER_BOARD ) // start virtual pin (i.e other Arduino board)
     {
         Update u = {real_pin, EPS_SET};

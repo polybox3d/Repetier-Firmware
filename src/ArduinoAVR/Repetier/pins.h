@@ -339,6 +339,9 @@ STEPPER_CURRENT_CONTROL
 
 #endif
 
+#ifndef CPU_ARCH  // Set default architecture
+#define CPU_ARCH ARCH_AVR
+#endif
 
 #ifndef SDSSORIG
 #define SDSSORIG -1

@@ -55,7 +55,7 @@
 /// set pin as output wrapper
 //#define		SET_OUTPUT(IO)		_SET_OUTPUT(IO)
 #define	READ(IO)  READ_VPIN(IO)//digitalRead(IO)
-#define	WRITE(IO, v)  WRITE_VPIN(IO,v) //digitalWrite(IO, v)
+#define	WRITE(IO, v)  WRITE_VPIN(IO,v)// digitalWrite(IO, v)
 #define	SET_INPUT(IO)  VPIN_MODE(IO,INPUT)//pinMode(IO, INPUT)
 #define	SET_OUTPUT(IO)  VPIN_MODE(IO,OUTPUT)//pinMode(IO, OUTPUT)
 

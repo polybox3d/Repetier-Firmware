@@ -30,7 +30,23 @@ FSTRINGVALUE(Com::tFirmware,"FIRMWARE_NAME:Repetier_" REPETIER_VERSION " FIRMWAR
 FSTRINGVALUE(Com::tFirmware,"FIRMWARE_NAME:Repetier_" REPETIER_VERSION " FIRMWARE_URL:https://github.com/repetier/Repetier-Firmware/ PROTOCOL_VERSION:1.0 MACHINE_TYPE:Core_XY EXTRUDER_COUNT:" XSTR(NUM_EXTRUDER) " REPETIER_PROTOCOL:2")
 #endif
 #endif
+
 FSTRINGVALUE(Com::tDebug,"Debug:");
+/** POLY **/
+FSTRINGVALUE(Com::tSpaceAColon," A:")
+FSTRINGVALUE(Com::tSpaceCColon," C:")
+FSTRINGVALUE(Com::tSpaceRColon," R:")
+FSTRINGVALUE(Com::tSpacePColon," P:")
+FSTRINGVALUE(Com::tSpaceIColon," I:")
+FSTRINGVALUE(Com::tSpaceZ0Colon," Z0:")
+FSTRINGVALUE(Com::tSpaceZ1Colon," Z1:")
+FSTRINGVALUE(Com::tSpaceZ2Colon," Z2:")
+FSTRINGVALUE(Com::tSpaceZ3Colon," Z3:")
+FSTRINGVALUE(Com::tSpaceZ4Colon," Z4:")
+FSTRINGVALUE(Com::tSpaceP," P")
+FSTRINGVALUE(Com::tSpaceH," H")
+FSTRINGVALUE(Com::tSpaceM," M")
+/** END **/
 FSTRINGVALUE(Com::tOk,"ok")
 FSTRINGVALUE(Com::tNewline,"\r\n")
 FSTRINGVALUE(Com::tNAN,"NAN")

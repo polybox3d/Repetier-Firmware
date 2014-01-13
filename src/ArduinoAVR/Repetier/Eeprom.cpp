@@ -657,7 +657,7 @@ With
 - description = Definition of the value
 */
 void EEPROM::writeSettings()
-{
+{ 
 #if EEPROM_MODE!=0
     writeLong(EPR_BAUDRATE,Com::tEPRBaudrate);
     writeFloat(EPR_PRINTING_DISTANCE,Com::tEPRFilamentPrinted);
@@ -754,7 +754,6 @@ void EEPROM::writeSettings()
     writeFloat(EPR_BED_PID_DGAIN,Com::tEPRBedDGain);
     writeByte(EPR_BED_PID_MAX,Com::tEPRBedPISMaxValue);
 #endif
-#endif
     // now the extruder
     for(uint8_t i=0; i<NUM_EXTRUDER; i++)
     {
@@ -788,6 +787,7 @@ void EEPROM::writeSettings()
         writeFloat(o+EPR_EXTRUDER_ADVANCE_L,Com::tEPRAdvanceL);
 #endif
     }
+#endif //DEBUG BULLSHIT
 #else
     Com::printErrorF(Com::tNoEEPROMSupport);
 #endif

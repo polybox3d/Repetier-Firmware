@@ -5,9 +5,8 @@ Board::Board()
 {
 	for (uint8_t i = 0; i < PINS_PER_BOARD ; ++i )
 	{
-			pin_values[i] = new Pin();
+		pin_values[i] = new Pin();
 	}
-	
     this->connected = false;
     this->check_state = BOARD_W8_MASTER;
 }
@@ -46,6 +45,7 @@ void Board::check_connected( uint8_t dest )
 
 void Board::check_pins_update(uint8_t type)
 {
+	#ifdef IS_SLAVE
     int value=0;
     for ( uint8_t i = 0; i < PINS_PER_BOARD ; ++i )
     {
@@ -91,6 +91,7 @@ void Board::check_pins_update(uint8_t type)
 			}
 		}
     }
+    #endif
 }
 void Board::init_pin_table()
 {
