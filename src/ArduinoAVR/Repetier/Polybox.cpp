@@ -28,6 +28,7 @@ volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
  **********************************************************************/
 void init_polybox()
 {
+	setup_slave_master();
 	init_slaves();
 	init_printer();
 	init_cn();
@@ -434,29 +435,39 @@ void check_boards_connected()
     last_check = 0; // reset cmpt
     #if NUM_BOARD > 1
 		//check if slave detected (elec.)
-		boards[1].connected = READ_VPIN( DETECTION_SLAVE_1 );
+		#if ENABLE_HARDWARE_CHECK_SLAVE
+		boards[1].connected = !READ_VPIN( DETECTION_SLAVE_1 );
 		// if slave detected (elec.) we check if slave is UP (software check)
 		if ( boards[1].connected )
+		#endif
 			boards[1].check_connected( 1+1 );
     #endif
     #if NUM_BOARD > 2
-		boards[2].connected = READ_VPIN( DETECTION_SLAVE_2 );
+		#if ENABLE_HARDWARE_CHECK_SLAVE
+		boards[2].connected = !READ_VPIN( DETECTION_SLAVE_2 );
 		if ( boards[2].connected )
+		#endif
 			boards[2].check_connected( 2+1 );
     #endif
     #if NUM_BOARD > 3
-		boards[3].connected = READ_VPIN( DETECTION_SLAVE_3 );
+    	#if ENABLE_HARDWARE_CHECK_SLAVE
+		boards[3].connected = !READ_VPIN( DETECTION_SLAVE_3 );
 		if ( boards[3].connected )
+		#endif
 			boards[3].check_connected( 3+1 );
     #endif
     #if NUM_BOARD > 4
-		boards[4].connected = READ_VPIN( DETECTION_SLAVE_4 );
+    	#if ENABLE_HARDWARE_CHECK_SLAVE
+		boards[4].connected = !READ_VPIN( DETECTION_SLAVE_4 );
 		if ( boards[4].connected )
+		#endif
 			boards[4].check_connected( 4+1 );
     #endif
     #if NUM_BOARD > 5
-		boards[5].connected = READ_VPIN( DETECTION_SLAVE_5 );
+    	#if ENABLE_HARDWARE_CHECK_SLAVE
+		boards[5].connected = !READ_VPIN( DETECTION_SLAVE_5 );
 		if ( boards[5].connected )
+		#endif
 			boards[5].check_connected( 5+1 );
     #endif
 }

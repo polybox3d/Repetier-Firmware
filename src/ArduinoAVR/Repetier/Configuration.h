@@ -53,6 +53,7 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define POLY_SERIAL_SEPARATOR_VALUE	"#"
 #define POLY_SERIAL_DEBUG			"%"
 #define ENABLE_ATU					false
+#define ENABLE_HARDWARE_CHECK_SLAVE	false
 #define ENABLE_ARCH_PWM				true
 #define POLYBOX_DEBUG				false
 
@@ -984,7 +985,7 @@ matches, the stored values are used to overwrite the settings.
 IMPORTANT: With mode <>0 some changes in Configuration.h are not set any more, as they are
            taken from the EEPROM.
 */
-#define EEPROM_MODE 0
+#define EEPROM_MODE 1
 
 /**************** duplicate motor driver ***************
 

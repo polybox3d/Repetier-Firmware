@@ -155,10 +155,17 @@ void Commands::printTemperatures(bool showRaw)
 #if HAVE_HEATED_BED
     if(showRaw)
     {
-        Com::printF(Com::tSpaceRaw,(int)NUM_EXTRUDER);
-        Com::printF(Com::tColon,(1023<<(2-ANALOG_REDUCE_BITS))-heatedBedController[0].currentTemperature);
+		for (uint8_t i = 0; i < HEATED_BED_NUM ; ++i )
+		{
+			Com::printF(Com::tSpaceRaw,(int)NUM_EXTRUDER+i);
+			Com::printF(Com::tColon,(1023<<(2-ANALOG_REDUCE_BITS))-heatedBedController[i].currentTemperature);
+		}
     }
-    Com::printF(Com::tSpaceBAtColon,(pwm_pos[heatedBedController[0].pwmIndex])); // Show output of autotune when tuning!
+    for (uint8_t i = 0; i < HEATED_BED_NUM ; ++i )
+    {
+		Com::printF(Com::tSpaceB, i);
+		Com::printF(Com::tColon,(pwm_pos[heatedBedController[i].pwmIndex])); // Show output of autotune when tuning!
+	}
 #endif
 #endif
 #ifdef TEMP_PID
@@ -1172,7 +1179,8 @@ void Commands::executeGCode(GCode *com)
                 if(com->S<0) break;
                 if(com->S<NUM_EXTRUDER) temp = &extruder[com->S].tempControl;
 #if HAVE_HEATED_BED
-                else temp = &heatedBedController[0];
+                else if(com->S-NUM_EXTRUDER < HEATED_BED_NUM)
+                 temp = &heatedBedController[com->S-NUM_EXTRUDER];
 #else
                 else break;
 #endif
@@ -1442,18 +1450,17 @@ void Commands::executeGCode(GCode *com)
 		
 		READ_VPIN( LASER_1_PRES );
 		Com::printPolybox( com->M );        
-		Com::printFLN(Com::tSpaceP, 0);
-		OUT_P_I(":", laser_detected(0) );
-		Com::printFLN(Com::tSpaceP, 1);
-		OUT_P_I(":", laser_detected(1) );
-		OUT_P_LN("");
+		Com::printF(Com::tSpaceP, 0);
+		Com::printF(Com::tColon, laser_detected(0) );
+		Com::printF(Com::tSpaceP, 1);
+		Com::printFLN(Com::tColon, laser_detected(1) );
     }
     break;
 /* ___________________LABVIEW_______________________ */
     case 620: // get labview ATU
     {    
 		Com::printPolybox( com->M );
-		OUT_P_I_LN("", READ_VPIN( ATU_LVM ));
+		Com::printFLN(Com::tSpace, READ_VPIN( ATU_LVM ));
 	}    
 	break;
     case 621: // get global color
@@ -1480,8 +1487,8 @@ void Commands::executeGCode(GCode *com)
     case 624: // get global intensity
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" X:", lvm_get_global_h_intensity() );
-        OUT_P_I_LN(" Y:", lvm_get_global_v_intensity() );
+        Com::printF(Com::tSpaceXColon, lvm_get_global_h_intensity() );
+        Com::printFLN(Com::tSpaceYColon, lvm_get_global_v_intensity() );
     }
     break;
     case 625: // set global intensity
@@ -1498,8 +1505,8 @@ void Commands::executeGCode(GCode *com)
     {
         Com::printPolybox( com->M );
         OUT_P_I(" P:", lvm_get_global_h_intensity() );
-        OUT_P_I(" X:", lvm_get_face_h_intensity( com->P ) );
-        OUT_P_I_LN(" Y:", lvm_get_face_v_intensity( com->P ) );
+        Com::printF(Com::tSpaceXColon, lvm_get_face_h_intensity( com->P ) );
+        Com::printFLN(Com::tSpaceYColon, lvm_get_face_v_intensity( com->P ) );
     }
     break;
     case 628: // get LED state (plugged or no)
@@ -1508,7 +1515,7 @@ void Commands::executeGCode(GCode *com)
         for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
         {
 			Com::printFLN(Com::tSpaceP, i);
-			OUT_P_I(":", faces[LVM_FACES_NUM].get_detected() );
+			Com::printF(Com::tColon, faces[LVM_FACES_NUM].get_detected() );
 		}
 		OUT_P_LN("");
     }
@@ -1533,7 +1540,7 @@ void Commands::executeGCode(GCode *com)
     case 632: // Get wire detected.
     {
         Com::printPolybox( com->M );
-       OUT_P_I_LN(" ", 1);
+       Com::printFLN(Com::tSpace, 1);
     }
     break;
     case 633:
@@ -1557,15 +1564,15 @@ void Commands::executeGCode(GCode *com)
     case 635:
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" B0:",1);
-        OUT_P_I_LN(" B1:",1);
+        Com::printF(Com::tSpaceB0Colon, 1);
+        Com::printFLN(Com::tSpaceB1Colon,1);
     }
     break;
     case 636:
     {
         Com::printPolybox( com->M );
-        OUT_P_F(" B0:",1);
-        OUT_P_F_LN(" B1:",1);
+        Com::printF(Com::tSpaceB0Colon, 1);
+        Com::printFLN(Com::tSpaceB1Colon,1);
     }
     break;
     case 637:   // set bed temp fast 
@@ -1677,7 +1684,7 @@ void Commands::executeGCode(GCode *com)
         for ( uint8_t i = 1  ; i <= NUM_BOARD ; ++i )
         {
             OUT_P_I(" A", i);
-            OUT_P_I(":", boards[i].connected);
+            Com::printF(Com::tColon, boards[i].connected);
         }
         OUT_P_LN("");
     }
@@ -1692,7 +1699,7 @@ void Commands::executeGCode(GCode *com)
 		OUT_P_LN("");
     }
     break;
-    case 655:
+    case 655: // command
     {
         Com::printPolybox( com->M );
         if ( ATU_MON_POWER_0 > -1 )
@@ -1702,7 +1709,7 @@ void Commands::executeGCode(GCode *com)
 		OUT_P_LN("");
     }
     break;
-    case 656:
+    case 656: // temp around board
     {
         Com::printPolybox( com->M );
         OUT_P_F(" T11:",1);
@@ -1749,6 +1756,13 @@ void Commands::executeGCode(GCode *com)
         OUT_P_LN("OUT");
     }
     break;
+    /* _____________________DEBUG______________________ */
+    case 670 : //get_update_queues_size
+    {
+		Com::printPolybox( com->M );
+		Com::printFLN(Com::tSpacePColon, get_update_queues_size() );
+	}
+	break;
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  

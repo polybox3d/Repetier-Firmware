@@ -82,6 +82,7 @@ void EEPROM::restoreEEPROMSettingsFromConfiguration()
     Printer::maxTravelAccelerationMMPerSquareSecond[Z_AXIS] = MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Z;
 #endif
 #if HAVE_HEATED_BED
+#if HEATED_BED_NUM > 0
     heatedBedController[0].heatManager= HEATED_BED_HEAT_MANAGER;
 #ifdef TEMP_PID
     heatedBedController[0].pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
@@ -90,8 +91,42 @@ void EEPROM::restoreEEPROMSettingsFromConfiguration()
     heatedBedController[0].pidIGain = HEATED_BED_PID_IGAIN;
     heatedBedController[0].pidDGain = HEATED_BED_PID_DGAIN;
     heatedBedController[0].pidMax = HEATED_BED_PID_MAX;
-#endif
-#endif
+#endif //pid
+#endif //HEATED_BED_NUM
+#if HEATED_BED_NUM > 1
+    heatedBedController[1].heatManager= HEATED_BED_HEAT_MANAGER;
+#ifdef TEMP_PID
+    heatedBedController[1].pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
+    heatedBedController[1].pidDriveMin = HEATED_BED_PID_INTEGRAL_DRIVE_MIN;
+    heatedBedController[1].pidPGain = HEATED_BED_PID_PGAIN;
+    heatedBedController[1].pidIGain = HEATED_BED_PID_IGAIN;
+    heatedBedController[1].pidDGain = HEATED_BED_PID_DGAIN;
+    heatedBedController[1].pidMax = HEATED_BED_PID_MAX;
+#endif //pid
+#endif //HEATED_BED_NUM
+#if HEATED_BED_NUM > 2
+    heatedBedController[2].heatManager= HEATED_BED_HEAT_MANAGER;
+#ifdef TEMP_PID
+    heatedBedController[2].pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
+    heatedBedController[2].pidDriveMin = HEATED_BED_PID_INTEGRAL_DRIVE_MIN;
+    heatedBedController[2].pidPGain = HEATED_BED_PID_PGAIN;
+    heatedBedController[2].pidIGain = HEATED_BED_PID_IGAIN;
+    heatedBedController[2].pidDGain = HEATED_BED_PID_DGAIN;
+    heatedBedController[2].pidMax = HEATED_BED_PID_MAX;
+#endif //pid
+#endif //HEATED_BED_NUM
+#if HEATED_BED_NUM > 3
+    heatedBedController[3].heatManager= HEATED_BED_HEAT_MANAGER;
+#ifdef TEMP_PID
+    heatedBedController[3].pidDriveMax = HEATED_BED_PID_INTEGRAL_DRIVE_MAX;
+    heatedBedController[3].pidDriveMin = HEATED_BED_PID_INTEGRAL_DRIVE_MIN;
+    heatedBedController[3].pidPGain = HEATED_BED_PID_PGAIN;
+    heatedBedController[3].pidIGain = HEATED_BED_PID_IGAIN;
+    heatedBedController[3].pidDGain = HEATED_BED_PID_DGAIN;
+    heatedBedController[3].pidMax = HEATED_BED_PID_MAX;
+#endif //pid
+#endif //HEATED_BED_NUM
+#endif // HAVE_HEATED_BED
     Printer::xLength = X_MAX_LENGTH;
     Printer::yLength = Y_MAX_LENGTH;
     Printer::zLength = Z_MAX_LENGTH;
@@ -483,6 +518,7 @@ void EEPROM::readDataFromEEPROM()
     Printer::maxTravelAccelerationMMPerSquareSecond[2] = HAL::eprGetFloat(EPR_Z_MAX_TRAVEL_ACCEL);
 #endif
 #if HAVE_HEATED_BED
+#if HEATED_BED_NUM > 0
     heatedBedController[0].heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
 #ifdef TEMP_PID
     heatedBedController[0].pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
@@ -491,8 +527,42 @@ void EEPROM::readDataFromEEPROM()
     heatedBedController[0].pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
     heatedBedController[0].pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
     heatedBedController[0].pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
-#endif
-#endif
+#endif // pid
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM > 1
+    heatedBedController[1].heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
+#ifdef TEMP_PID
+    heatedBedController[1].pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
+    heatedBedController[1].pidDriveMin = HAL::eprGetByte(EPR_BED_DRIVE_MIN);
+    heatedBedController[1].pidPGain = HAL::eprGetFloat(EPR_BED_PID_PGAIN);
+    heatedBedController[1].pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
+    heatedBedController[1].pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
+    heatedBedController[1].pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
+#endif // pid
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM > 2
+    heatedBedController[2].heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
+#ifdef TEMP_PID
+    heatedBedController[2].pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
+    heatedBedController[2].pidDriveMin = HAL::eprGetByte(EPR_BED_DRIVE_MIN);
+    heatedBedController[2].pidPGain = HAL::eprGetFloat(EPR_BED_PID_PGAIN);
+    heatedBedController[2].pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
+    heatedBedController[2].pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
+    heatedBedController[2].pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
+#endif // pid
+#endif // HEATED_BED_NUM
+#if HEATED_BED_NUM > 3
+    heatedBedController[3].heatManager= HAL::eprGetByte(EPR_BED_HEAT_MANAGER);
+#ifdef TEMP_PID
+    heatedBedController[3].pidDriveMax = HAL::eprGetByte(EPR_BED_DRIVE_MAX);
+    heatedBedController[3].pidDriveMin = HAL::eprGetByte(EPR_BED_DRIVE_MIN);
+    heatedBedController[3].pidPGain = HAL::eprGetFloat(EPR_BED_PID_PGAIN);
+    heatedBedController[3].pidIGain = HAL::eprGetFloat(EPR_BED_PID_IGAIN);
+    heatedBedController[3].pidDGain = HAL::eprGetFloat(EPR_BED_PID_DGAIN);
+    heatedBedController[3].pidMax = HAL::eprGetByte(EPR_BED_PID_MAX);
+#endif // pid
+#endif // HEATED_BED_NUM
+#endif // HAVE_HEATED_BED
     Printer::xMin = HAL::eprGetFloat(EPR_X_HOME_OFFSET);
     Printer::yMin = HAL::eprGetFloat(EPR_Y_HOME_OFFSET);
     Printer::zMin = HAL::eprGetFloat(EPR_Z_HOME_OFFSET);

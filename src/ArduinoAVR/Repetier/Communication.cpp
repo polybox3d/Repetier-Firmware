@@ -33,6 +33,7 @@ FSTRINGVALUE(Com::tFirmware,"FIRMWARE_NAME:Repetier_" REPETIER_VERSION " FIRMWAR
 
 FSTRINGVALUE(Com::tDebug,"Debug:");
 /** POLY **/
+FSTRINGVALUE(Com::tSpaceB," B")
 FSTRINGVALUE(Com::tSpaceAColon," A:")
 FSTRINGVALUE(Com::tSpaceCColon," C:")
 FSTRINGVALUE(Com::tSpaceRColon," R:")

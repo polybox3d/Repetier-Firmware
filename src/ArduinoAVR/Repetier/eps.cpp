@@ -20,6 +20,15 @@ uint8_t vpin2bpin(int vpin)
 {
     return vpin/PINS_PER_BOARD;
 }
+int get_update_queues_size()
+{
+	uint8_t size = 0;
+	for ( uint8_t i =0; i<NUM_BOARD ; ++i)
+	{
+		size += boards[i].pin_update_queue.count();
+	}
+	return size;
+}
 
 // READ
 int eps_read_vpin_value( int pin )
@@ -172,7 +181,6 @@ byte eps_send_entries(uint8_t dest)
 void i2cReceiveEvent(int howMany)
 {
     #ifdef IS_MASTER
-    //Serial.print(" [ISP ");
     int sender = Wire.I2C_READ() -1;
     byte action = Wire.I2C_READ();
 
