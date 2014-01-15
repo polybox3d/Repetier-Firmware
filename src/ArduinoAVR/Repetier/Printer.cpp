@@ -260,7 +260,7 @@ void Printer::kill(uint8_t only_steppers)
     disableZStepper();
     Extruder::disableCurrentExtruderMotor();
 #if FAN_BOARD_PIN>-1
-    pwm_pos[NUM_EXTRUDER+1] = 0;
+    pwm_pos[POS_PWM_FAN_BOARD] = 0;
 #endif // FAN_BOARD_PIN
     if(!only_steppers)
     {
@@ -719,7 +719,7 @@ void Printer::setup()
 #endif
     advanceStepsSet = 0;
 #endif
-    for(uint8_t i=0; i<NUM_EXTRUDER+3; i++) pwm_pos[i]=0;
+    for(uint8_t i=0; i<NUM_PWM; i++) pwm_pos[i]=0;
     currentPositionSteps[X_AXIS] = currentPositionSteps[Y_AXIS] = currentPositionSteps[Z_AXIS] = currentPositionSteps[E_AXIS] = 0;
     maxJerk = MAX_JERK;
 #if DRIVE_SYSTEM!=3

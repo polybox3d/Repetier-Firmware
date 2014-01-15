@@ -167,21 +167,21 @@ STEPPER_CURRENT_CONTROL
 /***********************************************************************
  *                    THERM
  * ********************************************************************/
+// -1 to desactivate
+#define THERM_BOX0			8 +PIN_ANALOG
+#define THERM_BOX1			9 +PIN_ANALOG
+#define THERM_BOX2			10 +PIN_ANALOG
 
-#define THERM_BOX1			8 +PIN_ANALOG
-#define THERM_BOX2			9 +PIN_ANALOG
-#define THERM_BOX3			10 +PIN_ANALOG
+#define THERM_ELEC1			7 +PIN_ANALOG
+#define THERM_ELEC0			6 +PIN_ANALOG
 
-#define THERM_ELEC2			7 +PIN_ANALOG
-#define THERM_ELEC1			6 +PIN_ANALOG
+#define THERM_B1			3 +PIN_ANALOG
+#define THERM_CF_B1_B		5 +PIN_ANALOG
+#define THERM_CF_B1_H		4 +PIN_ANALOG
 
-#define THERM_B2			3 +PIN_ANALOG
-#define THERM_CF_B2_B		5 +PIN_ANALOG
-#define THERM_CF_B2_H		4 +PIN_ANALOG
-
-#define THERM_B1			0 +PIN_ANALOG
-#define THERM_CF_B1_B		2 +PIN_ANALOG
-#define THERM_CF_B1_H		1 +PIN_ANALOG
+#define THERM_B0			0 +PIN_ANALOG
+#define THERM_CF_B0_B		2 +PIN_ANALOG
+#define THERM_CF_B0_H		1 +PIN_ANALOG
 
 
 /***********************************************************************
@@ -296,8 +296,8 @@ STEPPER_CURRENT_CONTROL
 #define HEATER_0_PIN       10
 #define HEATER_1_PIN       8
 #define HEATER_2_PIN       9
-#define TEMP_0_PIN         13   // ANALOG NUMBERING
-#define TEMP_1_PIN         14   // ANALOG NUMBERING
+#define TEMP_0_PIN         THERM_B0   // ANALOG NUMBERING
+#define TEMP_1_PIN         THERM_B1   // ANALOG NUMBERING
 #define TEMP_2_PIN         15
 #define E0_PINS E0_STEP_PIN,E0_DIR_PIN,E0_ENABLE_PIN,
 #define E1_PINS E1_STEP_PIN,E1_DIR_PIN,E1_ENABLE_PIN,

@@ -365,7 +365,7 @@ FSTRINGVAR(tSDErrorCode)
 #endif // SDSUPPORT
 
 
-static void printPolybox(uint8_t n);
+static void printPolybox(int n);
 static void printNumber(unsigned long n);
 static void printWarningF(FSTRINGPARAM(text));
 static void printInfoF(FSTRINGPARAM(text));

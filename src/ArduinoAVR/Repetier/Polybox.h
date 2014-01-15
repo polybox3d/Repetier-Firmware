@@ -16,6 +16,8 @@ extern volatile long encoder_lastSteps; ///< steps count by encoder at last chec
 extern volatile byte isClogged;
 extern volatile uint8_t i2c_update_time;
 
+extern volatile float ic_current_temp; ///< temp inside IC box
+
 #define POLY_MCODE_ISCLOGGED  639
 
 /***********************************************************************
@@ -49,6 +51,7 @@ void check_i2c_periodical();
 void check_boards_connected();
 void check_all_ATU();
 
+void manage_ic_temp();
 void manage_pwm();
 
 uint8_t get_lub_level();

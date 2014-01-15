@@ -67,7 +67,7 @@ void Commands::checkForPeriodicalActions()
     
     check_i2c_periodical();
 	check_boards_connected();
-	
+	manage_ic_temp();
       
 	#if USE_CLOG_ENCODER==1
 	check_clogged();
@@ -211,9 +211,9 @@ void Commands::setFanSpeed(int speed,bool wait)
     Printer::setMenuMode(MENU_MODE_FAN_RUNNING,speed!=0);
     if(wait)
         Commands::waitUntilEndOfAllMoves(); // use only if neededthis to change the speed exactly at that point, but it may cause blobs if you do!
-    if(speed!=pwm_pos[NUM_EXTRUDER+2])
+    if(speed!=pwm_pos[POS_PWM_FAN])
         Com::printFLN(Com::tFanspeed,speed);
-    pwm_pos[NUM_EXTRUDER+2] = speed;
+    pwm_pos[POS_PWM_FAN] = speed;
 #endif
 }
 void Commands::reportPrinterUsage()
@@ -1849,9 +1849,9 @@ void Commands::emergencyStop()
     //HAL::forbidInterrupts(); // Don't allow interrupts to do their work
     kill(false);
     Extruder::manageTemperatures();
-    for(uint8_t i=0; i<NUM_EXTRUDER+3; i++)
+    for(uint8_t i=0; i<NUM_PWM; i++)
         pwm_pos[i] = 0;
-    pwm_pos[0] = pwm_pos[NUM_EXTRUDER] = pwm_pos[NUM_EXTRUDER+1] = pwm_pos[NUM_EXTRUDER+2]=0;
+    //pwm_pos[0] = pwm_pos[NUM_EXTRUDER] = pwm_pos[NUM_EXTRUDER+1] = pwm_pos[NUM_EXTRUDER+2]=0;
 #if EXT0_HEATER_PIN>-1
     WRITE(EXT0_HEATER_PIN,0);
 #endif

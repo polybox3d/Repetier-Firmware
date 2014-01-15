@@ -17,9 +17,11 @@ extern uint8_t manageMonitor;
 4 loops allowing pid/bang bang for up to 3 extruder and the heated bed.
 
 */
-class TemperatureController
+
+class TemperatureController 
 {
     public:
+    
     uint8_t pwmIndex; ///< pwm index for output control. 0-2 = Extruder, 3 = Fan, 4 = Heated Bed
     uint8_t sensorType; ///< Type of temperature sensor.
     uint8_t sensorPin; ///< Pin to read extruder temperature.
@@ -43,7 +45,14 @@ class TemperatureController
     float tempArray[4];
 #endif
     uint8_t flags;
-
+	/*
+    TemperatureController()
+    {
+		
+		
+	}
+	~TemperatureController(){}*/
+	
     void setTargetTemperature(float target);
     void updateCurrentTemperature();
     void updateTempControlVars();

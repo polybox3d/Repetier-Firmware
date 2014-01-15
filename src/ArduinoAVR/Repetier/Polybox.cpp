@@ -14,7 +14,7 @@ volatile uint8_t last_check = 0;
 volatile uint8_t timer_i2c_update=0;
 volatile int timer_i2c_send_get=0;
 volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
-
+volatile float ic_current_temp = 0; ///< temp inside IC box
 
 #define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
   
@@ -39,20 +39,20 @@ void init_polybox()
 }
 void init_therm()
 {
+	SETUP_PIN( THERM_BOX0, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 	SETUP_PIN( THERM_BOX1, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 	SETUP_PIN( THERM_BOX2, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
-	SETUP_PIN( THERM_BOX3, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 
-	SETUP_PIN( THERM_ELEC2, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 	SETUP_PIN( THERM_ELEC1, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
-
-	SETUP_PIN( THERM_B2, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
-	SETUP_PIN( THERM_CF_B2_B, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
-	SETUP_PIN( THERM_CF_B2_H, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
+	SETUP_PIN( THERM_ELEC0, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 
 	SETUP_PIN( THERM_B1, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 	SETUP_PIN( THERM_CF_B1_B, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 	SETUP_PIN( THERM_CF_B1_H, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
+
+	SETUP_PIN( THERM_B0, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
+	SETUP_PIN( THERM_CF_B0_B, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
+	SETUP_PIN( THERM_CF_B0_H, PIN_TYPE_INPUT| PIN_TYPE_ANALOG );
 }
 void init_printer()
 {
@@ -206,6 +206,25 @@ void pin_x_steps( int PIN , int steps )
 }
 
 /**
+ * Handle IC temp. 
+ * We dont really regulate this value, but we check if the temps is too high or
+ * too low (due to pelletier and cooler).
+ * **/
+void manage_ic_temp()
+{
+	#if THERM_ELEC2 >-1 && THERM_ELEC1 > -1
+	if ( ic_current_temp < IC_BOX_MIN_TEMP ) // too cold
+	{
+		//HAL::emergencyStop();
+	}
+	else if ( ic_current_temp > IC_BOX_MIN_TEMP ) // too hot
+	{
+		//HAL::emergencyStop();
+	}
+	#endif
+}
+
+/**
  * Handle PWM. If ENABLE_ARCH_PWM is true, firmware use AnalogWrite to output PWM
  * No software emulation with ISR.
  * This routine is called from checkAction in Command::
@@ -254,10 +273,10 @@ void manage_pwm()
 #endif
 #endif
 #if FAN_BOARD_PIN>-1
-        WRITE_VPIN(FAN_BOARD_PIN, pwm_pos[NUM_EXTRUDER+1]);
+        WRITE_VPIN(FAN_BOARD_PIN, pwm_pos[POS_PWM_FAN_BOARD]);
 #endif
 #if FAN_PIN>-1 && FEATURE_FAN_CONTROL
-        WRITE_VPIN(FAN_PIN, pwm_pos[NUM_EXTRUDER+2]);
+        WRITE_VPIN(FAN_PIN, pwm_pos[POS_PWM_FAN]);
 #endif
 #if HEATER_BED_0 >-1 && HAVE_HEATED_BED
         if( pwm_pos[NUM_EXTRUDER]>0) WRITE_VPIN(HEATER_BED_0, pwm_pos[NUM_EXTRUDER]);

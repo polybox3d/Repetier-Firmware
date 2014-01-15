@@ -46,28 +46,44 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 ##                                        POLYBOX                                          ##
 ########################################################################################## */
 // Does the firmware use master/slave communication by i2c ? (pin extention function)
-#define POLYBOX_VERSION				1
-#define IC2_SLAVE_MASTER			1
+#define POLYBOX_VERSION					1
+#define IC2_SLAVE_MASTER				1
 //enable polybox ? Currently bugged care
-#define POLYBOX_ENABLE				true
-#define POLY_SERIAL_SEPARATOR_VALUE	"#"
-#define POLY_SERIAL_DEBUG			"%"
-#define ENABLE_ATU					false
-#define ENABLE_HARDWARE_CHECK_SLAVE	false
-#define ENABLE_ARCH_PWM				true
-#define POLYBOX_DEBUG				false
+#define POLYBOX_ENABLE					true
+#define POLY_SERIAL_SEPARATOR_VALUE		"#"
+#define POLY_SERIAL_DEBUG				"%"
+#define ENABLE_ATU						false
+#define ENABLE_HOT_CHAMBER				true
+#define ENABLE_HARDWARE_CHECK_SLAVE		false
+#define ENABLE_ARCH_PWM					true
+#define POLYBOX_DEBUG					false
 
-#define USE_CLOG_ENCODER    0
+/**  Min and Max temp inside IC box. In °C */
+#define IC_BOX_MIN_TEMP					-10
+#define IC_BOX_MAX_TEMP					90
+#define IC_SENSOR_TYPE 					1
 
-#define ENCODER_STEPS_PER_MM 373
-#define MIN_DELTAEXTRUDE_VALUE 0.001 //dont check if not enough filament extruded
-#define DETECT_CLOGGED_PERCENT 90.0 // %  for clogged. if compute value > DETECT_CLOGGED_PERCENT--> clogged detected (90.0 mean 10% of error)
+/**  Sensor used by thermistor inside the heating chamber (cf. extruder.h for generic table)*/
+#define HOT_CHAMBER_SENSOR_TYPE 		1
+/**  Sensor used by thermistor inside IC box (cf. extruder.h for generic table)*/
+#define IC_SENSOR_TYPE 					1
+/**  Sensor used by thermistor for the cold part of each extruder (cf. extruder.h for generic table)*/
+#define EXT_COLD_SENSOR_TYPE 			1
+
+
+#define USE_CLOG_ENCODER   				0
+
+#define ENCODER_STEPS_PER_MM 			373
+#define MIN_DELTAEXTRUDE_VALUE 			0.001 //dont check if not enough filament extruded
+#define DETECT_CLOGGED_PERCENT 			90.0 // %  for clogged. if compute value > DETECT_CLOGGED_PERCENT--> clogged detected (90.0 mean 10% of error)
 
 
 // BASIC SETTINGS: select your board type, thermistor type, axis scaling, and endstop configuration
 
 /** Number of extruders. Maximum 2 extruder. */
-#define NUM_EXTRUDER 2
+#define NUM_EXTRUDER 					2
+/** Number of cold thermistor for EACH extruder */
+#define NUM_COLD_THERM_BY_EXT			2 
 
 
 #define MOTHERBOARD 33
@@ -1109,5 +1125,11 @@ The following settings override uiconfig.h!
 
 */
 #define FEATURE_CONTROLLER 0
+
+#define NUM_PWM 				NUM_EXTRUDER+HEATED_BED_NUM+NUM_EXTRUDER*NUM_COLD_THERM_BY_EXT+2 // NUM_EXTRUDER*NUM_COLD_THERM_BY_EXT for NUM_COLD_THERM_BY_EXT cold therm for each extru, and +2 for board fan and fan
+#define POS_PWM_FAN_BOARD		NUM_EXTRUDER+HEATED_BED_NUM
+#define POS_PWM_FAN				NUM_EXTRUDER+HEATED_BED_NUM+1
+#define POS_COLD_THERM			NUM_EXTRUDER+HEATED_BED_NUM+2
+
 
 #endif

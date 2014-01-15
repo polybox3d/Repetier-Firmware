@@ -762,10 +762,10 @@ ISR(PWM_TIMER_VECTOR)
 #endif
 #endif
 #if FAN_BOARD_PIN>-1
-        if((pwm_pos_set[NUM_EXTRUDER+1] = pwm_pos[NUM_EXTRUDER+1])>0) WRITE(FAN_BOARD_PIN,1);
+        if((pwm_pos_set[POS_PWM_FAN_BOARD] = pwm_pos[POS_PWM_FAN_BOARD])>0) WRITE(FAN_BOARD_PIN,1);
 #endif
 #if FAN_PIN>-1 && FEATURE_FAN_CONTROL
-        if((pwm_pos_set[NUM_EXTRUDER+2] = pwm_pos[NUM_EXTRUDER+2])>0) WRITE(FAN_PIN,1);
+        if((pwm_pos_set[POS_PWM_FAN] = pwm_pos[POS_PWM_FAN])>0) WRITE(FAN_PIN,1);
 #endif
 #if HEATED_BED_HEATER_PIN>-1 && HAVE_HEATED_BED
         if((pwm_pos_set[NUM_EXTRUDER] = pwm_pos[NUM_EXTRUDER])>0) WRITE(HEATED_BED_HEATER_PIN,1);
