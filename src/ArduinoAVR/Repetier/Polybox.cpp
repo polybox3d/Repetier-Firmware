@@ -403,44 +403,54 @@ void check_all_ATU()
 	}
 	if ( READ_VPIN( ATU_MAIN ) )
 	{
+		Com::printFLN(Com::tError,"Main ATU");
 		Commands::emergencyStop();
 	}
 	// command
 	if ( READ_VPIN( ATU_COM_ONOFF_0 ) || READ_VPIN( ATU_COM_ONOFF_1 ) )
 	{
+		Com::printFLN(Com::tError,"Commands ATU");
 		Commands::emergencyStop();
 	}
 	//monitor
 	if ( READ_VPIN( ATU_MON_ONOFF_0 ) ||	READ_VPIN( ATU_MON_ONOFF_1 ) )
 	{
+		Com::printFLN(Com::tError,"Monitors ATU");
 		Commands::emergencyStop();
 	}
 	//monitor
 	if ( READ_VPIN( ATU_MON_POWER_0 ) ||	READ_VPIN( ATU_MON_POWER_1 ) )
 	{
+		Com::printFLN(Com::tError,"Power ATU");
 		Commands::emergencyStop();
 	}
 	//labviewmodule
 	if ( READ_VPIN( ATU_LVM ) )
 	{
+		Com::printFLN(Com::tError,"LabView ATU");
 		Commands::emergencyStop();
 	}
 	if ( READ_VPIN( ATU_HEATERS_BED_BOX) )
 	{
+		Com::printFLN(Com::tError,"HeaterBed ATU");
 		Commands::emergencyStop();
 	}
 	if ( READ_VPIN( ATU_TOOL ) )
 	{
+		Com::printFLN(Com::tError,"Tool ATU");
 		Commands::emergencyStop();
 	}
 	if ( READ_VPIN( ATU_PRE_ASI_0) || READ_VPIN( ATU_PRE_ASI_1) )
 	{
+		Com::printFLN(Com::tError,"PRE-ASI ATU");
 		Commands::emergencyStop();
 	}
 	if ( is_box_open() || is_ic_open() )
 	{
+		Com::printFLN(Com::tError,"Box open");
 		Commands::emergencyStop();
 	}
+	
 } 
 
 void check_boards_connected()
