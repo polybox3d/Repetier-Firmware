@@ -11,6 +11,8 @@
 // Toggels the heater power if necessary.
 extern bool reportTempsensorError(); ///< Report defect sensors
 extern uint8_t manageMonitor;
+extern const uint8_t temptables_num[12];
+extern const short * const temptables[12] ;
 
 #define TEMPERATURE_CONTROLLER_FLAG_ALARM 1
 /** TemperatureController manages one heater-temperature sensore loop. You can have up to
@@ -18,17 +20,11 @@ extern uint8_t manageMonitor;
 
 */
 
-class TemperatureController 
+class TemperatureController : public Sensor
 {
     public:
     
     uint8_t pwmIndex; ///< pwm index for output control. 0-2 = Extruder, 3 = Fan, 4 = Heated Bed
-    uint8_t sensorType; ///< Type of temperature sensor.
-    uint8_t sensorPin; ///< Pin to read extruder temperature.
-    int16_t currentTemperature; ///< Currenttemperature value read from sensor.
-    int16_t targetTemperature; ///< Target temperature value in units of sensor.
-    float currentTemperatureC; ///< Current temperature in degC.
-    float targetTemperatureC; ///< Target temperature in degC.
     uint32_t lastTemperatureUpdate; ///< Time in millis of the last temperature update.
     int8_t heatManager; ///< How is temperature controled. 0 = on/off, 1 = PID-Control, 3 = deat time control
 #ifdef TEMP_PID
@@ -45,16 +41,45 @@ class TemperatureController
     float tempArray[4];
 #endif
     uint8_t flags;
-	/*
-    TemperatureController()
-    {
-		
-		
-	}
-	~TemperatureController(){}*/
 	
-    void setTargetTemperature(float target);
-    void updateCurrentTemperature();
+    TemperatureController( uint8_t pwmIndex,  uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature,
+    float currentTemperatureC, float targetTemperatureC, uint32_t lastTemperatureUpdate, int8_t heatManager
+#ifdef TEMP_PID
+    , float tempIState, uint8_t pidDriveMax, uint8_t pidDriveMin, float pidPGain, float pidIGain, float pidDGain, uint8_t pidMax,
+     float tempIStateLimitMax, float tempIStateLimitMin, uint8_t tempPointer,
+#endif
+	uint8_t flags
+ ):Sensor(sensorType, sensorPin, currentTemperature, targetTemperature, currentTemperatureC, targetTemperatureC)
+    {
+		this->pwmIndex = pwmIndex; 
+		this->sensorType = sensorType;
+		this->sensorPin = sensorPin;
+		this->currentTemperature = currentTemperature;
+		this->targetTemperature = targetTemperature;
+		this->currentTemperatureC = currentTemperatureC;
+		this->targetTemperatureC = targetTemperatureC;
+		this->lastTemperatureUpdate = lastTemperatureUpdate;
+		this->heatManager = heatManager;
+#ifdef TEMP_PID
+		this->tempIState = tempIState;
+		this->pidDriveMax = pidDriveMax;
+		this->pidDriveMin = pidDriveMin;
+		this->pidPGain = pidPGain;
+		this->pidIGain = pidIGain;
+		this->pidDGain = pidDGain;
+		this->pidMax = pidMax;
+		this->tempIStateLimitMax = tempIStateLimitMax;
+		this->tempIStateLimitMin = tempIStateLimitMin;
+		this->tempPointer = tempPointer;
+		this->tempArray[0] = 0;
+		this->tempArray[1] = 0;
+		this->tempArray[2] = 0;
+		this->tempArray[3] = 0;
+		this->flags = flags;
+#endif
+	}
+	~TemperatureController(){}
+	
     void updateTempControlVars();
     inline bool isAlarm() {return flags & TEMPERATURE_CONTROLLER_FLAG_ALARM;}
     inline void setAlarm(bool on) {if(on) flags |= TEMPERATURE_CONTROLLER_FLAG_ALARM; else flags &= ~TEMPERATURE_CONTROLLER_FLAG_ALARM;}
