@@ -183,7 +183,6 @@ void Sensor::updateCurrentTemperature()
 
 void Sensor::setTargetTemperature(float target)
 {
-    targetTemperatureC = target;
     int temp = TEMP_FLOAT_TO_INT(target);
     uint8_t type = sensorType;
     switch(sensorType)

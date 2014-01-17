@@ -1648,12 +1648,18 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpace,is_clogged());
     }
     break;
-    case 640:
+    case 640: //get chamber temp
     {
         Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceAColon,1);
-        Com::printF(Com::tSpaceBColon,1);
-        Com::printFLN(Com::tSpaceCColon,1);
+        Com::printFLN(Com::tSpaceT0Colon,chamber.getCurrentTemp() );
+    }
+    break;
+    case 641: // set chamber temp (fast =no wait)
+    {
+		if ( com->hasS() )
+		{
+			chamber.setTargetTemperature( com->S );
+		}
     }
     break;
     case 643: // get detection peltier box
@@ -1712,8 +1718,7 @@ void Commands::executeGCode(GCode *com)
     case 656: // temp around board
     {
         Com::printPolybox( com->M );
-        OUT_P_F(" T11:",1);
-        OUT_P_F_LN(" T2:",1);
+        Com::printFLN(Com::tSpaceT0Colon, chamber.getCurrentICTemp());
     }
     break;
     case 657: // is IC open ?

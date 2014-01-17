@@ -9,6 +9,7 @@
  *    Variables
  * 
  **********************************************************************/
+ class ChamberTempController;
 extern volatile float filamentPrinted_lastCheck; ///< mm of filament printed since counting started but at previous check (n-1)
 extern volatile long encoder_currentSteps; ///< steps count by encoder
 extern volatile long encoder_lastSteps; ///< steps count by encoder at last check
@@ -17,6 +18,7 @@ extern volatile byte isClogged;
 extern volatile uint8_t i2c_update_time;
 
 extern volatile float ic_current_temp; ///< temp inside IC box
+extern ChamberTempController chamber;
 
 #define POLY_MCODE_ISCLOGGED  639
 

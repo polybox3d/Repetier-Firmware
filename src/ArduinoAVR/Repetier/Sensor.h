@@ -6,21 +6,20 @@
 class Sensor
 {
 	public:
-	Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature,
-						float currentTemperatureC,float targetTemperatureC):
+	Sensor(){};
+	Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature, float currentTemperatureC):
 						sensorType(sensorType), 
 						sensorPin(sensorPin), 
 						currentTemperature(currentTemperature), 
 						targetTemperature(targetTemperature),
-						currentTemperatureC(currentTemperatureC), 
-						targetTemperatureC(targetTemperatureC){}
+						currentTemperatureC(currentTemperatureC){}
 	~Sensor(){}
 	uint8_t sensorType; ///< Type of temperature sensor.
     uint8_t sensorPin; ///< Pin to read extruder temperature.
     int16_t currentTemperature; ///< Currenttemperature value read from sensor.
     int16_t targetTemperature; ///< Target temperature value in units of sensor.
     float currentTemperatureC; ///< Current temperature in degC.
-    float targetTemperatureC; ///< Target temperature in degC.
+    
 	
 	void setTargetTemperature(float target);
 	void updateCurrentTemperature();

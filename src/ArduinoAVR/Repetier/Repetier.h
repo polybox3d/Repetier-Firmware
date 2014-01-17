@@ -502,8 +502,9 @@ extern float maxadvspeed;
 #endif
 
 #include "Sensor.h"
+#include "Heater.h"
 #include "Extruder.h"
-
+#include "ChamberTempController.h"
 
 void manage_inactivity(uint8_t debug);
 

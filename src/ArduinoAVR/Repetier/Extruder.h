@@ -20,26 +20,11 @@ extern const short * const temptables[12] ;
 
 */
 
-class TemperatureController : public Sensor
+class TemperatureController : public Sensor, public Heater
 {
     public:
     
     uint8_t pwmIndex; ///< pwm index for output control. 0-2 = Extruder, 3 = Fan, 4 = Heated Bed
-    uint32_t lastTemperatureUpdate; ///< Time in millis of the last temperature update.
-    int8_t heatManager; ///< How is temperature controled. 0 = on/off, 1 = PID-Control, 3 = deat time control
-#ifdef TEMP_PID
-    float tempIState; ///< Temp. var. for PID computation.
-    uint8_t pidDriveMax; ///< Used for windup in PID calculation.
-    uint8_t pidDriveMin; ///< Used for windup in PID calculation.
-    float pidPGain; ///< Pgain (proportional gain) for PID temperature control [0,01 Units].
-    float pidIGain; ///< Igain (integral) for PID temperature control [0,01 Units].
-    float pidDGain;  ///< Dgain (damping) for PID temperature control [0,01 Units].
-    uint8_t pidMax; ///< Maximum PWM value, the heater should be set.
-    float tempIStateLimitMax;
-    float tempIStateLimitMin;
-    uint8_t tempPointer;
-    float tempArray[4];
-#endif
     uint8_t flags;
 	
     TemperatureController( uint8_t pwmIndex,  uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature,
@@ -49,34 +34,15 @@ class TemperatureController : public Sensor
      float tempIStateLimitMax, float tempIStateLimitMin, uint8_t tempPointer,
 #endif
 	uint8_t flags
- ):Sensor(sensorType, sensorPin, currentTemperature, targetTemperature, currentTemperatureC, targetTemperatureC)
+ ):Sensor(sensorType, sensorPin, currentTemperature, targetTemperature, currentTemperatureC),
+	Heater(targetTemperatureC, lastTemperatureUpdate, heatManager,
+			#ifdef TEMP_PID
+			tempIState,pidDriveMax,pidDriveMin,	pidPGain,pidIGain,pidDGain,pidMax,tempIStateLimitMax,tempIStateLimitMin,tempPointer
+			#endif
+			)
     {
 		this->pwmIndex = pwmIndex; 
-		this->sensorType = sensorType;
-		this->sensorPin = sensorPin;
-		this->currentTemperature = currentTemperature;
-		this->targetTemperature = targetTemperature;
-		this->currentTemperatureC = currentTemperatureC;
-		this->targetTemperatureC = targetTemperatureC;
-		this->lastTemperatureUpdate = lastTemperatureUpdate;
-		this->heatManager = heatManager;
-#ifdef TEMP_PID
-		this->tempIState = tempIState;
-		this->pidDriveMax = pidDriveMax;
-		this->pidDriveMin = pidDriveMin;
-		this->pidPGain = pidPGain;
-		this->pidIGain = pidIGain;
-		this->pidDGain = pidDGain;
-		this->pidMax = pidMax;
-		this->tempIStateLimitMax = tempIStateLimitMax;
-		this->tempIStateLimitMin = tempIStateLimitMin;
-		this->tempPointer = tempPointer;
-		this->tempArray[0] = 0;
-		this->tempArray[1] = 0;
-		this->tempArray[2] = 0;
-		this->tempArray[3] = 0;
 		this->flags = flags;
-#endif
 	}
 	~TemperatureController(){}
 	

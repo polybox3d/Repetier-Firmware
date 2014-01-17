@@ -70,6 +70,9 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 /**  Sensor used by thermistor for the cold part of each extruder (cf. extruder.h for generic table)*/
 #define EXT_COLD_SENSOR_TYPE 			1
 
+#define	NUM_SENSOR_BOX					3
+#define	NUM_HEATER_CHAMBER				1
+#define	NUM_FAN_CHAMBER					2
 
 #define USE_CLOG_ENCODER   				0
 

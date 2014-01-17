@@ -109,66 +109,8 @@ void Extruder::manageTemperatures()
             //beep(50*(controller+1),3);
             act->setAlarm(false);  //reset alarm
         }
-
-#ifdef TEMP_PID
-        act->tempArray[act->tempPointer++] = act->currentTemperatureC;
-        act->tempPointer &= 3;
-        if(act->heatManager == 1)
-        {
-            uint8_t output;
-            float error = act->targetTemperatureC - act->currentTemperatureC;
-            if(act->targetTemperatureC<20.0f) output = 0; // off is off, even if damping term wants a heat peak!
-            else if(error>PID_CONTROL_RANGE)
-                output = act->pidMax;
-            else if(error<-PID_CONTROL_RANGE)
-                output = 0;
-            else
-            {
-                float pidTerm = act->pidPGain * error;
-                act->tempIState = constrain(act->tempIState+error,act->tempIStateLimitMin,act->tempIStateLimitMax);
-                pidTerm += act->pidIGain * act->tempIState*0.1;
-                long dgain = act->pidDGain * (act->tempArray[act->tempPointer]-act->currentTemperatureC)*3.333f;
-                pidTerm += dgain;
-#if SCALE_PID_TO_MAX==1
-                pidTerm = (pidTerm*act->pidMax)*0.0039062;
-#endif
-                output = constrain((int)pidTerm, 0, act->pidMax);
-            }
-            pwm_pos[act->pwmIndex] = output;
-        }
-        else if(act->heatManager == 3)     // deat-time control
-        {
-            uint8_t output;
-            float error = act->targetTemperatureC - act->currentTemperatureC;
-            if(act->targetTemperatureC<20.0f)
-                output = 0; // off is off, even if damping term wants a heat peak!
-            else if(error>PID_CONTROL_RANGE)
-                output = act->pidMax;
-            else if(error < -PID_CONTROL_RANGE)
-                output = 0;
-            else
-            {
-                float raising = 3.333 * (act->currentTemperatureC - act->tempArray[act->tempPointer]); // raising dT/dt, 3.33 = reciproke of time interval (300 ms)
-                act->tempIState = 0.25 * (3.0 * act->tempIState + raising); // damp raising
-                output = (act->currentTemperatureC + act->tempIState * act->pidPGain > act->targetTemperatureC ? 0 : output = act->pidDriveMax);
-            }
-            pwm_pos[act->pwmIndex] = output;
-        }
-        else
-#endif
-            if(act->heatManager == 2)    // Bang-bang with reduced change frequency to save relais life
-            {
-                unsigned long time = HAL::timeInMilliseconds();
-                if (time - act->lastTemperatureUpdate > HEATED_BED_SET_INTERVAL)
-                {
-                    pwm_pos[act->pwmIndex] = (on ? 255 : 0);
-                    act->lastTemperatureUpdate = time;
-                }
-            }
-            else     // Fast Bang-Bang fallback
-            {
-                pwm_pos[act->pwmIndex] = (on ? 255 : 0);
-            }
+        ///compute PID, process output, and store pwm value
+		pwm_pos[act->pwmIndex] = act->computeOutput( act->currentTemperatureC ); // Heater::
 #ifdef MAXTEMP
         if(act->currentTemperatureC>MAXTEMP) // Force heater off if MAXTEMP is exceeded
             pwm_pos[act->pwmIndex] = 0;

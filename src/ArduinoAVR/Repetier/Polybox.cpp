@@ -1,5 +1,6 @@
 #include "Polybox.h"
 #include "Repetier.h"
+#include "ChamberTempController.h"
 
 /***********************************************************************
  * 
@@ -15,6 +16,7 @@ volatile uint8_t timer_i2c_update=0;
 volatile int timer_i2c_send_get=0;
 volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
 volatile float ic_current_temp = 0; ///< temp inside IC box
+ChamberTempController chamber;
 
 #define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
   
