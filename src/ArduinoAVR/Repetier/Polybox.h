@@ -38,7 +38,7 @@ byte bed_detected( uint8_t bed_id);
 void init_polybox();
 void init_printer();
 void init_cn();
-void init_atu();
+void init_atu_inter();
 void init_mon();
 void init_slaves();
 void init_scanner();

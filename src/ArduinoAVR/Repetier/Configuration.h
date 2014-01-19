@@ -71,8 +71,8 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define EXT_COLD_SENSOR_TYPE 			1
 
 #define	NUM_SENSOR_BOX					3
-#define	NUM_HEATER_CHAMBER				1
-#define	NUM_FAN_CHAMBER					2
+#define	NUM_HEATER_CHAMBER				4
+#define	NUM_FAN_CHAMBER					NUM_HEATER_CHAMBER + 2 ///< +2 'cause 1 extractor, 1 pulsor 
 
 #define USE_CLOG_ENCODER   				0
 

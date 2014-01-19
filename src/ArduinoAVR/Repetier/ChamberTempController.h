@@ -4,19 +4,41 @@
 #include <inttypes.h>
 #include "Repetier.h"
 
-typedef uint8_t Fan;
+#define CHAMBER_FLAG_ALL_STOP		1
+#define CHAMBER_FLAG_HEATERS_STOP	2
+
+
+class PWM
+{
+	public:
+	uint8_t pwm;
+	uint8_t pin;
+	PWM(){ pwm = 0; pin = -1;}
+};
+
+typedef PWM Fan;
 
 class ChamberTempController
 {
 	public:
 	
-	Sensor sensors[NUM_SENSOR_BOX];
-	Heater heaters[NUM_HEATER_CHAMBER];
-	Fan fans[NUM_FAN_CHAMBER];
+	Sensor _sensors[NUM_SENSOR_BOX];
+	Heater _heaters[NUM_HEATER_CHAMBER];
+	Fan _fans[NUM_FAN_CHAMBER];
+
 	float _targetTemperatureC; ///< Target temperature for the chamber, in °C
 	float _currentTemperatureC; ///< Current temperature for the chamber, in °C
 	float _currentICTemperatureC; ///< Current temperature for the IC, in °C
 	uint8_t _flags; ///< Flag/state 
+	
+	ChamberTempController()
+	{
+		_flags = 0;
+		_currentICTemperatureC = 0;
+		_currentTemperatureC = 0;
+		setTargetTemperature( 0 );
+		setAllFanPWM( 0 );
+	}
 	
 	float getCurrentTemp() const
 	{
@@ -33,7 +55,7 @@ class ChamberTempController
 		/** Basic temp for now. But we want something smooth **/
 		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
 		{
-			heaters[i].output = 0;
+			_heaters[i].output = 0;
 		}
 	}
 	
@@ -43,36 +65,44 @@ class ChamberTempController
 		_targetTemperatureC = 0;
 		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
 		{
-			heaters[i].output = 0;
+			_heaters[i].output = 0;
 		}
 	}
 	/********      FAN          ******/
-	void setFanPWM( uint8_t pwm)
+	void setAllFanPWM( uint8_t pwm)
 	{
 		for (uint8_t i = 0 ; i < NUM_FAN_CHAMBER ; i++ )
 		{
-			fans[i] = pwm;
+			_fans[i].pwm = pwm;
 		}
 	}
-	void setFanPercent( uint8_t percent)
+	void setAllFanPercent( uint8_t percent)
 	{
-		setFanPWM(percent*255/100);
+		if ( percent > 100 )
+			percent = 100;
+		setAllFanPWM(percent*255/100);
 	}
-	void disableFan()
+	void setFanByMask( uint8_t mask, uint8_t pwm )
 	{
-		setFanPWM(0);
+		
+	}
+	void disableAllFan()
+	{
+		setAllFanPWM(0);
 	}
 	
 	void disableAll()
 	{
 		disableHeaters();
-		disableFan();
+		disableAllFan();
+		_flags = CHAMBER_FLAG_ALL_STOP;
 	}
 	void manageFanPWM()
 	{
-		#if NUM_FAN_CHAMBER >0
-			WRITE_VPIN(EXT0_HEATER_PIN, pwm_pos[0]);
-		#endif
+		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
+		{
+			WRITE_VPIN( _fans[i].pin, _fans[i].pwm );
+		}
 	}
 	void manageTemeprature(){}
 	

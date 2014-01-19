@@ -1379,73 +1379,19 @@ void Commands::executeGCode(GCode *com)
     }
     break;
 /* ___________________SCANNER_______________________ */
-    case 610:    //get scanner status
+    case 620:    //get scanner status
     {   
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace,1); // send 1 for ready/ok
+  //      Com::printPolybox( com->M );
+  //      Com::printFLN(Com::tSpace,1); // send 1 for ready/ok
     }
     break;
-    case 611: // Get turntable plugged
+    case 621: // Get turntable plugged
     {
         Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace, !READ_VPIN(TABLE0_DETECTED_PIN) );
+        Com::printFLN(Com::tSpace, READ_VPIN(TABLE0_DETECTED_PIN) );
     }
     break;
-    case 612:    // Set  turntable On/Off
-    {    
-        WRITE_VPIN( TABLE0_ENABLE_PIN, !(com->S) );    
-    }    
-    break;
-    case 613:    // TurnTable X stepper
-    {    
-        pin_x_steps( TABLE0_STEP_PIN, com->S );
-    }
-    break;
-    case 614:    // Set Table Clock Direction (0 for CCW)
-    {    
-        WRITE_VPIN( TABLE0_DIR_PIN, (com->S) );
-    }
-    case 615:    // Set laser On/Off
-    {   
-		if ( com->hasP() && com->hasS() && laser_detected(com->P) )
-		{
-			if ( com->P == 0 )
-			{
-				WRITE_VPIN( LASER_0_PIN, !(com->S) );    
-			}
-			else if ( com->P == 1 )
-			{
-				WRITE_VPIN( LASER_1_PIN, !(com->S) );    
-			}
-		}
-    }
-    break;
-    case 616:    // Set LaserRotation On/Off
-    {    
-		if ( com->hasS() )
-		{
-			WRITE_VPIN( L0_ENABLE_PIN, !(com->S) );    
-		}
-        //OUT_POLY_DEBUG(" Code 616 not used... SLR On/Off");
-    }
-    break;
-    case 617:    // Laser Turn X stepper
-    {    
-		if ( com->hasS() )
-		{
-			pin_x_steps( L0_STEP_PIN, com->S );
-		}
-    }
-    break;
-    case 618:    // Set Laser Clock Direction (0 for CCW)
-    {    
-		if ( com->hasS() )
-		{
-			WRITE_VPIN( L0_DIR_PIN, (com->S) );
-		}
-    }
-    break;
-    case 619:    // Get laser plugged
+    case 622:    // Get laser plugged
     {    
 		
 		READ_VPIN( LASER_1_PRES );
@@ -1456,14 +1402,84 @@ void Commands::executeGCode(GCode *com)
 		Com::printFLN(Com::tColon, laser_detected(1) );
     }
     break;
+    case 624:    // Set  turntable On/Off
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( TABLE0_ENABLE_PIN, !(com->S) );
+		}
+    }    
+    break;
+    case 625:    // TurnTable X stepper
+    {   
+		if ( com->hasS() )
+		{ 
+			pin_x_steps( TABLE0_STEP_PIN, com->S );
+		}
+    }
+    break;
+    case 627:    // Set Table Clock Direction (0 for CCW)
+    {   
+		if ( com->hasS() )
+		{ 
+			WRITE_VPIN( TABLE0_DIR_PIN, (com->S) );
+		}
+    }
+    case 629:    // Set laser On/Off
+    {   
+		if ( com->hasP() && com->hasS() && laser_detected(com->P) )
+		{
+			if ( com->P == 0 )
+			{
+				WRITE_VPIN( LASER_0_PIN, (com->S) );    
+			}
+			else if ( com->P == 1 )
+			{
+				WRITE_VPIN( LASER_1_PIN, (com->S) );    
+			}
+		}
+    }
+    break;
+    case 631:    // Set LaserRotation On/Off
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( L0_ENABLE_PIN, (com->S) );    
+		}
+    }
+    break;
+    case 632:    // Laser Turn X stepper
+    {    
+		if ( com->hasS() )
+		{
+			pin_x_steps( L0_STEP_PIN, com->S );
+		}
+    }
+    break;
+    case 634:    // Set Laser Clock Direction (0 for CCW)
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( L0_DIR_PIN, (com->S) );
+		}
+    }
+    break;
 /* ___________________LABVIEW_______________________ */
-    case 620: // get labview ATU
+    case 640: // get labview on off
     {    
 		Com::printPolybox( com->M );
-		Com::printFLN(Com::tSpace, READ_VPIN( ATU_LVM ));
+		Com::printFLN(Com::tSpace, READ_VPIN( INTER_LVM ));
 	}    
 	break;
-    case 621: // get global color
+	case 641: // set labview on off
+    {    
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( INTER_LVM, com->S );
+		}
+	}    
+	break;
+    case 642: // get global color
     {
         Com::printPolybox( com->M );
         Color c = lvm_get_global_color();
@@ -1473,43 +1489,46 @@ void Commands::executeGCode(GCode *com)
         OUT_P_I_LN(" I:", c.i );
     }
     break;
-    case 623: // standard MCode
+    case 643: // set global color
     {
-        Color c = {com->R, com->E, com->P, com->I };
-        lvm_set_face_color( com->S, c ); // id , color
+		if ( com->hasR() && com->hasE() && com->hasP() && com->hasI() && com->hasS() )
+        {
+			Color c = {com->R, com->E, com->P, com->I };
+			lvm_set_face_color( com->S, c ); // id , color
+		}
 	}
-    case 622: // set global color
-    {
-        Color c = {com->R, com->E, com->P, com->I };
-        lvm_set_global_color( c );
-    }
-    break;
-    case 624: // get global intensity
+	case 644: // get global intensity
     {
         Com::printPolybox( com->M );
         Com::printF(Com::tSpaceXColon, lvm_get_global_h_intensity() );
         Com::printFLN(Com::tSpaceYColon, lvm_get_global_v_intensity() );
     }
     break;
-    case 625: // set global intensity
+    case 645: // set global intensity
     {    
-        lvm_set_global_intensity( com->S, com->S ); // ( h, v )
+		if ( com->hasS() )
+		{
+			lvm_set_global_intensity( com->S, com->S ); // ( h, v )
+		}
     }    
-    break;
-    case 626: // set face intensity ( h, v ) 
-    {    
-        lvm_set_face_intensity( com->S, com->X, com->Y );
-    }    
-    break;
-    case 627: // get face intensity
+    break;    
+    case 646: // get face intensity
     {
         Com::printPolybox( com->M );
         OUT_P_I(" P:", lvm_get_global_h_intensity() );
         Com::printF(Com::tSpaceXColon, lvm_get_face_h_intensity( com->P ) );
         Com::printFLN(Com::tSpaceYColon, lvm_get_face_v_intensity( com->P ) );
     }
+    break; // set face intensity
+    case 647: // set face intensity ( h, v ) 
+    {   
+		if ( com->hasS() )
+		{ 
+			lvm_set_face_intensity( com->S, com->X, com->Y );
+		}
+    }    
     break;
-    case 628: // get LED state (plugged or no)
+    case 648: // get LED state (plugged or no)
     {
 		Com::printPolybox( com->M );	
         for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
@@ -1521,61 +1540,70 @@ void Commands::executeGCode(GCode *com)
     }
     break;
 /* ___________________PRINTER_______________________ */
-    case 630: // printer ATU (heaters)
+    case 660: // printer ATU (heaters)
     {
 		Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace,READ_VPIN(ATU_HEATERS_BED_BOX) );
+        Com::printFLN(Com::tSpace, READ_VPIN(INTER_HEATER_BOX) );
 	}
 	break;
-    case 631:
+	case 661: // set printer ATU
+    {
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( INTER_HEATER_BOX, com->S );
+		}
+	}
+	break;
+    case 662: // fetection tool extruder plugged
     {
         Com::printPolybox( com->M );
         if ( DETECTION_E0 > -1 )
-			Com::printF(Com::tSpaceZ0Colon,DETECTION_E0);
+			Com::printF(Com::tSpaceZ0Colon, READ_VPIN(DETECTION_E0) );
 		if ( DETECTION_E1 > -1 )
-			Com::printF(Com::tSpaceZ1Colon,DETECTION_E1);	
+			Com::printF(Com::tSpaceZ1Colon, READ_VPIN(DETECTION_E1) );	
 		OUT_P_LN("");
     }
     break;
-    case 632: // Get wire detected.
+    case 663: // Get wire detected.
     {
         Com::printPolybox( com->M );
-       Com::printFLN(Com::tSpace, 1);
+		Com::printFLN(Com::tSpace, 1);
     }
     break;
-    case 633:
+    case 664: // detect bed
     {
         Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceZ0Colon,DETECTION_BED_0);
-        Com::printF(Com::tSpaceZ1Colon,DETECTION_BED_1);
-        Com::printF(Com::tSpaceZ2Colon,DETECTION_BED_2);
-        Com::printFLN(Com::tSpaceZ3Colon,DETECTION_BED_3);
+        Com::printF(Com::tSpaceZ0Colon, READ_VPIN(DETECTION_BED_0) );
+        Com::printF(Com::tSpaceZ1Colon, READ_VPIN(DETECTION_BED_1) );
+        Com::printF(Com::tSpaceZ2Colon, READ_VPIN(DETECTION_BED_2) );
+        Com::printFLN(Com::tSpaceZ3Colon, READ_VPIN(DETECTION_BED_3) );
     }
     break;
-    case 634:
+    case 665: // detect pelletiers (cooler/heater)
     {
         Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceZ0Colon,1);
-        Com::printF(Com::tSpaceZ1Colon,1);
-        Com::printF(Com::tSpaceZ2Colon,1);
-        Com::printFLN(Com::tSpaceZ3Colon,1);
+        Com::printF(Com::tSpaceZ0Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
+        Com::printF(Com::tSpaceZ1Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
+        Com::printF(Com::tSpaceZ2Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
+        Com::printFLN(Com::tSpaceZ3Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
     }
     break;
-    case 635:
-    {
-        Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceB0Colon, 1);
-        Com::printFLN(Com::tSpaceB1Colon,1);
-    }
-    break;
-    case 636:
+    case 666: // ????
     {
         Com::printPolybox( com->M );
         Com::printF(Com::tSpaceB0Colon, 1);
         Com::printFLN(Com::tSpaceB1Colon,1);
     }
     break;
-    case 637:   // set bed temp fast 
+    case 667: // ???
+    {
+		if ( com->hasS() && com->hasP() )
+		{
+			chamber.setFanByMask( com->P, com->S );
+		}
+    }
+    break;
+    case 670:   // set bed temp fast 
     {   
 		#if HAVE_HEATED_BED
 		if(reportTempsensorError()) break;
@@ -1594,7 +1622,7 @@ void Commands::executeGCode(GCode *com)
 		#endif
 	}
 	break;
-    case 638:   // set bed temp
+    case 671:   // set bed temp
     {	
 		#if HAVE_HEATED_BED
             if(Printer::debugDryrun()) break;
@@ -1640,6 +1668,28 @@ void Commands::executeGCode(GCode *com)
             //UI_CLEAR_STATUS;
 	}    
 	break;
+	case 672: // set all fan
+    {
+		if ( com->hasS() )
+		{
+			chamber.setAllFanPercent( com->S );
+		}
+    }
+    break;
+	case 673: //get chamber temp
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpaceT0Colon,chamber.getCurrentTemp() );
+    }
+    break;
+    case 675: // set chamber temp (fast =no wait)
+    {
+		if ( com->hasS() )
+		{
+			chamber.setTargetTemperature( com->S );
+		}
+    }
+    break;
     case POLY_MCODE_ISCLOGGED: // wire clogged ? (639)
     {
         //executeAction( UI_ACTION_PAUSE,  POLY_MCODE_ISCLOGGED );
@@ -1648,43 +1698,20 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpace,is_clogged());
     }
     break;
-    case 640: //get chamber temp
-    {
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpaceT0Colon,chamber.getCurrentTemp() );
-    }
-    break;
-    case 641: // set chamber temp (fast =no wait)
-    {
-		if ( com->hasS() )
-		{
-			chamber.setTargetTemperature( com->S );
-		}
-    }
-    break;
-    case 643: // get detection peltier box
-    {
-        Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceZ0Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
-        Com::printF(Com::tSpaceZ1Colon, READ_VPIN(DETECTION_PEL_BOX_1) );
-        Com::printF(Com::tSpaceZ2Colon, READ_VPIN(DETECTION_PEL_BOX_2) );
-        Com::printFLN(Com::tSpaceZ3Colon, READ_VPIN(DETECTION_PEL_BOX_3) );
-    }
-    break;
     /* _____________________GLOBAL______________________ */
-    case 651:
-    {
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace,is_box_open());
-    }
-    break;
-    case 652:
+    case 680:
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpace, READ_VPIN( ATU_MAIN ));
     }
     break;
-    case 653: // check connected board
+    case 682: //get box open or not
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpace,is_box_open());
+    }
+    break;
+    case 683: // check connected board
     {
         Com::printPolybox( com->M );
         for ( uint8_t i = 1  ; i <= NUM_BOARD ; ++i )
@@ -1695,46 +1722,55 @@ void Commands::executeGCode(GCode *com)
         OUT_P_LN("");
     }
     break;
-    case 654: // power status
-    {
-        Com::printPolybox( com->M );
-        if ( POWER_ONOFF_0 > -1 )
-			Com::printF(Com::tSpaceZ0Colon, POWER_ONOFF_0);
-		if ( POWER_ONOFF_1 > -1 )
-			Com::printF(Com::tSpaceZ1Colon, POWER_ONOFF_1);	
-		OUT_P_LN("");
-    }
-    break;
-    case 655: // command
-    {
-        Com::printPolybox( com->M );
-        if ( ATU_MON_POWER_0 > -1 )
-			Com::printF(Com::tSpaceZ0Colon, ATU_MON_POWER_0);
-		if ( ATU_MON_POWER_1 > -1 )
-			Com::printF(Com::tSpaceZ1Colon, ATU_MON_POWER_1);	
-		OUT_P_LN("");
-    }
-    break;
-    case 656: // temp around board
-    {
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpaceT0Colon, chamber.getCurrentICTemp());
-    }
-    break;
-    case 657: // is IC open ?
+	case 684: // is IC open ?
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpace, is_ic_open());
     }
     break;
-    case 658: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
+    case 685: // PRE-ASI monitor
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpace, ( READ_VPIN(MON_PRE_ASI_0) || READ_VPIN(MON_PRE_ASI_1) ) );
+    }
+    break;
+    case 686: // temp around board
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpaceT0Colon, chamber.getCurrentICTemp());
+    }
+    break;
+    case 687: // power status
+    {
+        Com::printPolybox( com->M );
+        if ( MON_POWER_0 > -1 )
+			Com::printF(Com::tSpaceZ0Colon, READ_VPIN(MON_POWER_0) );
+		if ( MON_POWER_1 > -1 )
+			Com::printF(Com::tSpaceZ1Colon, READ_VPIN(MON_POWER_1) );	
+		OUT_P_LN("");
+    }
+    break;
+    case 689:// get tool bloc ATU
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpace, READ_VPIN( INTER_TOOL) );
+    }
+    break;
+    case 690: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpace, 1);
     }
     break;
-    
-    case 659: // i2c refresh timer
+    /* _____________________DEBUG______________________ */
+    case 698 : //get_update_queues_size
+    {
+		Com::printPolybox( com->M );
+		Com::printFLN(Com::tSpacePColon, get_update_queues_size() );
+	}
+	break;
+	    
+    case 699: // i2c refresh timer
     {
 		if ( com->hasS() )
 		{
@@ -1743,31 +1779,25 @@ void Commands::executeGCode(GCode *com)
 		}
     }
     break;
-    case 660:// get tool bloc ATU
+    case 700: // get pin value
     {
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace, READ_VPIN(ATU_TOOL) );
+		if ( com->hasS() )
+		{
+			Com::printPolybox( com->M );
+			Com::printFLN(Com::tSpacePColon, READ_VPIN(com->P) );
+		}
     }
     break;
-    case 661:
+
+    case 701: // set pin value
     {
-        Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace, ( READ_VPIN(ATU_PRE_ASI_0) || READ_VPIN(ATU_PRE_ASI_1) ) );
+		if ( com->hasS() && com->hasP() )
+		{
+			WRITE_VPIN(com->P, com->S);
+		}
     }
     break;
-    case 666:
-    {
-        VPIN_MODE(66, OUTPUT);
-        OUT_P_LN("OUT");
-    }
-    break;
-    /* _____________________DEBUG______________________ */
-    case 670 : //get_update_queues_size
-    {
-		Com::printPolybox( com->M );
-		Com::printFLN(Com::tSpacePColon, get_update_queues_size() );
-	}
-	break;
+
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  

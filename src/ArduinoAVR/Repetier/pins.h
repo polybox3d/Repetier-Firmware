@@ -110,29 +110,32 @@ STEPPER_CURRENT_CONTROL
 #define CN_LUB_LEVEL_HIGH	11+PIN_ANALOG +PINS_PER_BOARD*ID_BOARD_CN
 
 /***********************************************************************
- *                    ATU
+ *                    ATU / INTER
  * ********************************************************************/
 #define ID_BOARD_ATU 		1
 #define ATU_MAIN			25 +PINS_PER_BOARD*ID_BOARD_ATU
 
-#define POWER_ONOFF_0		51
-#define POWER_ONOFF_1		53
+/***** POWER *****/
+///inter
+#define INTER_POWER_0		51
+#define INTER_POWER_1		53
+///same, x2 for safety
+#define INTER_COM_ONOFF_00	28 +PINS_PER_BOARD*ID_BOARD_ATU
+#define INTER_COM_ONOFF_11	30 +PINS_PER_BOARD*ID_BOARD_ATU
+///monitor
+#define MON_POWER_0			1
+#define MON_POWER_1			0
+///same, x2 for safety
+#define MON_POWER_00		19 +PINS_PER_BOARD*ID_BOARD_ATU
+#define MON_POWER_11		18 +PINS_PER_BOARD*ID_BOARD_ATU
 
-// command
-#define ATU_COM_ONOFF_0		28 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_COM_ONOFF_1		30 +PINS_PER_BOARD*ID_BOARD_ATU
-//monitor
-#define ATU_MON_POWER_0		1
-#define ATU_MON_POWER_1		0
-
-#define ATU_MON_ONOFF_0		19 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_MON_ONOFF_1		18 +PINS_PER_BOARD*ID_BOARD_ATU
+/***** FUNCTIONS *****/
 //labviewmodule
-#define ATU_LVM				22 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_HEATERS_BED_BOX	23 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_TOOL			24 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_PRE_ASI_0		26 +PINS_PER_BOARD*ID_BOARD_ATU
-#define ATU_PRE_ASI_1		27 +PINS_PER_BOARD*ID_BOARD_ATU
+#define INTER_LVM			22 +PINS_PER_BOARD*ID_BOARD_ATU
+#define INTER_HEATER_BOX	23 +PINS_PER_BOARD*ID_BOARD_ATU
+#define INTER_TOOL			24 +PINS_PER_BOARD*ID_BOARD_ATU
+#define MON_PRE_ASI_0		26 +PINS_PER_BOARD*ID_BOARD_ATU
+#define MON_PRE_ASI_1		27 +PINS_PER_BOARD*ID_BOARD_ATU
 // Detect if the box (chamber, working space door) is open or not.
 #define BOX_OPEN_0_PIN		0+PINS_PER_BOARD*1
 #define BOX_OPEN_1_PIN		1+PINS_PER_BOARD*1
@@ -183,6 +186,18 @@ STEPPER_CURRENT_CONTROL
 #define THERM_CF_B0_B		2 +PIN_ANALOG
 #define THERM_CF_B0_H		1 +PIN_ANALOG
 
+/***********************************************************************
+ *                    Fans
+ * ********************************************************************/
+#define FAN_CHAMBER_EXT_0		2 +PINS_PER_BOARD*1
+#define FAN_CHAMBER_PULS_0		3 +PINS_PER_BOARD*1
+
+#define FAN_BOARD_PIN			4 ///< repetier fan handler
+
+#define FAN_CHAMBER_PEL_0		13 +PINS_PER_BOARD*3
+#define FAN_CHAMBER_PEL_1 		10 +PINS_PER_BOARD*3
+#define FAN_CHAMBER_PEL_2		9 +PINS_PER_BOARD*3
+#define FAN_CHAMBER_PEL_3 		4 +PINS_PER_BOARD*3
 
 /***********************************************************************
  *                    Monitoring

@@ -35,7 +35,7 @@ void init_polybox()
 	init_printer();
 	init_cn();
 	init_mon();
-	init_atu();
+	init_atu_inter();
 	init_scanner();
 	init_therm();
 }
@@ -122,32 +122,37 @@ void init_mon()
 	SETUP_PIN( MON_FAN_OPT2, PIN_TYPE_INPUT);
 	SETUP_PIN( MON_FAN_OPT1, PIN_TYPE_INPUT);
 }
-void init_atu()
+void init_atu_inter()
 {
-	SETUP_PIN(ATU_MAIN, PIN_TYPE_INPUT);
+	SETUP_PIN(ATU_MAIN, PIN_TYPE_OUTPUT);
 
-	SETUP_PIN( POWER_ONOFF_0, PIN_TYPE_INPUT);
- 	SETUP_PIN(POWER_ONOFF_1, PIN_TYPE_INPUT);
+	/***** POWER *****/
+	///inter
+	SETUP_PIN( INTER_POWER_0, PIN_TYPE_OUTPUT );
+ 	SETUP_PIN( INTER_POWER_1, PIN_TYPE_OUTPUT );
+ 	
+ 	SETUP_PIN( INTER_COM_ONOFF_00, PIN_TYPE_OUTPUT );
+ 	SETUP_PIN( INTER_COM_ONOFF_11, PIN_TYPE_OUTPUT );
+ 	
+	///monitor
+ 	SETUP_PIN(MON_POWER_0, PIN_TYPE_INPUT );
+ 	SETUP_PIN(MON_POWER_1, PIN_TYPE_INPUT );
 
- 	SETUP_PIN(ATU_COM_ONOFF_0, PIN_TYPE_INPUT);
- 	SETUP_PIN(ATU_COM_ONOFF_1, PIN_TYPE_INPUT);
+	SETUP_PIN( MON_POWER_00, PIN_TYPE_INPUT );
+	SETUP_PIN( MON_POWER_11, PIN_TYPE_INPUT );
+	
+	/***** FUNCTIONS *****/
+	SETUP_PIN( INTER_LVM, PIN_TYPE_OUTPUT );
+	SETUP_PIN( INTER_HEATER_BOX, PIN_TYPE_OUTPUT );
+	SETUP_PIN( INTER_TOOL, PIN_TYPE_OUTPUT );
+	
+	SETUP_PIN( MON_PRE_ASI_0, PIN_TYPE_INPUT );
+	SETUP_PIN( MON_PRE_ASI_1, PIN_TYPE_INPUT );
 
-	SETUP_PIN( ATU_MON_POWER_0, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_MON_POWER_1, PIN_TYPE_INPUT);
-
-	SETUP_PIN( ATU_MON_ONOFF_0, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_MON_ONOFF_1, PIN_TYPE_INPUT);
-
-	SETUP_PIN( ATU_LVM, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_HEATERS_BED_BOX, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_TOOL, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_PRE_ASI_0, PIN_TYPE_INPUT);
-	SETUP_PIN( ATU_PRE_ASI_1, PIN_TYPE_INPUT);
-
-	SETUP_PIN( BOX_OPEN_0_PIN, PIN_TYPE_INPUT);
-	SETUP_PIN( BOX_OPEN_1_PIN, PIN_TYPE_INPUT);
-	SETUP_PIN( IC_OPEN_0_PIN, PIN_TYPE_INPUT);
-	SETUP_PIN( IC_OPEN_1_PIN, PIN_TYPE_INPUT);
+	SETUP_PIN( BOX_OPEN_0_PIN, PIN_TYPE_INPUT );
+	SETUP_PIN( BOX_OPEN_1_PIN, PIN_TYPE_INPUT );
+	SETUP_PIN( IC_OPEN_0_PIN, PIN_TYPE_INPUT );
+	SETUP_PIN( IC_OPEN_1_PIN, PIN_TYPE_INPUT );
 }
 
 void init_cn()
@@ -403,49 +408,30 @@ void check_all_ATU()
 	{
 		return;
 	}
-	if ( READ_VPIN( ATU_MAIN ) )
+	if ( READ_VPIN( MON_POWER_0 ) || READ_VPIN( MON_POWER_00 ) )
 	{
-		Com::printFLN(Com::tError,"Main ATU");
+		Com::printFLN(Com::tError,"Power 0 is OFF");
 		Commands::emergencyStop();
 	}
-	// command
-	if ( READ_VPIN( ATU_COM_ONOFF_0 ) || READ_VPIN( ATU_COM_ONOFF_1 ) )
+	if ( READ_VPIN( MON_POWER_1 ) || READ_VPIN( MON_POWER_11 ) )
 	{
-		Com::printFLN(Com::tError,"Commands ATU");
+		Com::printFLN(Com::tError,"Power 1 is OFF");
 		Commands::emergencyStop();
 	}
-	//monitor
-	if ( READ_VPIN( ATU_MON_ONOFF_0 ) ||	READ_VPIN( ATU_MON_ONOFF_1 ) )
+	if ( READ_VPIN( MON_PRE_ASI_0 ) ||	READ_VPIN( MON_PRE_ASI_1 ) )
 	{
-		Com::printFLN(Com::tError,"Monitors ATU");
-		Commands::emergencyStop();
-	}
-	//monitor
-	if ( READ_VPIN( ATU_MON_POWER_0 ) ||	READ_VPIN( ATU_MON_POWER_1 ) )
-	{
-		Com::printFLN(Com::tError,"Power ATU");
-		Commands::emergencyStop();
-	}
-	//labviewmodule
-	if ( READ_VPIN( ATU_LVM ) )
-	{
-		Com::printFLN(Com::tError,"LabView ATU");
-		Commands::emergencyStop();
-	}
-	if ( READ_VPIN( ATU_HEATERS_BED_BOX) )
-	{
-		Com::printFLN(Com::tError,"HeaterBed ATU");
-		Commands::emergencyStop();
-	}
-	if ( READ_VPIN( ATU_TOOL ) )
-	{
-		Com::printFLN(Com::tError,"Tool ATU");
-		Commands::emergencyStop();
-	}
-	if ( READ_VPIN( ATU_PRE_ASI_0) || READ_VPIN( ATU_PRE_ASI_1) )
-	{
-		Com::printFLN(Com::tError,"PRE-ASI ATU");
-		Commands::emergencyStop();
+		Com::printFLN(Com::tError,"Pre-ASI issue !");
+		/* @todo : 
+		 * 1. store current GCode line into eeprom
+		 * 2. set bit to 1 into eeprom (RESTART BIT FLAG)
+		 * 3.stop machine
+		 * On start-up:
+		 * Check RESTART BIT FLAG
+		 * 1. if is set : 
+		 * 1.1. start init procotol
+		 * 1.2. Start file from stored line ?? OR virtu line < CURRENT STORE LINE.
+		 * */
+		Commands::emergencyStop(); 
 	}
 	if ( is_box_open() || is_ic_open() )
 	{
