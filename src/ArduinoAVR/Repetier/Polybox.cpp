@@ -15,7 +15,6 @@ volatile uint8_t last_check = 0;
 volatile uint8_t timer_i2c_update=0;
 volatile int timer_i2c_send_get=0;
 volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
-volatile float ic_current_temp = 0; ///< temp inside IC box
 ChamberTempController chamber;
 
 #define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
@@ -38,6 +37,7 @@ void init_polybox()
 	init_atu_inter();
 	init_scanner();
 	init_therm();
+	chamber.initAll();
 }
 void init_therm()
 {
@@ -210,25 +210,6 @@ void pin_x_steps( int PIN , int steps )
         WRITE_VPIN( PIN, HIGH);
         delay(3);
     }    
-}
-
-/**
- * Handle IC temp. 
- * We dont really regulate this value, but we check if the temps is too high or
- * too low (due to pelletier and cooler).
- * **/
-void manage_ic_temp()
-{
-	#if THERM_ELEC2 >-1 && THERM_ELEC1 > -1
-	if ( ic_current_temp < IC_BOX_MIN_TEMP ) // too cold
-	{
-		//HAL::emergencyStop();
-	}
-	else if ( ic_current_temp > IC_BOX_MIN_TEMP ) // too hot
-	{
-		//HAL::emergencyStop();
-	}
-	#endif
 }
 
 /**

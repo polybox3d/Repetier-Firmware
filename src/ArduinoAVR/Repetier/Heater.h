@@ -23,6 +23,7 @@ class Heater
     float tempIStateLimitMin;
     uint8_t tempPointer;
     float tempArray[4];
+    uint8_t pin;
 #endif
 	uint8_t output; /// pwm output to controle heater
 	Heater(	){};
@@ -65,6 +66,7 @@ class Heater
 		this->tempArray[3] = 0;
 		#endif
 		this->output = 0;
+		this->pin = -1;
 	};
 	
 	~Heater(){}

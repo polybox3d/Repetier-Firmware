@@ -17,7 +17,6 @@ extern volatile long encoder_lastSteps; ///< steps count by encoder at last chec
 extern volatile byte isClogged;
 extern volatile uint8_t i2c_update_time;
 
-extern volatile float ic_current_temp; ///< temp inside IC box
 extern ChamberTempController chamber;
 
 #define POLY_MCODE_ISCLOGGED  639

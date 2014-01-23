@@ -90,6 +90,11 @@ STEPPER_CURRENT_CONTROL
 #define DETECTION_PEL_BOX_3	48 +PINS_PER_BOARD* 3
 
 
+#define PEL_BOX_0			8 +PINS_PER_BOARD*3
+#define PEL_BOX_1 			7 +PINS_PER_BOARD*3
+#define PEL_BOX_2			6 +PINS_PER_BOARD*3
+#define PEL_BOX_3	 		5 +PINS_PER_BOARD*3
+
 /***********************************************************************
  *                    CN
  * ********************************************************************/

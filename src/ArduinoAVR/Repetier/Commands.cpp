@@ -67,7 +67,7 @@ void Commands::checkForPeriodicalActions()
     
     check_i2c_periodical();
 	check_boards_connected();
-	manage_ic_temp();
+	chamber.manageTemperatures();
       
 	#if USE_CLOG_ENCODER==1
 	check_clogged();
@@ -1595,7 +1595,7 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpaceB1Colon,1);
     }
     break;
-    case 667: // ???
+    case 667: // Set fan by mask
     {
 		if ( com->hasS() && com->hasP() )
 		{
@@ -1737,7 +1737,7 @@ void Commands::executeGCode(GCode *com)
     case 686: // temp around board
     {
         Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpaceT0Colon, chamber.getCurrentICTemp());
+        Com::printFLN(Com::tSpaceT0Colon, chamber.getCurrentICTemp() );
     }
     break;
     case 687: // power status

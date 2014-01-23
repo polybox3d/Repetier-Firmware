@@ -65,12 +65,36 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 
 /**  Sensor used by thermistor inside the heating chamber (cf. extruder.h for generic table)*/
 #define HOT_CHAMBER_SENSOR_TYPE 		1
+
+
+/**
+Heat manager for heated bed:
+0 = Bang Bang, fast update
+1 = PID controlled
+2 = Bang Bang, limited check every HEATED_BED_SET_INTERVAL. Use this with relay-driven beds to save life time
+3 = dead time control
+*/
+#define CHAMBER_HEAT_MANAGER 1
+#define CHAMBER_PID_INTEGRAL_DRIVE_MAX 255
+#define CHAMBER_PID_INTEGRAL_DRIVE_MIN 80
+/** P-gain.  Overridden if EEPROM activated. */
+#define CHAMBER_PID_PGAIN   196
+/** I-gain  Overridden if EEPROM activated.*/
+#define CHAMBER_PID_IGAIN   33.02
+/** Dgain.  Overridden if EEPROM activated.*/
+#define CHAMBER_PID_DGAIN 290
+// maximum time the heater can be switched on. Max = 255.  Overridden if EEPROM activated.
+#define CHAMBER_PID_MAX 255
+
+
 /**  Sensor used by thermistor inside IC box (cf. extruder.h for generic table)*/
 #define IC_SENSOR_TYPE 					1
 /**  Sensor used by thermistor for the cold part of each extruder (cf. extruder.h for generic table)*/
 #define EXT_COLD_SENSOR_TYPE 			1
 
-#define	NUM_SENSOR_BOX					3
+#define	NUM_SENSOR_BOX_INSIDE			3 ///< 3 inside
+#define	NUM_SENSOR_BOX_IC				2 ///< 2 for IC box
+#define	NUM_SENSOR_BOX					NUM_SENSOR_BOX_IC + NUM_SENSOR_BOX_INSIDE ///< 3 inside, 2 for IC box
 #define	NUM_HEATER_CHAMBER				4
 #define	NUM_FAN_CHAMBER					NUM_HEATER_CHAMBER + 2 ///< +2 'cause 1 extractor, 1 pulsor 
 
