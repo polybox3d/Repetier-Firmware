@@ -19,7 +19,7 @@ extern volatile uint8_t i2c_update_time;
 
 extern ChamberTempController chamber;
 
-#define POLY_MCODE_ISCLOGGED  639
+#define POLY_MCODE_ISCLOGGED  676
 
 /***********************************************************************
  * 

@@ -40,63 +40,6 @@ class ChamberTempController
 		setTargetTemperature( 0 );
 		
 	}
-	void initFan()
-	{
-		#if FAN_CHAMBER_PEL_0 > -1 
-			_fans[0].pin = FAN_CHAMBER_PEL_0;
-			SETUP_PIN( _fans[0].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		#if FAN_CHAMBER_PEL_1 > -1 
-			_fans[1].pin = FAN_CHAMBER_PEL_1;
-			SETUP_PIN( _fans[1].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		#if FAN_CHAMBER_PEL_2 > -1 
-			_fans[2].pin = FAN_CHAMBER_PEL_2;
-			SETUP_PIN( _fans[2].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		#if FAN_CHAMBER_PEL_3 > -1 
-			_fans[3].pin = FAN_CHAMBER_PEL_3;
-			SETUP_PIN( _fans[3].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		#if FAN_CHAMBER_EXT_0 > -1 
-			_fans[4].pin = FAN_CHAMBER_EXT_0;
-			SETUP_PIN( _fans[4].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		#if FAN_CHAMBER_PULS_0 > -1 
-			_fans[5].pin = FAN_CHAMBER_PULS_0;
-			SETUP_PIN( _fans[5].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
-		#endif
-		
-		setAllFanPWM( 0 );
-	}	
-	float getCurrentTemp() const
-	{
-		return _currentTemperatureC;
-	}
-	float getCurrentICTemp() const
-	{
-		return _currentICTemperatureC;
-	}
-	
-	void setTargetTemperature(float target)
-	{
-		_targetTemperatureC = target;
-		/** Basic temp for now. But we want something smooth **/
-		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
-		{
-			_heaters[i].output = target;
-		}
-	}
-	
-	/********      Heater          ******/
-	void disableHeaters()
-	{
-		_targetTemperatureC = 0;
-		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
-		{
-			_heaters[i].output = 0;
-		}
-	}
 	/********      FAN          ******/
 	void setFanPWMById( uint8_t id, uint8_t pwm)
 	{
@@ -131,12 +74,6 @@ class ChamberTempController
 		setAllFanPWM(0);
 	}
 	
-	void disableAll()
-	{
-		disableHeaters();
-		disableAllFan();
-		_flags = CHAMBER_FLAG_ALL_STOP;
-	}
 	/*void manageFanPWM()
 	{
 		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
@@ -144,6 +81,84 @@ class ChamberTempController
 			WRITE_VPIN( _fans[i].pin, _fans[i].pwm );
 		}
 	}*/
+	void initFan()
+	{
+		#if FAN_CHAMBER_PEL_0 > -1 
+			_fans[0].pin = FAN_CHAMBER_PEL_0;
+			SETUP_PIN( _fans[0].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		#if FAN_CHAMBER_PEL_1 > -1 
+			_fans[1].pin = FAN_CHAMBER_PEL_1;
+			SETUP_PIN( _fans[1].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		#if FAN_CHAMBER_PEL_2 > -1 
+			_fans[2].pin = FAN_CHAMBER_PEL_2;
+			SETUP_PIN( _fans[2].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		#if FAN_CHAMBER_PEL_3 > -1 
+			_fans[3].pin = FAN_CHAMBER_PEL_3;
+			SETUP_PIN( _fans[3].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		#if FAN_CHAMBER_EXT_0 > -1 
+			_fans[4].pin = FAN_CHAMBER_EXT_0;
+			SETUP_PIN( _fans[4].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		#if FAN_CHAMBER_PULS_0 > -1 
+			_fans[5].pin = FAN_CHAMBER_PULS_0;
+			SETUP_PIN( _fans[5].pin , PIN_TYPE_OUTPUT | PIN_TYPE_ANALOG );
+		#endif
+		
+		setAllFanPWM( 0 );
+	}	
+	float getCurrentTemp() const
+	{
+		return _currentTemperatureC;
+	}
+	float getCurrentTempById( uint8_t sensor_id )
+	{
+		if ( sensor_id >= NUM_SENSOR_BOX_INSIDE )
+		{
+			return 0;
+		}
+		return _sensors[sensor_id].currentTemperatureC;
+	}
+	float getCurrentICTemp() const
+	{
+		return _currentICTemperatureC;
+	}
+	
+	void setTargetTemperature(float target)
+	{
+		_targetTemperatureC = target;
+		/** Basic temp for now. But we want something smooth **/
+		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
+		{
+			_heaters[i].output = target;
+		}
+	}
+	
+	/********      Heater          ******/
+	bool isHeaterDisabled()
+	{
+		return _flags & CHAMBER_FLAG_HEATERS_STOP;
+	}
+	void enableHeaters()
+	{
+		WRITE_VPIN( INTER_HEATER_BOX, 0 );
+		_flags &= ~CHAMBER_FLAG_HEATERS_STOP;
+	}
+	void disableHeaters()
+	{
+		_targetTemperatureC = 0;
+		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
+		{
+			_heaters[i].output = 0;
+			_heaters[i].targetTemperatureC = 0;
+			WRITE_VPIN( _heaters[i].pin, 0 );
+		}
+		_flags |= CHAMBER_FLAG_HEATERS_STOP;
+		WRITE_VPIN( INTER_HEATER_BOX, 1 );
+	}
 	void updateTemperature()
 	{
 		float current_temp_sum = 0;
@@ -164,18 +179,23 @@ class ChamberTempController
 	}
 	void manageTemperatures()
 	{
-		manageICTemp();
-		
 		/** SENSORS **/
-		updateTemperature();		
+		updateTemperature();	
+		
 		/** HEATERS **/
+		
+		if ( isHeaterDisabled() )
+		{
+			return;
+		}
+		manageICTemp();
 		uint8_t pin_output_value = 0;
 		
 		for (uint8_t i = 0 ; i < NUM_HEATER_CHAMBER ; i++ )
 		{
 			pin_output_value = _heaters[i].computeOutput( _currentTemperatureC );
 			// for all heaters pin
-			//WRITE_VPIN( _heaters[i], pin_output_value );
+			WRITE_VPIN( _heaters[i].pin, pin_output_value );
 		}
 		
 		
@@ -267,6 +287,12 @@ class ChamberTempController
 		initFan();
 		initHeaters();
 		initSensors();
+	}
+	void disableAll()
+	{
+		disableHeaters();
+		disableAllFan();
+		_flags |= CHAMBER_FLAG_ALL_STOP;
 	}
 	
 };

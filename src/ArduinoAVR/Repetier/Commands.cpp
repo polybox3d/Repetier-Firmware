@@ -1543,14 +1543,21 @@ void Commands::executeGCode(GCode *com)
     case 660: // printer ATU (heaters)
     {
 		Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace, READ_VPIN(INTER_HEATER_BOX) );
+        Com::printFLN(Com::tSpace, chamber.isHeaterDisabled() );
 	}
 	break;
 	case 661: // set printer ATU
     {
 		if ( com->hasS() )
 		{
-			WRITE_VPIN( INTER_HEATER_BOX, com->S );
+			if ( com->S )
+			{
+				chamber.disableHeaters();
+			}
+			else
+			{
+				chamber.enableHeaters();
+			}
 		}
 	}
 	break;
@@ -1698,6 +1705,23 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpace,is_clogged());
     }
     break;
+    case 677: //get chamber temp (all)
+    {
+        Com::printPolybox( com->M );
+        Com::printF(Com::tSpaceAColon,chamber.getCurrentTempById(0) );
+        Com::printF(Com::tSpaceBColon,chamber.getCurrentTempById(1) );
+        Com::printFLN(Com::tSpaceCColon,chamber.getCurrentTempById(2) );
+    }
+    break;
+    case 678: //get bed temp (all)
+    {
+        Com::printPolybox( com->M );
+        Com::printF(Com::tSpaceB0Colon, Extruder::current->getHeatedBedTemperature(0) );
+        Com::printF(Com::tSpaceB1Colon, Extruder::current->getHeatedBedTemperature(1) );
+        Com::printF(Com::tSpaceB2Colon, Extruder::current->getHeatedBedTemperature(2) );
+        Com::printFLN(Com::tSpaceB3Colon, Extruder::current->getHeatedBedTemperature(3) );
+    }
+    break;
     /* _____________________GLOBAL______________________ */
     case 680:
     {
@@ -1756,7 +1780,15 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpace, READ_VPIN( INTER_TOOL) );
     }
     break;
-    case 690: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
+    case 690:// set tool bloc ATU
+    {
+		if ( com->hasS() )
+		{
+			WRITE_VPIN( INTER_TOOL, com->S );
+		}
+    }
+    break;
+    case 692: // auto level Z-0 plate/bad. Return 1 when it's done, 0 or soemthing else if error/timeout etc...
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpace, 1);
