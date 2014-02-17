@@ -65,7 +65,7 @@ void Commands::checkForPeriodicalActions()
     executePeriodical=0;
     Extruder::manageTemperatures();
     
-    check_i2c_periodical();
+    //check_i2c_periodical();
 	check_boards_connected();
 	chamber.manageTemperatures();
       
@@ -1324,7 +1324,7 @@ void Commands::executeGCode(GCode *com)
     {    }    break;
     case 11: // vacuum off
         {    }    break;
-    case 600:   {  Com::printPolybox( com->M );( checkFreeMemory() ); Com::println(); }    break;
+    case 600:   {  Com::printPolybox( com->M );( checkFreeMemory() ); Com::printFLN(Com::tFreeRAM,lowestRAMValue); }    break;
     case 601: // Get CNCTool plugged
     {
         Com::printPolybox( com->M );
@@ -1813,23 +1813,30 @@ void Commands::executeGCode(GCode *com)
     break;
     case 700: // get pin value
     {
-		if ( com->hasS() )
+		if ( com->hasP() )
 		{
 			Com::printPolybox( com->M );
 			Com::printFLN(Com::tSpacePColon, READ_VPIN(com->P) );
 		}
     }
     break;
-
     case 701: // set pin value
     {
 		if ( com->hasS() && com->hasP() )
 		{
-			WRITE_VPIN(com->P, com->S);
+			VPIN_MODE(com->P, OUTPUT);
+  			WRITE_VPIN(com->P, com->S);
 		}
     }
     break;
-
+    case 702: 
+    {
+		if ( com->hasP() )
+		{
+  			eps_send_board_update(com->P );
+		}
+    }
+    break;
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  

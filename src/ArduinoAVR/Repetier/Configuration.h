@@ -53,7 +53,7 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define POLY_SERIAL_SEPARATOR_VALUE		"#"
 #define POLY_SERIAL_DEBUG				"%"
 #define ENABLE_ATU						false
-#define ENABLE_HOT_CHAMBER				true
+#define ENABLE_HOT_CHAMBER				false
 #define ENABLE_HARDWARE_CHECK_SLAVE		false
 #define ENABLE_ARCH_PWM					true
 #define POLYBOX_DEBUG					false

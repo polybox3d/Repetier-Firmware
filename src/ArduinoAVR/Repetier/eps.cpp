@@ -1,6 +1,17 @@
 #include "eps.h"
-
+#include "Repetier.h"
 #include <Wire.h>
+
+
+#if defined(ARDUINO) && ARDUINO >= 100
+#define I2C_WRITE write
+#define I2C_READ read
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#define I2C_WRITE send
+#define I2C_READ receive
+#endif
 
 Board boards[NUM_BOARD];
 bool send_entries_flag = false;
@@ -125,10 +136,12 @@ void eps_send_board_update(uint8_t dest)
     if ( ! boards[dest].pin_update_queue.isEmpty() ) 
     {
         Update up;
-        byte count=0;
+        byte count=2;
         int value=0;
-        count = 2;
         Wire.beginTransmission( dest+1 ); // Open th I2C link (i.e master)
+        Wire.I2C_WRITE( BOARD_ID );
+		Wire.I2C_WRITE( EPS_ALL );
+		
         while ( !boards[dest].pin_update_queue.isEmpty() && count < BUFFER_LENGTH-2) 
         {
             up = boards[dest].pin_update_queue.pop();
@@ -224,6 +237,9 @@ void i2cReceiveEvent(int howMany)
             }
         }
     }
+    else
+    {
+	}
     #else
     byte pin = 0;
     int value = 0;

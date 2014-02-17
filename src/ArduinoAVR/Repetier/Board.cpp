@@ -60,7 +60,7 @@ void Board::check_pins_update(uint8_t type)
 					value = digitalRead( i );
 					if ( read_bpin( i ) != value )
 					{
-                                                Update u = { i, EPS_SET };
+                        Update u = { i, EPS_SET };
 						pin_update_queue.push( u );
 						write_bpin( i, value );
 					}
@@ -85,7 +85,7 @@ void Board::check_pins_update(uint8_t type)
 				else if ( c->updated )
 				{
 					c->updated = false;
-                                        Update u = { i, EPS_SET };
+                    Update u = { i, EPS_SET };
 					pin_update_queue.push( u );
 				}
 			}
