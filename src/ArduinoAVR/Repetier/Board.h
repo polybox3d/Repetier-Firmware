@@ -25,7 +25,7 @@
 #define BOARD_INIT    6
 #define BOARD_W8_MASTER    7
 
-#define BOARD_CONNECTED_CHECK_DELAY     10 //total time is : 100ms * BOARD_CONNECTED_CHECK_DELAY = 1sec
+#define BOARD_CONNECTED_CHECK_DELAY     1 //total time is : 100ms * BOARD_CONNECTED_CHECK_DELAY = 1sec
 #define BOARD_UPDATE_CHECK_DELAY        1 //total time is : 100ms * BOARD_UPDATE_CHECK_DELAY = 100mssec
 #define BOARD_SEND_GET_DELAY            10*60 // 1min
 
@@ -36,9 +36,10 @@ class Board
     Board();
     ~Board();
     
-    void check_connected( uint8_t dest );
     void check_pins_update(uint8_t type = 0);
     void process_state( uint8_t dest );
+    void manage_status( );
+    void manage_ping_pong();
     
     //READ
     int read_bpin( uint8_t pin );
@@ -48,9 +49,12 @@ class Board
     uint8_t write_bpin_type( uint8_t pin, uint8_t type );
     
     Pin* pin_values[PINS_PER_BOARD];
-        
+    
+    static uint8_t next_id;
     uint8_t connected;
     uint8_t check_state;
+    uint8_t i2c_id;
+    
     QueueList<Update> pin_update_queue;
     
     void init_pin_table();

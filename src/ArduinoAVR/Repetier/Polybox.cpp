@@ -424,7 +424,7 @@ void check_all_ATU()
 
 void check_boards_connected()
 {   // need to wait more ?
-    if ( last_check < BOARD_CONNECTED_CHECK_DELAY )
+  /*  if ( last_check < BOARD_CONNECTED_CHECK_DELAY )
     {
         last_check++;
         return;
@@ -468,6 +468,7 @@ void check_boards_connected()
 		#endif
 			boards[5].check_connected( 5+1 );
     #endif
+    */
 }
 
 byte is_clogged()

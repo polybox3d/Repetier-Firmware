@@ -49,6 +49,8 @@
 #define EPS_RESET           7
 #define EPS_VERSION         8
 #define EPS_INIT            9
+#define EPS_TOKEN			10
+#define EPS_ACK            	31
 
 #define MASTER_ID           1
 
@@ -69,6 +71,8 @@ extern bool send_entries_flag;
 uint8_t vpin2bpin(int vpin);
 uint8_t vpin2board(int vpin);
 
+void eps_manage();
+
 // READ
 int board_read_bpin_value( uint8_t b, uint8_t pin );
 uint8_t board_read_bpin_type( uint8_t b, uint8_t pin );
@@ -84,13 +88,15 @@ void eps_send_action( uint8_t dest, uint8_t action );
 void eps_send_version( int dest );
 
 void eps_send_board_update(uint8_t dest);
-byte eps_send_entries(uint8_t dest);
+byte eps_send_board_value(uint8_t dest);
+void eps_send_output_pin();
 
 void i2cReceiveEvent(int howMany);
 void setup_slave_master();
 
 int get_update_queues_size();
-
+void eps_check_ack();
+void eps_ack_reset();
 /*
 #ifdef IS_MASTER && ARDUINO < 100 // welll...arduino dont know new/delete...but it's ok for INO...
  void operator delete(void * p);

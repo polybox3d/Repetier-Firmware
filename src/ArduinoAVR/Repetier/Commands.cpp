@@ -61,18 +61,18 @@ void Commands::commandLoop()
 
 void Commands::checkForPeriodicalActions()
 {
-    if(!executePeriodical) return;
-    executePeriodical=0;
-    Extruder::manageTemperatures();
-    
-    //check_i2c_periodical();
-	check_boards_connected();
-	chamber.manageTemperatures();
-      
 	#if USE_CLOG_ENCODER==1
 	check_clogged();
 	#endif
 	check_all_ATU();
+	
+	eps_manage();   	
+	
+    if(!executePeriodical) return;
+    executePeriodical=0;
+    Extruder::manageTemperatures();	
+	chamber.manageTemperatures();
+
   
     if(--counter250ms==0)
     {
@@ -80,6 +80,7 @@ void Commands::checkForPeriodicalActions()
             writeMonitor();
         counter250ms=5;
     }
+    
     //UI_SLOW;
 }
 
