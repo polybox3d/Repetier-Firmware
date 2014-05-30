@@ -1,14 +1,57 @@
+/*
+    This file is part of Polybox.
+
+    Repetier-Firmware is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Repetier-Firmware is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Repetier-Firmware.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+/***********************************************************
+ * @file ChamberTempController.h
+ * @author Florian Boudinet <florian.boudinet@gmail.com>
+ * 
+ * Controle and manage temperature of the Machine (Printer's chamber).
+ * 
+ * 
+ * It's a part of Polybox-Firmware.
+ * 
+ * *********************************************************/
+
 #ifndef __CHAMBERTEMP_H__
 #define __CHAMBERTEMP_H__
 
 #include <inttypes.h>
 #include "Repetier.h"
 
+
+/***********************************************************************
+ * 
+ * Defines
+ * 
+ * ********************************************************************/
+ 
 #define CHAMBER_FLAG_ALL_STOP		1
 #define CHAMBER_FLAG_HEATERS_STOP	2
 
 #define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
 
+
+/***********************************************************************
+ * 
+ * Class definition
+ * 
+ * ********************************************************************/
+ 
 class PWM
 {
 	public:
@@ -17,14 +60,24 @@ class PWM
 	PWM(){ pwm = 0; pin = -1;}
 };
 
+
+/***********************************************************************
+ * 
+ * Class definition
+ * 
+ * ********************************************************************/
+ 
 typedef PWM Fan;
 
 class ChamberTempController
 {
 	public:
-	
+	/** Sensor used to get chamber temperature. **/
 	Sensor _sensors[NUM_SENSOR_BOX];
+	
+	/** Heater used to increase the temperature inside the chamber. **/
 	Heater _heaters[NUM_HEATER_CHAMBER];
+	/** Fan used to cool down the temperature inside the chamber. **/
 	Fan _fans[NUM_FAN_CHAMBER];
 
 	float _targetTemperatureC; ///< Target temperature for the chamber, in °C
@@ -32,6 +85,7 @@ class ChamberTempController
 	float _currentICTemperatureC; ///< Current temperature for the IC, in °C
 	uint8_t _flags; ///< Flag/state 
 	
+	/** Constructor. Initilize variables  **/
 	ChamberTempController()
 	{
 		_flags = 0;
@@ -40,7 +94,10 @@ class ChamberTempController
 		setTargetTemperature( 0 );
 		
 	}
-	/********      FAN          ******/
+   /********************************************************************
+    *    FAN
+    * *****************************************************************/
+    
 	void setFanPWMById( uint8_t id, uint8_t pwm)
 	{
 		_fans[id].pwm = pwm;
@@ -59,6 +116,10 @@ class ChamberTempController
 			percent = 100;
 		setAllFanPWM(percent*255/100);
 	}
+	/**
+	 * Set FANs speed using mask ID. 
+	 * FAN with given ID by maskarading are set
+	 *  **/
 	void setFanByMask( uint8_t mask, uint8_t pwm )
 	{
 		for (uint8_t i = 0; i < NUM_FAN_CHAMBER ; ++i )
@@ -69,6 +130,7 @@ class ChamberTempController
 			}
 		}
 	}
+	
 	void disableAllFan()
 	{
 		setAllFanPWM(0);
@@ -110,10 +172,12 @@ class ChamberTempController
 		
 		setAllFanPWM( 0 );
 	}	
+	
 	float getCurrentTemp() const
 	{
 		return _currentTemperatureC;
 	}
+	
 	float getCurrentTempById( uint8_t sensor_id )
 	{
 		if ( sensor_id >= NUM_SENSOR_BOX_INSIDE )
@@ -122,6 +186,7 @@ class ChamberTempController
 		}
 		return _sensors[sensor_id].currentTemperatureC;
 	}
+	
 	float getCurrentICTemp() const
 	{
 		return _currentICTemperatureC;
@@ -137,16 +202,21 @@ class ChamberTempController
 		}
 	}
 	
-	/********      Heater          ******/
+    /********************************************************************
+    *    HEATERS
+    * *****************************************************************/
+    
 	bool isHeaterDisabled()
 	{
 		return _flags & CHAMBER_FLAG_HEATERS_STOP;
 	}
+	
 	void enableHeaters()
 	{
 		WRITE_VPIN( INTER_HEATER_BOX, 0 );
 		_flags &= ~CHAMBER_FLAG_HEATERS_STOP;
 	}
+	
 	void disableHeaters()
 	{
 		_targetTemperatureC = 0;
@@ -159,6 +229,7 @@ class ChamberTempController
 		_flags |= CHAMBER_FLAG_HEATERS_STOP;
 		WRITE_VPIN( INTER_HEATER_BOX, 1 );
 	}
+	
 	void updateTemperature()
 	{
 		float current_temp_sum = 0;
@@ -177,6 +248,7 @@ class ChamberTempController
 		}
 		_currentICTemperatureC = current_temp_sum;
 	}
+	
 	void manageTemperatures()
 	{
 		/** SENSORS **/
@@ -205,6 +277,7 @@ class ChamberTempController
  * We dont really regulate this value, but we check if the temps is too high or
  * too low (due to pelletier and cooler).
  * **/
+ 
 	void manageICTemp()
 	{
 		#if NUM_SENSOR_BOX_IC > 0
@@ -218,7 +291,6 @@ class ChamberTempController
 		}
 		#endif
 	}
-	
 	
 	void initHeaters()
 	{
@@ -288,6 +360,7 @@ class ChamberTempController
 		initHeaters();
 		initSensors();
 	}
+	
 	void disableAll()
 	{
 		disableHeaters();

@@ -219,28 +219,28 @@ void eps_send_board_update(uint8_t dest)
         Update up;
         byte count=2;
         int value=0;
-    /*    Wire.beginTransmission( dest+1 ); // Open th I2C link (i.e master)
+        Wire.beginTransmission( dest+1 ); // Open th I2C link (i.e master)
         Wire.I2C_WRITE( BOARD_ID );
 		Wire.I2C_WRITE( EPS_ALL );
-		*/
+		
         while ( !boards[dest].pin_update_queue.isEmpty() && count < BUFFER_LENGTH-2) 
         {
             up = boards[dest].pin_update_queue.pop();
-          //  Wire.I2C_WRITE( up.type );
-          //  Wire.I2C_WRITE( up.pin );
+            Wire.I2C_WRITE( up.type );
+            Wire.I2C_WRITE( up.pin );
             if ( up.type == EPS_SET ) {
                 value = boards[dest].read_bpin(up.pin);
-          //      Wire.I2C_WRITE( (byte) ( ( value & 0xFF00)>>8 ) );
-           //     Wire.I2C_WRITE( (byte) ( value & 0x00FF ) );
+                Wire.I2C_WRITE( (byte) ( ( value & 0xFF00)>>8 ) );
+				Wire.I2C_WRITE( (byte) ( value & 0x00FF ) );
                 count = count+2+2;
             }
             else if ( up.type == EPS_SETUP )
             {
-           //     Wire.I2C_WRITE( boards[dest].read_bpin_type(up.pin) );
+                Wire.I2C_WRITE( boards[dest].read_bpin_type(up.pin) );
                 count = count+2+1;
             }
         }
-        //Wire.endTransmission();
+        Wire.endTransmission();
     }
 }
 

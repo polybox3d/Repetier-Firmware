@@ -1,3 +1,21 @@
+/*
+    This file is part of Polybox.
+
+    Repetier-Firmware is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Repetier-Firmware is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Repetier-Firmware.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 #ifndef __eps_H__
 #define __eps_H__
 
@@ -23,12 +41,9 @@
  * Wait > Check Version > Init > Running
  * 
  * ********************************************************************/
- 
-#define EPS_PROTOCOL_VERSION 1
-#define EPS_MIN_VERSION_REQUIRE   1
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#define I2C_WRITE write
+#define I2C_WRITE write 
 #define I2C_READ read
 #include "Arduino.h"
 #else
@@ -40,6 +55,20 @@
 #include <inttypes.h>
 
 
+#include "Configuration_eps.h"
+#include "Board.h"
+#include <Wire.h>
+
+
+/***********************************************************************
+ * 
+ * Defines
+ * 
+ * ********************************************************************/
+
+#define EPS_PROTOCOL_VERSION 1
+#define EPS_MIN_VERSION_REQUIRE   1
+
 #define EPS_SETUP           1
 #define EPS_SET             2
 #define EPS_GET             3
@@ -50,20 +79,22 @@
 #define EPS_VERSION         8
 #define EPS_INIT            9
 #define EPS_TOKEN			10
-#define EPS_ACK            	31
+#define EPS_ACK				31
 
 #define MASTER_ID           1
-
-#include "Configuration_eps.h"
-#include "Board.h"
-#include <Wire.h>
-
-class Board;
 
 #define WRITE_VPIN( p, v) eps_set_vpin_value( p, v)
 #define READ_VPIN( p ) eps_read_vpin_value( p )
 #define READ_VPIN_MODE( p ) eps_read_vpin_type( p )
 #define VPIN_MODE( p, v) eps_write_vpin_type( p, v)
+
+class Board;
+
+/***********************************************************************
+ * 
+ * Extern Variables & Variables
+ * 
+ * ********************************************************************/
 
 extern Board boards[NUM_BOARD];
 extern bool send_entries_flag;
@@ -71,7 +102,11 @@ extern bool send_entries_flag;
 uint8_t vpin2bpin(int vpin);
 uint8_t vpin2board(int vpin);
 
-void eps_manage();
+/***********************************************************************
+ * 
+ * Read/Write Functions
+ * 
+ * ********************************************************************/
 
 // READ
 int board_read_bpin_value( uint8_t b, uint8_t pin );
@@ -84,6 +119,14 @@ uint8_t eps_read_vpin_type( int pin );
 void eps_set_vpin_value( int pin, int value);
 void eps_write_vpin_type( int pin, uint8_t type);
 
+/***********************************************************************
+ * 
+ * Functions
+ * 
+ * ********************************************************************/
+ 
+void eps_manage();
+
 void eps_send_action( uint8_t dest, uint8_t action );
 void eps_send_version( int dest );
 
@@ -95,6 +138,13 @@ void i2cReceiveEvent(int howMany);
 void setup_slave_master();
 
 int get_update_queues_size();
+
+/***********************************************************************
+ * 
+ * ACK 
+ * 
+ * ********************************************************************/
+ 
 void eps_check_ack();
 void eps_ack_reset();
 /*

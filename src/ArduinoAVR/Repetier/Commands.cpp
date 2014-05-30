@@ -1733,7 +1733,8 @@ void Commands::executeGCode(GCode *com)
     case 682: //get box open or not
     {
         Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace,is_box_open());
+        Com::printFLN(Com::tSpace,0);
+        //Com::printFLN(Com::tSpace,is_box_open());
     }
     break;
     case 683: // check connected board

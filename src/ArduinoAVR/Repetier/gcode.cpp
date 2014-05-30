@@ -737,6 +737,8 @@ bool GCode::parseAscii(char *line,bool fromSerial)
         formatErrors++;
         if(Printer::debugErrors())
             Com::printErrorFLN(Com::tFormatError);
+        Com::print(line);
+        Com::println();
         if(formatErrors<3) return false;
     }
     else formatErrors = 0;
