@@ -1041,7 +1041,7 @@ instead of driving both with a single stepper. The same works for the other axis
 #define X2_DIR_PIN    E1_DIR_PIN
 #define X2_ENABLE_PIN E1_ENABLE_PIN
 
-#define FEATURE_TWO_YSTEPPER true
+#define FEATURE_TWO_YSTEPPER false
 #define Y2_STEP_PIN   Y_2_STEP_PIN
 #define Y2_DIR_PIN    Y_2_DIR_PIN
 #define Y2_ENABLE_PIN Y_2_ENABLE_PIN

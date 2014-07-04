@@ -54,6 +54,14 @@ Color lvm_get_global_color()
     return faces[0].get_color();
 }
 
+Color lvm_get_face_color(  uint8_t id )
+{
+    if ( id >= 0 && id < LVM_FACES_NUM )
+    {
+        return faces[id].get_color( );
+    }	
+}
+
 uint8_t lvm_get_global_h_intensity()
 {
     return faces[0].get_h_intensity();

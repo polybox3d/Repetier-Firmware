@@ -31,6 +31,8 @@ void lvm_set_face_intensity(uint8_t id, uint8_t h, uint8_t v);
 void lvm_set_face_color(  uint8_t id, Color &c );
 
 Color lvm_get_global_color();
+Color lvm_get_face_color(  uint8_t id );
+
 uint8_t lvm_get_global_h_intensity();
 uint8_t lvm_get_global_v_intensity();
 uint8_t lvm_get_face_h_intensity(uint8_t id);

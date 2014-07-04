@@ -1331,16 +1331,16 @@ void Commands::executeGCode(GCode *com)
         Com::printPolybox( com->M );
         if ( READ_VPIN(CN_MOD_MANUAL) )
         {
-            Com::printFLN(Com::tSpaceH);
-        }
-        else if ( READ_VPIN(CN_MOD_PROX) )
-        {
-            Com::printFLN(Com::tSpaceP);
-        }
-        else
-        {
-            Com::printFLN(" 0");
-        }
+			Com::printFLN(Com::tSpace,  "H");
+		}
+		else if( READ_VPIN(CN_MOD_PROX) )
+		{
+			Com::printFLN(Com::tSpace, "P" );
+		}
+		else
+		{
+			Com::printFLN(Com::tSpace, "0" );
+		}
     }
     break;
     case 602: // Get Lubricant motor plugged
@@ -1497,7 +1497,13 @@ void Commands::executeGCode(GCode *com)
 			Color c = {com->R, com->E, com->P, com->I };
 			lvm_set_face_color( com->S, c ); // id , color
 		}
+		else
+		{
+			Com::printPolybox( com->M );
+			Com::printFLN(Com::tSpace, "Bad arguments...");
+		}
 	}
+	break;
 	case 644: // get global intensity
     {
         Com::printPolybox( com->M );
@@ -1516,7 +1522,7 @@ void Commands::executeGCode(GCode *com)
     case 646: // get face intensity
     {
         Com::printPolybox( com->M );
-        OUT_P_I(" P:", lvm_get_global_h_intensity() );
+        OUT_P_I(" P:", com->P );
         Com::printF(Com::tSpaceXColon, lvm_get_face_h_intensity( com->P ) );
         Com::printFLN(Com::tSpaceYColon, lvm_get_face_v_intensity( com->P ) );
     }
@@ -1534,12 +1540,40 @@ void Commands::executeGCode(GCode *com)
 		Com::printPolybox( com->M );	
         for ( uint8_t i = 0 ; i < LVM_FACES_NUM ; ++i )
         {
-			Com::printFLN(Com::tSpaceP, i);
+			Com::printF(Com::tSpaceP, i);
 			Com::printF(Com::tColon, faces[LVM_FACES_NUM].get_detected() );
 		}
 		OUT_P_LN("");
     }
     break;
+    case 650: // get face color
+    {
+		if ( com->hasP() )
+		{
+			Com::printPolybox( com->M );
+			Color c = lvm_get_face_color( com->P );
+			OUT_P_I(" S:", com->P );
+			OUT_P_I(" R:", c.r );
+			OUT_P_I(" E:", c.g );
+			OUT_P_I(" P:", c.b );
+			OUT_P_I_LN(" I:", c.i );
+		}
+    }
+    break;
+    case 651: // set face color
+    {
+		if ( com->hasR() && com->hasE() && com->hasP() && com->hasI() && com->hasS() )
+        {
+			Color c = {com->R, com->E, com->P, com->I };
+			lvm_set_face_color( com->S, c ); // id , color
+		}
+		else
+		{
+			Com::printPolybox( com->M );
+			Com::printFLN(Com::tSpace, "Bad arguments...");
+		}
+	}
+	break;
 /* ___________________PRINTER_______________________ */
     case 660: // printer ATU (heaters)
     {
@@ -1562,7 +1596,7 @@ void Commands::executeGCode(GCode *com)
 		}
 	}
 	break;
-    case 662: // fetection tool extruder plugged
+    case 662: // detection tool extruder plugged
     {
         Com::printPolybox( com->M );
         if ( DETECTION_E0 > -1 )
@@ -1596,11 +1630,10 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpaceZ3Colon, READ_VPIN(DETECTION_PEL_BOX_0) );
     }
     break;
-    case 666: // ????
+    case 679:
     {
         Com::printPolybox( com->M );
-        Com::printF(Com::tSpaceB0Colon, 1);
-        Com::printFLN(Com::tSpaceB1Colon,1);
+		Com::printFLN(Com::tSpace, 112);
     }
     break;
     case 667: // Set fan by mask
@@ -1733,8 +1766,8 @@ void Commands::executeGCode(GCode *com)
     case 682: //get box open or not
     {
         Com::printPolybox( com->M );
-        Com::printFLN(Com::tSpace,0);
-        //Com::printFLN(Com::tSpace,is_box_open());
+        //Com::printFLN(Com::tSpace,0);
+        Com::printFLN(Com::tSpace,is_box_open());
     }
     break;
     case 683: // check connected board
