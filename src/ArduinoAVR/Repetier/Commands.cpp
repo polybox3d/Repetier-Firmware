@@ -65,14 +65,17 @@ void Commands::checkForPeriodicalActions()
 	check_clogged();
 	#endif
 	check_all_ATU();
-	
+		
 	eps_manage();   	
 	
     if(!executePeriodical) return;
     executePeriodical=0;
+    
+    manage_mode();
+    
     Extruder::manageTemperatures();	
 	chamber.manageTemperatures();
-
+	
   
     if(--counter250ms==0)
     {

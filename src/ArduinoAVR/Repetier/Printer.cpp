@@ -266,7 +266,7 @@ void Printer::kill(uint8_t only_steppers)
     {
         for(uint8_t i=0; i<NUM_TEMPERATURE_LOOPS; i++)
             Extruder::setTemperatureForExtruder(0,i);
-        Extruder::setHeatedBedTemperature(0);// CACA <-------------------------
+        Extruder::setHeatedBedTemperature(0);
         UI_STATUS_UPD(UI_TEXT_KILLED);
 #if defined(PS_ON_PIN) && PS_ON_PIN>-1
         //pinMode(PS_ON_PIN,INPUT);

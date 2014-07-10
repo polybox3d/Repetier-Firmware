@@ -15,11 +15,88 @@ volatile uint8_t last_check = 0;
 volatile uint8_t timer_i2c_update=0;
 volatile int timer_i2c_send_get=0;
 volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
+
+volatile uint8_t polybox_mode = MODE_PRINTER_ON;
+
 ChamberTempController chamber;
 
 #define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
   
  
+
+void manage_mode()
+{
+	// Gestion Extern. set HZ.
+	if ( READ_VPIN( CN_GEST_EXT ) && !(polybox_mode & MODE_CN_ON) )
+	{
+		Printer::kill(true);
+		for(uint8_t i=0; i<NUM_TEMPERATURE_LOOPS; i++)
+            Extruder::setTemperatureForExtruder(0,i);
+        Extruder::setHeatedBedTemperature(0);
+		// Motor
+		VPIN_MODE( RY_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( RY_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( RY_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		VPIN_MODE( RX_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( RX_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( RX_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		VPIN_MODE( OPT_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( OPT_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( OPT_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		VPIN_MODE( Y_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( Y_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( Y_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		VPIN_MODE( X_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( X_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( X_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		VPIN_MODE( Z_STEP_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( Z_DIR_PIN, PIN_TYPE_INPUT);
+		VPIN_MODE( Z_ENABLE_PIN, PIN_TYPE_INPUT);
+		
+		polybox_mode = MODE_CN_ON;
+		
+	}
+	else if ( (READ_VPIN( CN_GEST_EXT ) == 0) && !(polybox_mode & MODE_PRINTER_ON) )
+	{
+		Printer::unsetAllSteppersDisabled();
+		
+		VPIN_MODE( RY_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( RY_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( RY_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		VPIN_MODE( RX_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( RX_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( RX_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		VPIN_MODE( OPT_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( OPT_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( OPT_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		VPIN_MODE( Y_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( Y_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( Y_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		VPIN_MODE( X_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( X_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( X_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		VPIN_MODE( Z_STEP_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( Z_DIR_PIN, PIN_TYPE_OUTPUT);
+		VPIN_MODE( Z_ENABLE_PIN, PIN_TYPE_OUTPUT);
+		
+		polybox_mode = MODE_PRINTER_ON;
+	}
+
+}
+bool is_printer_mode()
+{
+	return 	(polybox_mode & MODE_PRINTER_ON) ;
+}
 
 
 /***********************************************************************

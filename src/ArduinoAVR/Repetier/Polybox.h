@@ -40,6 +40,12 @@ extern volatile uint8_t i2c_update_time;
 
 extern ChamberTempController chamber;
 
+#define MODE_CN_ON				1
+#define MODE_PRINTER_ON			2
+
+
+extern volatile uint8_t polybox_mode;
+
 /***********************************************************************
  * 
  *    Initilization functions
@@ -64,6 +70,8 @@ void init_therm(); ///< Initilize all the thermistors.
 void encoder_incr(); ///< Incremente the encoder for clogging.
 void pin_x_steps( int PIN , int steps ); ///< Move motor at PIn by the given steps.
 void executeAction(int action, int param); ///< 
+void manage_mode();
+bool is_printer_mode();
 
 /***********************************************************************
  * 
