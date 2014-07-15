@@ -21,7 +21,6 @@ Board::~Board()
 
 void Board::manage_ping_pong()
 {
-#if IS_MASTER
     switch ( check_state )
     {   
         case BOARD_WAIT_PONG :
@@ -30,26 +29,23 @@ void Board::manage_ping_pong()
         break;            
         case BOARD_OK :
             eps_send_action( this->i2c_id, EPS_PING );
-            check_state = BOARD_WAIT_PONG;
+            Wire.requestFrom((uint8_t)this->i2c_id, (uint8_t)1);
+            while(Wire.available())
+			{
+				char c = Wire.I2C_READ();
+				if ( c == EPS_PONG )
+				{
+					check_state = BOARD_OK;
+				}
+				else
+				{
+					check_state = BOARD_WAIT_PONG;
+				}
+			}
         break;
         default:
         break;
-    }
-#else
-	switch ( check_state )
-    {
-        case BOARD_WAIT_PONG :
-        {
-            eps_send_action( this->i2c_id, EPS_PONG );
-            check_state = BOARD_OK;
-            Serial.print(" PONG ");
-        }
-        break;
-        default :
-        break;
-    }
-#endif	
-	
+    }	
 }
 
 void Board::check_pins_update(uint8_t type)
@@ -129,18 +125,43 @@ uint8_t Board::write_bpin_type( uint8_t pin, uint8_t type )
     pin_values[pin]->type = type;
 }
 
-
 void Board::manage_status( )
 {  
-#if IS_MASTER
     switch ( check_state )
     {   
         case BOARD_WAIT_VERSION :
             eps_send_version( this->i2c_id );
+            Wire.requestFrom((uint8_t)this->i2c_id, (uint8_t)1);
+			while ( Wire.available() )
+			{
+				uint8_t value = Wire.I2C_READ();
+				if ( value < EPS_MIN_VERSION_REQUIRE )
+				{
+					this->check_state = BOARD_BAD_VERSION;
+				}
+				else
+				{
+					this->check_state = BOARD_WAIT_INIT;
+				}
+			}
         break;         
         case BOARD_WAIT_INIT :
             eps_send_action( this->i2c_id, EPS_INIT );
-            eps_send_output_pin(); // stack OUTPUT pin
+            Wire.requestFrom((uint8_t)this->i2c_id, (uint8_t)1);
+			while ( Wire.available() )
+			{
+				uint8_t value = Wire.I2C_READ();
+				if ( value == EPS_INIT )
+				{
+					this->check_state = BOARD_OK;
+					this->connected = true;
+					//eps_send_output_pin(); // stack OUTPUT pin
+				}
+				else
+				{
+					this->check_state = BOARD_WAIT_INIT;
+				}
+			}
         break;          
         case BOARD_OK :
         break;
@@ -149,34 +170,4 @@ void Board::manage_status( )
         default:
         break;
     }
-#else
-	switch ( check_state )
-    {
-        case BOARD_WAIT_VERSION :
-        {
-			Serial.print(" WAITVERS ");
-            check_state = BOARD_W8_MASTER;
-            eps_send_version( this->i2c_id );
-        }
-        break;
-        case BOARD_WAIT_INIT :
-        {
-			Serial.print(" WAITINIT ");
-            check_state = BOARD_OK;
-            connected = true;
-            eps_send_action( this->i2c_id, EPS_INIT );
-        }
-        break;
-        case BOARD_BAD_VERSION :
-        {
-			Serial.print(" > BAD VERSION < ");
-            check_state = BOARD_OFF;
-            connected = false;
-            eps_send_version( this->i2c_id );
-        }
-        break;
-        default :
-        break;
-    }
-#endif
 }

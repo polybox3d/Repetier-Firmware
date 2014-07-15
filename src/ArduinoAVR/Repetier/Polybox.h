@@ -87,7 +87,6 @@ byte bed_detected( uint8_t bed_id); ///< Return true if heated beds are detected
 uint8_t get_lub_level(); ///< Return the currrent lubricant level .
 
 byte check_clogged(); ///< Check if the current extruder is clogged, using an encoder near the filament.
-void check_i2c_periodical(); ///< Check I2C status.
 void check_boards_connected(); ///< Process the keep-alive protocol with slaves.
 void check_all_ATU(); ///< Check all the ATU and stop the machine if needed.
 

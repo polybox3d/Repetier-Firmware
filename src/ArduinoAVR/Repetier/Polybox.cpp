@@ -433,19 +433,6 @@ void i2c_send_get()
     }
 }
 
-void check_i2c_periodical()
-{
-  if(++timer_i2c_update>= i2c_update_time )
-  {
-     timer_i2c_update=0;
-     i2c_send_update();
-  }
-  if(++timer_i2c_send_get>= BOARD_SEND_GET_DELAY )
-  {
-     timer_i2c_send_get=0;
-     i2c_send_get();
-  }
-}
 uint8_t get_lub_level()
 {
 	uint8_t level = 0;

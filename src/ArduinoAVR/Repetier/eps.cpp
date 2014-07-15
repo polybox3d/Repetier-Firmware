@@ -68,10 +68,12 @@ void eps_manage()
 			if ( get_flag )
 			{ 
 				eps_send_action( i2c_current_board+1, EPS_GET );
+				Wire.requestFrom(i2c_current_board+1,32);
 			}
 			if ( token_flag )
 			{ 
 				eps_send_action( i2c_current_board+1, EPS_TOKEN );
+				Wire.requestFrom(i2c_current_board+1,32);
 			}
 			if ( pong_flag )
 			{
@@ -93,15 +95,10 @@ void eps_manage()
 }
 void eps_check_ack()
 {
-	if ( send_ack == true )
-	{
-		eps_send_action( i2c_ack_reply_destination, EPS_ACK ) ;
-		send_ack = false;
-	}
+
 }
 void eps_ack_reset()
 {
-	i2c_current_buffer_size = 0;
 }
 
 uint8_t vpin2bpin(int vpin)
@@ -201,6 +198,7 @@ void eps_send_action( uint8_t dest, uint8_t action )
     Wire.I2C_WRITE( BOARD_ID );
     Wire.I2C_WRITE( action );
     Wire.endTransmission();
+    delay(1);
 }
 
 void eps_send_version( int dest )
@@ -210,6 +208,7 @@ void eps_send_version( int dest )
     Wire.I2C_WRITE( EPS_VERSION );
     Wire.I2C_WRITE( EPS_PROTOCOL_VERSION );
     Wire.endTransmission();
+    delay(1);
 }
 
 void eps_send_board_update(uint8_t dest) 
@@ -250,7 +249,7 @@ void eps_send_output_pin()
 	{
 		for ( uint8_t pin=0; pin<PINS_PER_BOARD ; ++pin)
 		{
-			if ( boards[board_idx].pin_values[pin]->GET_IO_TYPE == PIN_TYPE_OUTPUT)
+			if ( boards[board_idx].pin_values[pin]->GET_IO_TYPE == PIN_TYPE_OUTPUT) /// !!!!!!!!!!!!!!!!!!!!!!!
 			{
 				Update u = {pin, EPS_SET};
 				boards[board_idx].pin_update_queue.push( u );		
@@ -291,14 +290,10 @@ byte eps_send_board_value(uint8_t dest)
 // this function is registered as an event, see setup()
 void i2cReceiveEvent(int howMany)
 {
-    #ifdef IS_MASTER
+	/*
     int sender = Wire.I2C_READ() -1;
     byte action = Wire.I2C_READ();
     
-    ///< ACK system
-	i2c_ack_reply_destination = sender + 1 ;
-	send_ack = true;
-
     if ( action == EPS_SET )
     {
         byte pin = 0;
@@ -319,135 +314,10 @@ void i2cReceiveEvent(int howMany)
     {
         reset_board();
     }
-    else if (action == EPS_INIT )
-    {
-        boards[sender].check_state = BOARD_OK;
-        boards[sender].connected = true;
-    }
-    else if (action == EPS_VERSION )
-    {
-        while ( Wire.available() )
-        {
-            uint8_t value = Wire.I2C_READ();
-            if ( value < EPS_MIN_VERSION_REQUIRE )
-            {
-                boards[sender].check_state = BOARD_BAD_VERSION;
-            }
-            else
-            {
-                boards[sender].check_state = BOARD_WAIT_INIT;
-            }
-        }
-    }
-    else if ( action == EPS_ACK )
-    {
-		send_ack = false; ///< no need ack for an ACK...
-		//eps_ack_reset(); ///< Reset the ACK flag.
-    }
     else
     {
 	}
-	
-    #else
-    byte pin = 0;
-    int value = 0;
-    int sender = Wire.I2C_READ() -1;
-    byte action = Wire.read();
-    
-    ///< ACK system
-	i2c_ack_reply_destination = sender + 1 ;
-	send_ack = true;
-	
-    if ( action == EPS_GET && board.connected ) 
-    {
-        send_entries_flag = true;
-    }
-    else if ( action == EPS_SET ) 
-    {
-        if ( Wire.available() )
-        {
-            pin = Wire.I2C_READ();
-            value = Wire.I2C_READ()<<8;
-            value += Wire.I2C_READ();
-            WRITE_VPIN( pin, value );            
-        }
-    }
-    else if ( action == EPS_SETUP ) 
-    {
-        while ( Wire.available() )
-        {
-            pin = Wire.I2C_READ();
-            value = Wire.I2C_READ();
-            VPIN_MODE( pin, value );  
-            Serial.print(pin);
-        }
-    }
-    else if ( action == EPS_ALL ) 
-    {
-        while ( Wire.available() )
-        {
-            action = Wire.I2C_READ();
-            pin = Wire.I2C_READ();
-            if ( action == EPS_SET)
-            {
-                value = Wire.I2C_READ() << 8;
-                value += Wire.I2C_READ();
-                WRITE_VPIN( pin, value );
-                
-            }
-            else if ( action == EPS_SETUP)
-            {
-                value = Wire.I2C_READ();
-                VPIN_MODE( pin, value );    
-            }
-        }
-        
-    }
-    else if ( action == EPS_PING && board.connected ) 
-    {
-        board.check_state = BOARD_WAIT_PONG;
-    }
-    else if ( action == EPS_RESET ) 
-    {
-		Serial.print(" RESET BOARD ");
-        //reset_board();
-    }
-    else if ( action == EPS_INIT ) 
-    {
-		Serial.print(" INIT ");
-        board.check_state = BOARD_WAIT_INIT;
-    }
-    else if ( action == EPS_VERSION ) 
-    {
-		Serial.print(" VERS ");
-		restart_counter++;
-        board.connected = false;
-        if ( Wire.available() )
-        {
-            value = Wire.read();
-            if ( value > EPS_PROTOCOL_VERSION )
-            {
-                board.check_state = BOARD_BAD_VERSION;
-            }
-            else
-            {
-                board.check_state = BOARD_WAIT_VERSION;
-            }
-        }
-    }
-    else if ( action == EPS_ACK )
-    {
-		send_ack = false; ///< no need ack for an ACK...
-		//eps_ack_reset(); ///< Reset the ACK flag.
-		Serial.print(" ACK ");
-    }
-    else
-    {
-        Serial.print(" else? ");
-        Serial.print( action );        
-    }
-	
-    #endif
+	*/
 }
 
 /*
