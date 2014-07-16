@@ -69,11 +69,13 @@ void eps_manage()
 			{ 
 				eps_send_action( i2c_current_board+1, EPS_GET );
 				Wire.requestFrom(i2c_current_board+1,32);
+				eps_process_incoming_datas( i2c_current_board );
 			}
 			if ( token_flag )
 			{ 
 				eps_send_action( i2c_current_board+1, EPS_TOKEN );
 				Wire.requestFrom(i2c_current_board+1,32);
+				eps_process_incoming_datas( i2c_current_board );
 			}
 			if ( pong_flag )
 			{
@@ -92,6 +94,29 @@ void eps_manage()
 	//eps_check_ack();
 	
 	i2c_current_board++;
+}
+
+void eps_process_incoming_datas(uint8_t board)
+{
+	byte pin = 0;
+	int value = 0;
+	byte action = 0;
+	while ( Wire.available() ) 
+	{
+		action = Wire.I2C_READ();
+		if ( action == EPS_SET ) {
+			pin = Wire.I2C_READ();
+			value = Wire.I2C_READ() << 8;
+			value += Wire.I2C_READ();
+			boards[board].write_bpin( pin, value );
+		}
+		else if ( action == EPS_SETUP )
+		{
+			pin = Wire.I2C_READ();
+			value = Wire.I2C_READ();
+			boards[board].write_bpin_type( pin, value );
+		}
+	}	
 }
 void eps_check_ack()
 {
@@ -243,17 +268,17 @@ void eps_send_board_update(uint8_t dest)
     }
 }
 
-void eps_send_output_pin()
+void eps_send_all_pin()
 {
 	for ( uint8_t board_idx=1; board_idx<NUM_BOARD ; ++board_idx)
 	{
 		for ( uint8_t pin=0; pin<PINS_PER_BOARD ; ++pin)
 		{
-			if ( boards[board_idx].pin_values[pin]->GET_IO_TYPE == PIN_TYPE_OUTPUT) /// !!!!!!!!!!!!!!!!!!!!!!!
-			{
-				Update u = {pin, EPS_SET};
-				boards[board_idx].pin_update_queue.push( u );		
-			}
+			Update ut = {pin, EPS_SETUP};
+			boards[board_idx].pin_update_queue.push( ut );
+			
+			Update u = {pin, EPS_SET};
+			boards[board_idx].pin_update_queue.push( u );
 		}
 	}
 }

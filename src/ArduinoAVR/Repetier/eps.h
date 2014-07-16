@@ -132,7 +132,8 @@ void eps_send_version( int dest );
 
 void eps_send_board_update(uint8_t dest);
 byte eps_send_board_value(uint8_t dest);
-void eps_send_output_pin();
+void eps_send_all_pin();
+void eps_process_incoming_datas(uint8_t board);
 
 void i2cReceiveEvent(int howMany);
 void setup_slave_master();
