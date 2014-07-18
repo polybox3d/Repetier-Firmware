@@ -1479,7 +1479,7 @@ void Commands::executeGCode(GCode *com)
     {    
 		if ( com->hasS() )
 		{
-			WRITE_VPIN( INTER_LVM, com->S );
+			//WRITE_VPIN( INTER_LVM, com->S );
 		}
 	}    
 	break;
@@ -1524,15 +1524,18 @@ void Commands::executeGCode(GCode *com)
     break;    
     case 646: // get face intensity
     {
-        Com::printPolybox( com->M );
-        OUT_P_I(" P:", com->P );
-        Com::printF(Com::tSpaceXColon, lvm_get_face_h_intensity( com->P ) );
-        Com::printFLN(Com::tSpaceYColon, lvm_get_face_v_intensity( com->P ) );
+		if ( com->hasP() )
+        {
+			Com::printPolybox( com->M );
+			OUT_P_I(" P:", com->P );
+			Com::printF(Com::tSpaceXColon, lvm_get_face_h_intensity( com->P ) );
+			Com::printFLN(Com::tSpaceYColon, lvm_get_face_v_intensity( com->P ) );
+		}
     }
     break; // set face intensity
     case 647: // set face intensity ( h, v ) 
     {   
-		if ( com->hasS() )
+		if ( com->hasS() && com->hasX() && com->hasY())
 		{ 
 			lvm_set_face_intensity( com->S, com->X, com->Y );
 		}
@@ -1720,7 +1723,7 @@ void Commands::executeGCode(GCode *com)
 		}
     }
     break;
-	case 673: //get chamber temp
+	case 673: //get chamber temp  /// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!<!<!<!!<!<<!<!<!!<!<!<
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpaceT0Colon,chamber.getCurrentTemp() );

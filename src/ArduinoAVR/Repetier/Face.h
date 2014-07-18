@@ -35,6 +35,7 @@ public:
     uint8_t get_h_intensity();
     uint8_t get_v_intensity();
     uint8_t get_detected();
+    void init();
     
     private:
     uint8_t id; // id auto-incr.

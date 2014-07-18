@@ -191,14 +191,7 @@ void eps_set_vpin_value( int pin, int value) {
     }
     else
     {
-        if ( IS_DIGITAL(boards[board_n].pin_values[real_pin]->type) ) // digital
-        {
-            digitalWrite( real_pin, value );
-        }
-        else
-        {
-            analogWrite( real_pin, value );
-        }
+        analogWrite( real_pin, value );
     }//pin_update_queue.push( Update{pin, eps_SET} );
 }
 

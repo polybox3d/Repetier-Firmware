@@ -19,9 +19,7 @@ volatile uint8_t i2c_update_time = BOARD_UPDATE_CHECK_DELAY;
 volatile uint8_t polybox_mode = MODE_PRINTER_ON;
 
 ChamberTempController chamber;
-
-#define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
-  
+ 
  
 
 void manage_mode()
@@ -132,7 +130,8 @@ void init_polybox()
 	init_atu_inter();
 	init_scanner();
 	init_therm();
-	chamber.initAll();
+	init_lvm();
+	chamber.initAll(); // init fans, heaters, sensors
 	//send data to slave i.e force update
 	eps_send_all_pin();
 }

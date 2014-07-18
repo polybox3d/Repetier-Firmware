@@ -94,9 +94,9 @@ Heat manager for heated bed:
 
 #define	NUM_SENSOR_BOX_INSIDE			3 ///< 3 inside
 #define	NUM_SENSOR_BOX_IC				2 ///< 2 for IC box
-#define	NUM_SENSOR_BOX					NUM_SENSOR_BOX_IC + NUM_SENSOR_BOX_INSIDE ///< 3 inside, 2 for IC box
+#define	NUM_SENSOR_BOX					( NUM_SENSOR_BOX_IC + NUM_SENSOR_BOX_INSIDE ) ///< 3 inside, 2 for IC box
 #define	NUM_HEATER_CHAMBER				4
-#define	NUM_FAN_CHAMBER					NUM_HEATER_CHAMBER + 2 ///< +2 'cause 1 extractor, 1 pulsor 
+#define	NUM_FAN_CHAMBER					( NUM_HEATER_CHAMBER + 2 ) ///< +2 'cause 1 extractor, 1 pulsor 
 
 #define USE_CLOG_ENCODER   				0
 

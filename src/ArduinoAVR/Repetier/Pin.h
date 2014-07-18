@@ -67,6 +67,8 @@
 
 #define GET_IO_TYPE type & PIN_TYPE_IO_MASK
 
+#define SETUP_PIN(p,t)  if (p>-1)  VPIN_MODE( p, t)
+
 class Pin
 {
 	public :

@@ -3,6 +3,15 @@
 
 Face faces[LVM_FACES_NUM];
 
+
+void init_lvm()
+{
+	for ( uint8_t i =0; i < LVM_FACES_NUM  ; ++i)
+    {
+        faces[i].init();
+    }
+	
+}
 void lvm_set_face_intensity(uint8_t id, uint8_t h, uint8_t v)
 {
     if ( id >= 0 && id < LVM_FACES_NUM )
