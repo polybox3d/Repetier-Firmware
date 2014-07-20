@@ -1475,11 +1475,11 @@ void Commands::executeGCode(GCode *com)
 		Com::printFLN(Com::tSpace, READ_VPIN( INTER_LVM ));
 	}    
 	break;
-	case 641: // set labview on off
+	case 641: // set labview on/off
     {    
 		if ( com->hasS() )
 		{
-			//WRITE_VPIN( INTER_LVM, com->S );
+			WRITE_VPIN( SELECT_LVM, com->S );
 		}
 	}    
 	break;
