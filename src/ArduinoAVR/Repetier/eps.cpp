@@ -216,7 +216,7 @@ void eps_send_action( uint8_t dest, uint8_t action )
     Wire.I2C_WRITE( BOARD_ID );
     Wire.I2C_WRITE( action );
     Wire.endTransmission();
-    delay(1);
+    delayMicroseconds(2);  //needs at least 1.3us free time between start and stop /** Credits : http://www.bajdi.com/arduino-sketches/mag3110.ino **/
 }
 
 void eps_send_version( int dest )
@@ -226,7 +226,7 @@ void eps_send_version( int dest )
     Wire.I2C_WRITE( EPS_VERSION );
     Wire.I2C_WRITE( EPS_PROTOCOL_VERSION );
     Wire.endTransmission();
-    delay(1);
+    delayMicroseconds(2);  //needs at least 1.3us free time between start and stop /** Credits : http://www.bajdi.com/arduino-sketches/mag3110.ino **/
 }
 
 void eps_send_board_update(uint8_t dest) 
