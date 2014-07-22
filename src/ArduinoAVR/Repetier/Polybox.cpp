@@ -133,7 +133,6 @@ void init_polybox()
 	init_lvm();
 	chamber.initAll(); // init fans, heaters, sensors
 	//send data to slave i.e force update
-	eps_send_all_pin();
 }
 void init_therm()
 {

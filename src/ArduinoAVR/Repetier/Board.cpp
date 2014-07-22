@@ -125,6 +125,27 @@ uint8_t Board::write_bpin_type( uint8_t pin, uint8_t type )
     pin_values[pin]->type = type;
 }
 
+void Board::push_all_pin( )
+{
+	for ( uint8_t pin=0; pin<PINS_PER_BOARD ; ++pin)
+	{
+		Update ut = {pin, EPS_SETUP};
+		this->pin_update_queue.push( ut );
+		
+		Update u = {pin, EPS_SET};
+		this->pin_update_queue.push( u );
+	}
+	
+}
+void Board::clear_queue()
+{
+	while( ! pin_update_queue.isEmpty() )
+	{
+		pin_update_queue.pop();
+	}
+}
+
+
 void Board::manage_status( )
 {  
     switch ( check_state )
@@ -155,7 +176,8 @@ void Board::manage_status( )
 				{
 					this->check_state = BOARD_OK;
 					this->connected = true;
-					//eps_send_output_pin(); // stack OUTPUT pin
+					this->clear_queue();
+					this->push_all_pin();
 				}
 				else
 				{

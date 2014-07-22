@@ -96,7 +96,16 @@ class Board
     * Initialize pin_value table.
     * **/
     void init_pin_table(); 
+    /**
+    * Push all pin type and value to slave
+    * **/
+    void push_all_pin( );
+    /**
+    * clear queue
+    * **/
+    void clear_queue( );
     
+        
  /***********************************************************************
  * Define Read/Write function for virtual pin.
  * ********************************************************************/

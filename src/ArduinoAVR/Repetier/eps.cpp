@@ -261,21 +261,13 @@ void eps_send_board_update(uint8_t dest)
     }
 }
 
-void eps_send_all_pin()
+void eps_push_all_pin()
 {
 	for ( uint8_t board_idx=1; board_idx<NUM_BOARD ; ++board_idx)
 	{
-		for ( uint8_t pin=0; pin<PINS_PER_BOARD ; ++pin)
-		{
-			Update ut = {pin, EPS_SETUP};
-			boards[board_idx].pin_update_queue.push( ut );
-			
-			Update u = {pin, EPS_SET};
-			boards[board_idx].pin_update_queue.push( u );
-		}
+		boards[board_idx].push_all_pin();
 	}
 }
-
 
 byte eps_send_board_value(uint8_t dest)
 {
