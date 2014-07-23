@@ -241,6 +241,7 @@ class ChamberTempController
 			current_temp_sum+= _sensors[i].currentTemperatureC;
 		}
 		_currentTemperatureC = current_temp_sum/i;
+		OUT_P_I_LN(" T°:",_currentTemperatureC);
 		
 		current_temp_sum = 0;
 		/****************  Therm IC  ****************/
@@ -248,7 +249,7 @@ class ChamberTempController
 		{
 			_sensors[i].updateCurrentTemperature();
 			current_temp_sum+= _sensors[i].currentTemperatureC;
-			OUT_P_I_LN(" T°:",_sensors[i].currentTemperatureC);
+			//OUT_P_I_LN(" T°:",_sensors[i].currentTemperatureC);
 		}
 		_currentICTemperatureC = current_temp_sum/(i-NUM_SENSOR_BOX_INSIDE);
 	}

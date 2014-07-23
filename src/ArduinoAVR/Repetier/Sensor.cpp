@@ -39,11 +39,6 @@ void Sensor::updateCurrentTemperature()
         currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-(osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS)); // Convert to 10 bit result
         break;
     case 50: // User defined PTC table
-    //ADDDDDDDDDDD
-		currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-(osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS)); // Convert to 10 bit result
-		
-		break;
-	// ENDDD
     case 51:
     case 52:
     case 60: // HEATER_USES_AD8495 (Delivers 5mV/degC)
@@ -63,6 +58,10 @@ void Sensor::updateCurrentTemperature()
     default:
         currentTemperature = 4095; // unknown method, return high value to switch heater off for safety
     }
+    /*if ( sensorPin == 6 )
+    {
+		OUT_P_I_LN(" Vraw:",currentTemperature);
+	}*/
     int currentTemperature = this->currentTemperature;
     switch(type)
     {
@@ -109,14 +108,14 @@ void Sensor::updateCurrentTemperature()
     case 51:
     case 52:
     {
-		// WAS -46
-        type-=47;
+        type-=46;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
         const short *temptable = (const short *)pgm_read_word(&temptables[type]); //pgm_read_word_near(&temptables[type]);
         short oldraw = pgm_read_word(&temptable[0]);
         short oldtemp = pgm_read_word(&temptable[1]);
         short newraw,newtemp;        
+        currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-currentTemperature;
         while(i<num)
         {
             newraw = pgm_read_word(&temptable[i++]);
