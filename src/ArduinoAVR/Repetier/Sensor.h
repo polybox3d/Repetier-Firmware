@@ -7,12 +7,7 @@ class Sensor
 {
 	public:
 	Sensor(){};
-	Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature, float currentTemperatureC):
-						sensorType(sensorType), 
-						sensorPin(sensorPin), 
-						currentTemperature(currentTemperature), 
-						targetTemperature(targetTemperature),
-						currentTemperatureC(currentTemperatureC){}
+	Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature, float currentTemperatureC);
 	~Sensor(){}
 	uint8_t sensorType; ///< Type of temperature sensor.
     uint8_t sensorPin; ///< Pin to read extruder temperature.

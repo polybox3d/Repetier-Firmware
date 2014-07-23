@@ -855,6 +855,11 @@ ISR(PWM_TIMER_VECTOR)
             // Start next conversion
             if(++osAnalogInputPos>=ANALOG_INPUTS) osAnalogInputPos = 0;
             uint8_t channel = pgm_read_byte(&osAnalogInputChannels[osAnalogInputPos]);
+            // Need the analog channel, not the AVR pin number.
+            if ( channel > PIN_ANALOG )
+            {
+				channel -= PIN_ANALOG;
+			}
 #if defined(ADCSRB) && defined(MUX5)
             if(channel & 8)  // Reading channel 0-7 or 8-15?
                 ADCSRB |= _BV(MUX5);

@@ -53,15 +53,10 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define POLY_SERIAL_SEPARATOR_VALUE		"#"
 #define POLY_SERIAL_DEBUG				"%"
 #define ENABLE_ATU						false
-#define ENABLE_HOT_CHAMBER				false
+#define ENABLE_HOT_CHAMBER				true
 #define ENABLE_HARDWARE_CHECK_SLAVE		false
 #define ENABLE_ARCH_PWM					true
 #define POLYBOX_DEBUG					false
-
-/**  Min and Max temp inside IC box. In °C */
-#define IC_BOX_MIN_TEMP					-10
-#define IC_BOX_MAX_TEMP					90
-#define IC_SENSOR_TYPE 					1
 
 /**  Sensor used by thermistor inside the heating chamber (cf. extruder.h for generic table)*/
 #define HOT_CHAMBER_SENSOR_TYPE 		1
@@ -87,8 +82,11 @@ Heat manager for heated bed:
 #define CHAMBER_PID_MAX 255
 
 
-/**  Sensor used by thermistor inside IC box (cf. extruder.h for generic table)*/
-#define IC_SENSOR_TYPE 					1
+/**  Min and Max temp inside IC box. In °C */
+#define IC_BOX_MIN_TEMP					-10
+#define IC_BOX_MAX_TEMP					90
+#define IC_SENSOR_TYPE 					50 
+
 /**  Sensor used by thermistor for the cold part of each extruder (cf. extruder.h for generic table)*/
 #define EXT_COLD_SENSOR_TYPE 			1
 

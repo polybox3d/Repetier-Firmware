@@ -233,20 +233,24 @@ class ChamberTempController
 	void updateTemperature()
 	{
 		float current_temp_sum = 0;
-		for (uint8_t i = 0 ; i < NUM_SENSOR_BOX_INSIDE ; i++ )
+		uint8_t i;
+		/***********  Therm Hot Chamber   ***********/
+		for ( i = 0 ; i < NUM_SENSOR_BOX_INSIDE ; i++ )
 		{
 			_sensors[i].updateCurrentTemperature();
 			current_temp_sum+= _sensors[i].currentTemperatureC;
 		}
-		_currentTemperatureC = current_temp_sum;
+		_currentTemperatureC = current_temp_sum/i;
 		
 		current_temp_sum = 0;
-		for (uint8_t i = NUM_SENSOR_BOX_INSIDE ; i < NUM_SENSOR_BOX_IC+NUM_SENSOR_BOX_INSIDE ; i++ )
+		/****************  Therm IC  ****************/
+		for ( i = NUM_SENSOR_BOX_INSIDE ; i < NUM_SENSOR_BOX_IC+NUM_SENSOR_BOX_INSIDE ; i++ )
 		{
-			_sensors[NUM_SENSOR_BOX_INSIDE].updateCurrentTemperature();
-			current_temp_sum+= _sensors[NUM_SENSOR_BOX_INSIDE].currentTemperatureC;
+			_sensors[i].updateCurrentTemperature();
+			current_temp_sum+= _sensors[i].currentTemperatureC;
+			OUT_P_I_LN(" T°:",_sensors[i].currentTemperatureC);
 		}
-		_currentICTemperatureC = current_temp_sum;
+		_currentICTemperatureC = current_temp_sum/(i-NUM_SENSOR_BOX_INSIDE);
 	}
 	
 	void manageTemperatures()
@@ -352,6 +356,17 @@ class ChamberTempController
 		#if NUM_SENSOR_BOX_INSIDE > 4
 			_sensors[4] = Sensor(HOT_CHAMBER_SENSOR_TYPE,CHAMBER_4_SENSOR_INDEX,0,0,0);
 		#endif
+		
+		#if  (NUM_SENSOR_BOX_IC+NUM_SENSOR_BOX_INSIDE ) > NUM_SENSOR_BOX_INSIDE
+			_sensors[NUM_SENSOR_BOX_INSIDE] = Sensor(IC_SENSOR_TYPE,IC_0_SENSOR_INDEX,0,0,0);
+		#endif
+		#if ( NUM_SENSOR_BOX_IC+NUM_SENSOR_BOX_INSIDE ) > ( NUM_SENSOR_BOX_INSIDE +1 )
+			_sensors[( NUM_SENSOR_BOX_INSIDE + 1 )] = Sensor(IC_SENSOR_TYPE,IC_1_SENSOR_INDEX,0,0,0);
+		#endif
+		#if ( NUM_SENSOR_BOX_IC+NUM_SENSOR_BOX_INSIDE ) > ( NUM_SENSOR_BOX_INSIDE + 2 )
+			_sensors[( NUM_SENSOR_BOX_INSIDE + 2 )] = Sensor(IC_SENSOR_TYPE,IC_2_SENSOR_INDEX,0,0,0);
+		#endif
+		
 	}
 	
 	void initAll()

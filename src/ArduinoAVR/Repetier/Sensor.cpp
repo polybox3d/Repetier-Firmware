@@ -2,11 +2,21 @@
 
 #include "Repetier.h"
 
+Sensor::Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature, int16_t targetTemperature, float currentTemperatureC):
+						sensorType(sensorType), 
+						sensorPin(sensorPin), 
+						currentTemperature(currentTemperature), 
+						targetTemperature(targetTemperature),
+						currentTemperatureC(currentTemperatureC)
+{ 
+}
+
 
 void Sensor::updateCurrentTemperature()
 {
-    uint8_t type = sensorType;
-    
+	/*OUT_P_I_LN(" P:",sensorPin);
+	OUT_P_I_LN(" Vraw:",osAnalogInputValues[sensorPin]);*/
+    uint8_t type = sensorType;    
     // get raw temperature
     switch(type)
     {
@@ -29,6 +39,11 @@ void Sensor::updateCurrentTemperature()
         currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-(osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS)); // Convert to 10 bit result
         break;
     case 50: // User defined PTC table
+    //ADDDDDDDDDDD
+		currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-(osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS)); // Convert to 10 bit result
+		
+		break;
+	// ENDDD
     case 51:
     case 52:
     case 60: // HEATER_USES_AD8495 (Delivers 5mV/degC)
@@ -49,7 +64,6 @@ void Sensor::updateCurrentTemperature()
         currentTemperature = 4095; // unknown method, return high value to switch heater off for safety
     }
     int currentTemperature = this->currentTemperature;
-    
     switch(type)
     {
     case 1:
@@ -95,7 +109,8 @@ void Sensor::updateCurrentTemperature()
     case 51:
     case 52:
     {
-        type-=46;
+		// WAS -46
+        type-=47;
         uint8_t num = pgm_read_byte(&temptables_num[type])<<1;
         uint8_t i=2;
         const short *temptable = (const short *)pgm_read_word(&temptables[type]); //pgm_read_word_near(&temptables[type]);
@@ -164,8 +179,6 @@ void Sensor::updateCurrentTemperature()
             newtemp = temptable[i++];
             if (newraw > currentTemperature)
             {
-                //OUT_P_I("RC O:",oldtemp);OUT_P_I_LN(" OR:",oldraw);
-                //OUT_P_I("RC N:",newtemp);OUT_P_I_LN(" NR:",newraw);
                 currentTemperatureC = TEMP_INT_TO_FLOAT(oldtemp + (float)(currentTemperature-oldraw)*(float)(newtemp-oldtemp)/(newraw-oldraw));
                 return;
             }
