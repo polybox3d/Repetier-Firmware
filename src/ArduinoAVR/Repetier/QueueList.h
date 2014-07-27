@@ -222,7 +222,7 @@ void QueueList<T>::exit (const char * m) const{
 template<typename T>
 void QueueList<T>::blink () const {
   // set led pin as output.
-  /*pinMode (ledPin, OUTPUT);
+  pinMode (ledPin, OUTPUT);
 
   // continue looping until hardware reset.
   while (true) {
@@ -230,8 +230,17 @@ void QueueList<T>::blink () const {
     delay (250);                 // pauses 1/4 of second.
     digitalWrite (ledPin, LOW);  // sets the LED off.
     delay (150);                 // pauses 1/4 of second.
+    digitalWrite (ledPin, HIGH); // sets the LED on.
+    delay (250);                 // pauses 1/4 of second.
+    digitalWrite (ledPin, LOW);  // sets the LED off.
+    delay (150);                 // pauses 1/4 of second.
+    digitalWrite (ledPin, HIGH); // sets the LED on.
+    delay (800);                 // pauses 1/4 of second.
+    digitalWrite (ledPin, LOW);  // sets the LED off.
+    delay (800
+    );                 // pauses 1/4 of second.
   }
-*/
+
   // solution selected due to lack of exit() and assert().
 }
 

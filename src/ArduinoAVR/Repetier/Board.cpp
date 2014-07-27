@@ -176,8 +176,8 @@ void Board::manage_status( )
 				{
 					this->check_state = BOARD_OK;
 					this->connected = true;
-					this->clear_queue();
-					this->push_all_pin();
+					//this->clear_queue();
+					//this->push_all_pin();
 				}
 				else
 				{

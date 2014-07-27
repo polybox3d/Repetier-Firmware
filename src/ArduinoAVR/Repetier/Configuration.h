@@ -85,7 +85,7 @@ Heat manager for heated bed:
 /**  Min and Max temp inside IC box. In °C */
 #define IC_BOX_MIN_TEMP					-10
 #define IC_BOX_MAX_TEMP					90
-#define IC_SENSOR_TYPE 					50 
+#define IC_SENSOR_TYPE 					13 // LM35  
 
 /**  Sensor used by thermistor for the cold part of each extruder (cf. extruder.h for generic table)*/
 #define EXT_COLD_SENSOR_TYPE 			1

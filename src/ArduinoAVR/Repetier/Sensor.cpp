@@ -14,8 +14,6 @@ Sensor::Sensor(uint8_t sensorType, uint8_t sensorPin, int16_t currentTemperature
 
 void Sensor::updateCurrentTemperature()
 {
-	/*OUT_P_I_LN(" P:",sensorPin);
-	OUT_P_I_LN(" Vraw:",osAnalogInputValues[sensorPin]);*/
     uint8_t type = sensorType;    
     // get raw temperature
     switch(type)
@@ -38,6 +36,9 @@ void Sensor::updateCurrentTemperature()
     case 99:
         currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-(osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS)); // Convert to 10 bit result
         break;
+    case 13: // LM35
+		currentTemperature = (osAnalogInputValues[sensorPin]>>(ANALOG_REDUCE_BITS));
+		break;
     case 50: // User defined PTC table
     case 51:
     case 52:
@@ -104,6 +105,9 @@ void Sensor::updateCurrentTemperature()
         currentTemperatureC = TEMP_INT_TO_FLOAT(newtemp);
         break;
     }
+    case 13: // LM35
+        currentTemperatureC = (((float)currentTemperature-122.0f) * 0.4883f*((float)(1.0/16.0)) );
+        break;
     case 50: // User defined PTC thermistor
     case 51:
     case 52:
@@ -115,7 +119,6 @@ void Sensor::updateCurrentTemperature()
         short oldraw = pgm_read_word(&temptable[0]);
         short oldtemp = pgm_read_word(&temptable[1]);
         short newraw,newtemp;        
-        currentTemperature = (1023<<(2-ANALOG_REDUCE_BITS))-currentTemperature;
         while(i<num)
         {
             newraw = pgm_read_word(&temptable[i++]);

@@ -336,7 +336,7 @@ STEPPER_CURRENT_CONTROL
 #define FAN_PIN            9
 #define PS_ON_PIN          12
 
-#define HEATER_0_PIN       10 //*********************************/*/*/*/*/*/*/*/*/*!!!!!
+#define HEATER_0_PIN       10 //*******************************
 #define HEATER_1_PIN       8
 #define HEATER_2_PIN       9
 #define TEMP_0_PIN         THERM_B0   // ANALOG NUMBERING

@@ -65,8 +65,7 @@ void Commands::checkForPeriodicalActions()
 	check_clogged();
 	#endif
 	check_all_ATU();
-		
-	eps_manage();   	
+	eps_manage();		
 	
     if(!executePeriodical) return;
     executePeriodical=0;
@@ -75,7 +74,7 @@ void Commands::checkForPeriodicalActions()
     
     Extruder::manageTemperatures();	
 	chamber.manageTemperatures();
-	
+
   
     if(--counter250ms==0)
     {
@@ -1328,7 +1327,7 @@ void Commands::executeGCode(GCode *com)
     {    }    break;
     case 11: // vacuum off
         {    }    break;
-    case 600:   {  Com::printPolybox( com->M );( checkFreeMemory() ); Com::printFLN(Com::tFreeRAM,lowestRAMValue); }    break;
+    case 600:   {  Com::printPolybox( com->M );( checkFreeMemory() ); Com::printFLN(Com::tSpace,lowestRAMValue); }    break;
     case 601: // Get CNCTool plugged
     {
         Com::printPolybox( com->M );
@@ -1723,7 +1722,7 @@ void Commands::executeGCode(GCode *com)
 		}
     }
     break;
-	case 673: //get chamber temp  /// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!<!<!<!!<!<<!<!<!!<!<!<
+	case 673: //get chamber temp  /// 
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpaceT0Colon,chamber.getCurrentTemp() );
@@ -1876,6 +1875,12 @@ void Commands::executeGCode(GCode *com)
 		{
   			eps_send_board_update(com->P );
 		}
+    }
+    break;
+    case 703: 
+    {
+		Com::printPolybox( com->M );
+		Com::printFLN( Com::tNewline );
     }
     break;
 
