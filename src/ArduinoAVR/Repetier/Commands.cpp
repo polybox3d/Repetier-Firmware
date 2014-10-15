@@ -1551,14 +1551,16 @@ void Commands::executeGCode(GCode *com)
     break;
     case 649: // set labview controller (remote control or software)
     {
-		Com::printPolybox( com->M );	
 		if ( com->hasS() ) // softaware
 		{
-			WRITE_VPIN( SELECT_LVM, HIGH );
+			WRITE_VPIN( SELECT_LVM, 255 );
+			OUT_P_I(" V:", 1 );	
 		}
 		else // remote controle & other
 		{
 			WRITE_VPIN( SELECT_LVM, LOW );
+			Com::printPolybox( com->M );
+			OUT_P_I(" V:", 0 );	
 		}
     }
     break;
