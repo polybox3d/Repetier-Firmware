@@ -1396,8 +1396,6 @@ void Commands::executeGCode(GCode *com)
     break;
     case 622:    // Get laser plugged
     {    
-		
-		READ_VPIN( LASER_1_PRES );
 		Com::printPolybox( com->M );        
 		Com::printF(Com::tSpaceP, 0);
 		Com::printF(Com::tColon, laser_detected(0) );
