@@ -1896,6 +1896,12 @@ void Commands::executeGCode(GCode *com)
 		Com::printFLN( Com::tNewline );
     }
     break;
+    case 705: 
+    {
+		lvm_set_unconnected_light();
+		eps_send_board_update( 4 );
+    }
+    break;
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  
@@ -2012,6 +2018,9 @@ void Commands::emergencyStop()
     while(1) {}
     END_INTERRUPT_PROTECTED
 #endif
+
+	Color c = { 250, 0, 0, 255 };
+	lvm_set_light( c );
 }
 
 void Commands::checkFreeMemory()
@@ -2021,6 +2030,11 @@ void Commands::checkFreeMemory()
     {
         lowestRAMValue = newfree;
     }
+    if ( lowestRAMValue < CRITICAL_MIN_RAM_VALUE )
+    {
+		Color c = { 190, 70, 250, 255 };
+		lvm_set_light( c );
+	}
 }
 void Commands::writeLowestFreeRAM()
 {

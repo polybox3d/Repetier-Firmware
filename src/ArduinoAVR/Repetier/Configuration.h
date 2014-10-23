@@ -58,6 +58,8 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 #define ENABLE_ARCH_PWM					true
 #define POLYBOX_DEBUG					false
 
+#define	CRITICAL_MIN_RAM_VALUE			250
+
 /**  Sensor used by thermistor inside the heating chamber (cf. extruder.h for generic table)*/
 #define HOT_CHAMBER_SENSOR_TYPE 		1
 

@@ -27,6 +27,9 @@ void manage_mode()
 	// Gestion Extern. set HZ.
 	if ( READ_VPIN( CN_GEST_EXT ) && !(polybox_mode & MODE_CN_ON) )
 	{
+		Color c = { 125, 190, 240, 255 };
+		lvm_set_light( c );
+		
 		Printer::kill(true);
 		for(uint8_t i=0; i<NUM_TEMPERATURE_LOOPS; i++)
             Extruder::setTemperatureForExtruder(0,i);
@@ -70,6 +73,8 @@ void manage_mode()
 	}
 	else if ( (READ_VPIN( CN_GEST_EXT ) == 0) && !(polybox_mode & MODE_PRINTER_ON) )
 	{
+		Color c = { 250, 150, 150, 255 };
+		lvm_set_light( c );
 		Printer::unsetAllSteppersDisabled();
 		
 		VPIN_MODE( RY_STEP_PIN, PIN_TYPE_OUTPUT);

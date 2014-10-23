@@ -38,6 +38,10 @@ uint8_t lvm_get_global_v_intensity();
 uint8_t lvm_get_face_h_intensity(uint8_t id);
 uint8_t lvm_get_face_v_intensity(uint8_t id);
 
+void lvm_set_connected_light();
+void lvm_set_unconnected_light();
+void lvm_set_light( Color &c );
+
 void init_lvm();
 
 #endif // __LVM_H__

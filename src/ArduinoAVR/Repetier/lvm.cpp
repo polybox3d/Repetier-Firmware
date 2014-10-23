@@ -10,6 +10,7 @@ void init_lvm()
     {
         faces[i].init();
     }
+    lvm_set_unconnected_light();
 	
 }
 void lvm_set_face_intensity(uint8_t id, uint8_t h, uint8_t v)
@@ -79,4 +80,25 @@ uint8_t lvm_get_global_h_intensity()
 uint8_t lvm_get_global_v_intensity()
 {
     return faces[0].get_v_intensity();
+}
+
+void lvm_set_connected_light()
+{
+	Color c = { 0, 110, 80, 255 };
+	lvm_set_global_color( c ); // blu/green
+	lvm_set_global_intensity( 110, 110 );
+}
+
+void lvm_set_unconnected_light()
+{
+	Color c = { 220, 0, 0, 255 };
+	//Color c = { 250, 150, 0, 255 };
+	lvm_set_global_color( c ); 
+	lvm_set_global_intensity( 60, 60 );
+}
+
+void lvm_set_light( Color &c)
+{
+	lvm_set_global_color( c ); 
+	lvm_set_global_intensity( 20, 20 );
 }
