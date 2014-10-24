@@ -1775,10 +1775,18 @@ void Commands::executeGCode(GCode *com)
     }
     break;
     /* _____________________GLOBAL______________________ */
-    case 680:
+    case 680: // Get ATU
     {
         Com::printPolybox( com->M );
         Com::printFLN(Com::tSpace, READ_VPIN( ATU_MAIN ));
+    }
+    break;
+    case 681: // Set ATU // @todo
+    {
+		if ( com->hasS() )
+		{
+			set_atu( com->S );
+		}
     }
     break;
     case 682: //get box open or not
@@ -1902,6 +1910,12 @@ void Commands::executeGCode(GCode *com)
 		eps_send_board_update( 4 );
     }
     break;
+    case 706:
+    {
+		lvm_set_connected_light();
+		eps_send_board_update( 4 );
+    }
+    break;
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  
@@ -1981,6 +1995,7 @@ void Commands::executeGCode(GCode *com)
 }
 void Commands::emergencyStop()
 {
+	
 #if defined(KILL_METHOD) && KILL_METHOD==1
     HAL::resetHardware();
 #else
@@ -2015,12 +2030,10 @@ void Commands::emergencyStop()
 #if HEATED_BED_HEATER_PIN>-1
     WRITE(HEATED_BED_HEATER_PIN,0);
 #endif
+
     while(1) {}
     END_INTERRUPT_PROTECTED
 #endif
-
-	Color c = { 250, 0, 0, 255 };
-	lvm_set_light( c );
 }
 
 void Commands::checkFreeMemory()
@@ -2032,7 +2045,7 @@ void Commands::checkFreeMemory()
     }
     if ( lowestRAMValue < CRITICAL_MIN_RAM_VALUE )
     {
-		Color c = { 190, 70, 250, 255 };
+		Color c = { 0, 250, 0, 255 };
 		lvm_set_light( c );
 	}
 }

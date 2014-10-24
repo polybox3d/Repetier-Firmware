@@ -91,8 +91,8 @@ void lvm_set_connected_light()
 
 void lvm_set_unconnected_light()
 {
-	Color c = { 220, 0, 0, 255 };
-	//Color c = { 250, 150, 0, 255 };
+	//Color c = { 220, 0, 0, 255 };
+	Color c = { 250, 85, 0, 255 };
 	lvm_set_global_color( c ); 
 	lvm_set_global_intensity( 60, 60 );
 }
@@ -100,5 +100,5 @@ void lvm_set_unconnected_light()
 void lvm_set_light( Color &c)
 {
 	lvm_set_global_color( c ); 
-	lvm_set_global_intensity( 20, 20 );
+	lvm_set_global_intensity( 10, 10 );
 }

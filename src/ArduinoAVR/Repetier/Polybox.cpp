@@ -384,6 +384,17 @@ void manage_pwm()
 	
  #endif
 }
+void set_atu( bool enable )
+{
+	if ( enable )
+	{
+		Color c = { 255, 0, 0, 255 };
+		lvm_set_light( c );
+		eps_send_board_update( 4 );
+		Commands::emergencyStop();
+	}
+}
+
 
 byte is_box_open()
 {

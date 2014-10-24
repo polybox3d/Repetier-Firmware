@@ -72,7 +72,7 @@ void pin_x_steps( int PIN , int steps ); ///< Move motor at PIn by the given ste
 void executeAction(int action, int param); ///< 
 void manage_mode();
 bool is_printer_mode();
-
+void set_atu ( bool enable );
 /***********************************************************************
  * 
  *    Check & Get Functions
