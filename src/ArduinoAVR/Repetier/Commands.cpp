@@ -1916,6 +1916,19 @@ void Commands::executeGCode(GCode *com)
 		eps_send_board_update( 4 );
     }
     break;
+    case 710:
+    {
+		if ( com->hasF() )
+		{
+			Com::printPolybox( com->M );
+			com->G = com->F;
+			Commands::executeGCode( com );
+			Com::printFLN( Com::tNewline );
+		}
+//			Com::printFLN( Com::tNewline );
+		
+    }
+    break;
 
 #endif //POLYBOX_ENABLE
 //##################POLYBOX--END#####################  
