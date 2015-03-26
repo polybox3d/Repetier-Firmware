@@ -1855,6 +1855,44 @@ void Commands::executeGCode(GCode *com)
         Com::printFLN(Com::tSpace, 1);
     }
     break;
+    case 693: // MCODE_GLOBAL_GET_GYRO_ABSOLU
+    {
+		Point p = table.captor.getCurrentAngle();
+		
+        Com::printPolybox( com->M );        
+        Com::printF(Com::tSpaceZ0Colon, p.x );
+        Com::printF(Com::tSpaceZ1Colon, p.y );
+        Com::printFLN(Com::tSpaceZ2Colon, p.z );
+    }
+    break;
+    case 694: // MCODE_GLOBAL_GET_GYRO_RELATIF
+    {
+		Point p = table.getCurrentAngle();
+		
+        Com::printPolybox( com->M );
+        Com::printF(Com::tSpaceZ0Colon, 0 );
+        Com::printF(Com::tSpaceZ1Colon, 0 );
+        Com::printFLN(Com::tSpaceZ2Colon, 0 );
+    }
+    break;
+    case 695: // MCODE_GLOBAL_SET_GYRO_OFFSET
+    {
+        
+        if ( com->hasX() && com->hasY() && com->hasZ() )
+        {
+			table.setOffset( {com->X, com->Y, com->Z } );
+			Com::printPolybox( com->M );
+			Com::printFLN(Com::tSpace, 1);
+		}
+        
+    }
+    break;
+    case 696: // MCODE_GLOBAL_MOVE_MOTOR_ANGLE
+    {
+        Com::printPolybox( com->M );
+        Com::printFLN(Com::tSpace, 1);
+    }
+    break;
     /* _____________________DEBUG______________________ */
     case 698 : //get_update_queues_size
     {

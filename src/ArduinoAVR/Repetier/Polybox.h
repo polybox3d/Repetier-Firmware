@@ -21,6 +21,8 @@
 
 #include "eps.h" // Extension pin system, allow to use external board as input/output device.
 #include "lvm.h" // LabViewModule, handle light.
+#include "DOF.h"
+#include "Table.h"
 
 #define POLY_MCODE_ISCLOGGED  676
 
@@ -39,6 +41,8 @@ extern volatile byte isClogged;
 extern volatile uint8_t i2c_update_time;
 
 extern ChamberTempController chamber;
+
+extern Table table;
 
 #define MODE_CN_ON				1
 #define MODE_PRINTER_ON			2
